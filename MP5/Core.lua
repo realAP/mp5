@@ -29,6 +29,59 @@ local TICK_TOLERANCE = 0.35      -- akzeptierter Abstand zweier Ticks
 local FSR_DURATION   = 5.0       -- Dauer der 5-Sekunden-Regel
 local MEASURE_TTL    = 180       -- Messwerte so lange als gueltig ansehen (Sek.)
 
+-- Zugriff auf den Manawert ------------------------------------------------
+--
+-- Manche Clients geben den aktuellen Manawert als "secret value" zurueck:
+-- das Spiel darf damit rechnen, Addon-Code nicht. Jede Rechnung damit
+-- bricht ab ("attempt to perform arithmetic on a secret number value").
+-- Deshalb wird der Zugriff einmal geprueft und, wenn er nicht nutzbar ist,
+-- die Messung abgeschaltet - statt bei jedem Mana-Tick zu werfen.
+
+local manaFn = nil          -- nil = noch nicht geprueft, false = kein Zugriff
+
+local function usable(v)
+    if type(v) ~= "number" then
+        -- Ein secret value ist kein echtes number, oder verhaelt sich nicht so.
+        local ok = pcall(function() return v + 0 end)
+        if not ok then return false end
+    end
+    return pcall(function() return v + 0 > -1 end)
+end
+
+local function pickManaFn()
+    local tries = {}
+    if UnitPower then
+        tries[#tries + 1] = function() return UnitPower("player", MANA) end
+    end
+    if UnitMana then
+        tries[#tries + 1] = function() return UnitMana("player") end
+    end
+    for i = 1, #tries do
+        local ok, v = pcall(tries[i])
+        if ok and v ~= nil and usable(v) then return tries[i] end
+    end
+    return false
+end
+
+local function readMana()
+    if manaFn == nil then manaFn = pickManaFn() end
+    if not manaFn then return nil end
+    local ok, v = pcall(manaFn)
+    if ok and v ~= nil then return v end
+    return nil
+end
+
+-- Kann der Manawert ueberhaupt gelesen werden?
+function Core:ManaReadable()
+    if manaFn == nil then manaFn = pickManaFn() end
+    return manaFn and true or false
+end
+
+-- Aktuelles Mana, oder nil wenn der Client es schuetzt.
+function Core:GetMana()
+    return readMana()
+end
+
 -- Zustand -----------------------------------------------------------------
 local lastMana   = 0
 local fsrEnd     = 0             -- Zeitpunkt, an dem die 5-Sek-Regel endet
@@ -47,17 +100,52 @@ Core.callbacks = {}
 -- hochkommen. Jede Fehlermeldung wird genau einmal ausgegeben; danach
 -- laeuft das Addon weiter, ohne den Chat zuzumuellen.
 local reported = {}
+local MAX_ERRORS = 60
+
+-- Fehler werden zusaetzlich in die SavedVariables geschrieben. Die Datei
+-- WTF\Account\<KONTO>\SavedVariables\MP5.lua ist reiner Text und laesst
+-- sich weitergeben, ohne irgendetwas abzutippen.
+local function store(err)
+    if type(MP5Errors) ~= "table" then MP5Errors = {} end
+    local e = tostring(err)
+    for i = 1, #MP5Errors do
+        if MP5Errors[i].msg == e then
+            MP5Errors[i].count = (MP5Errors[i].count or 1) + 1
+            return
+        end
+    end
+    if #MP5Errors >= MAX_ERRORS then return end
+    MP5Errors[#MP5Errors + 1] = {
+        msg     = e,
+        count   = 1,
+        when    = date and date("%Y-%m-%d %H:%M:%S") or nil,
+        build   = GetBuildInfo and tostring(GetBuildInfo()) or nil,
+        version = GetAddOnMetadata and GetAddOnMetadata("MP5", "Version") or nil,
+        stack   = debugstack and debugstack(3, 6, 0) or nil,
+    }
+end
 
 local function report(err)
+    pcall(store, err)
     if reported[err] then return end
     reported[err] = true
     local out = DEFAULT_CHAT_FRAME
     if out then
         out:AddMessage("|cffffd100MP5|r |cffff5555Fehler:|r " .. tostring(err))
-        out:AddMessage("|cffffd100MP5|r Diese Meldung kommt nur einmal. "
-            .. "Bitte genau so weitergeben.")
+        out:AddMessage("|cffffd100MP5|r Mitgeschrieben. Weitere Meldungen "
+            .. "derselben Art bleiben stumm. |cff88ccff/mp5 errors|r")
     end
 end
+
+-- Fuer Event-Handler: faengt alles ab und schreibt es mit.
+function ns.safe(fn)
+    return function(...)
+        local ok, err = pcall(fn, ...)
+        if not ok then report(err) end
+    end
+end
+
+ns.report = report
 
 local function fire()
     for i = 1, #Core.callbacks do
@@ -102,7 +190,8 @@ end
 -- Evokation, Aderlass usw. fallen damit heraus.
 local function onManaChanged()
     local now  = GetTime()
-    local cur  = UnitPower("player", MANA)
+    local cur  = readMana()
+    if not cur then return end        -- Client schuetzt den Wert: nicht messbar
     local max  = UnitPowerMax("player", MANA)
     local delta = cur - lastMana
     lastMana = cur
@@ -202,7 +291,7 @@ f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
 local auraThrottle = 0
 
-f:SetScript("OnEvent", function(_, event, unit, powerType)
+f:SetScript("OnEvent", ns.safe(function(_, event, unit, powerType)
     if event == "UNIT_POWER_UPDATE" or event == "UNIT_MANA" then
         if unit ~= "player" then return end
         if powerType and powerType ~= "MANA" then return end
@@ -222,8 +311,8 @@ f:SetScript("OnEvent", function(_, event, unit, powerType)
         pending = nil
         fire()
     else
-        lastMana = UnitPower("player", MANA)
+        lastMana = readMana() or 0
         pending = nil
         fire()
     end
-end)
+end))

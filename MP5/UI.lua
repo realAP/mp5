@@ -117,8 +117,13 @@ local function createSlot(i)
                 1, 1, 1, 1, 0.82, 0.2)
         end
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("Bei Dauercasten, mit der Regeneration", 0.6, 0.6, 0.6)
-        GameTooltip:AddLine("innerhalb der 5-Sekunden-Regel.", 0.6, 0.6, 0.6)
+        if not Core:ManaReadable() then
+            GameTooltip:AddLine("Dieser Client schuetzt den Manawert,", 1, 0.6, 0.33)
+            GameTooltip:AddLine("daher laesst sich das nicht berechnen.", 1, 0.6, 0.33)
+        else
+            GameTooltip:AddLine("Bei Dauercasten, mit der Regeneration", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("innerhalb der 5-Sekunden-Regel.", 0.6, 0.6, 0.6)
+        end
         GameTooltip:Show()
     end)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -167,7 +172,7 @@ end
 local function updateSpells()
     local db = ns.db
     if not db then return end
-    local mana = UnitPower("player", Enum and Enum.PowerType and Enum.PowerType.Mana or 0)
+    local mana = Core:GetMana()               -- nil, wenn der Client ihn schuetzt
     local mp5  = Core:GetMP5(true)            -- beim Durchcasten gilt die FSR-Stufe
     local mps  = mp5 and (mp5 / 5) or nil
 
@@ -432,6 +437,12 @@ frame:SetScript("OnEnter", function(self)
         GameTooltip:AddLine("Volle Regeneration aktiv", 0.3, 0.9, 0.3)
     end
     GameTooltip:AddLine(" ")
+    if not Core:ManaReadable() then
+        GameTooltip:AddLine("Dieser Client schuetzt den Manawert.", 1, 0.6, 0.33)
+        GameTooltip:AddLine("Messung und Zauber-Zahlen sind daher nicht", 1, 0.6, 0.33)
+        GameTooltip:AddLine("moeglich - angezeigt wird nur, was die API liefert.", 1, 0.6, 0.33)
+        GameTooltip:AddLine(" ")
+    end
     GameTooltip:AddLine("Quelle: " .. (src or "-") .. " / " .. (fsrc or "-"), 0.6, 0.6, 0.6)
     GameTooltip:AddLine("Gemessene Werte stammen aus den echten Mana-Ticks", 0.6, 0.6, 0.6)
     GameTooltip:AddLine("und enthalten alle Buffs, Items und Volksfaehigkeiten.", 0.6, 0.6, 0.6)

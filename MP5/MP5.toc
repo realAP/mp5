@@ -3,7 +3,7 @@
 ## Notes: Zeigt die tatsaechliche Mana-Regeneration pro 5 Sekunden, inkl. 5-Sekunden-Regel.
 ## Author: Axel
 ## Version: 0.1.0
-## SavedVariables: MP5DB
+## SavedVariables: MP5DB, MP5Errors
 ## SavedVariablesPerCharacter: MP5CharDB
 
 Core.lua

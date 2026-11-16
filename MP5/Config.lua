@@ -231,6 +231,9 @@ SlashCmdList["MP5"] = function(input)
         msg("  Spirit:          " .. tostring(p.spirit))
         msg("  Intellect:       " .. tostring(p.intellect))
         msg("  Text der Leiste: " .. tostring(p.manaBarText))
+        msg("  Wert der Leiste: " .. tostring(p.manaBarValue))
+        msg("  vergleichbar:    " .. tostring(p.manaCanCompare))
+        msg("  bezahlbar-Test:  " .. tostring(p.spellAffordable))
         msg("Vollstaendig in WTF\\Account\\<KONTO>\\SavedVariables\\MP5.lua")
         return
     elseif cmd == "errors" then

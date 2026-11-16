@@ -157,6 +157,10 @@ local function spellCommand(db, raw)
         .. (info.rank and (" (" .. info.rank .. ")") or "")
         .. " - " .. (info.cost or "?") .. " Mana, "
         .. string.format("%.1fs", math.max(info.castTime or 0, 1.5)))
+    if info.rankIgnored then
+        msg("|cffffaa33Hinweis:|r Dieser Client kennt keine Raenge, "
+            .. "\"" .. info.rankIgnored .. "\" wurde ignoriert.")
+    end
     return true
 end
 

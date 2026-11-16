@@ -120,10 +120,14 @@ for i = 1, MAX_SPELLS do
             info:SetText("|cffff5555nicht gefunden|r")
             return
         end
-        info:SetText(string.format("|cff40ff40%s|r  %s Mana, %.1fs",
+        local text = string.format("|cff40ff40%s|r  %s Mana, %.1fs",
             s.name .. (s.rank and (" (" .. s.rank .. ")") or ""),
             tostring(s.cost or "?"),
-            math.max(s.castTime or 0, 1.5)))
+            math.max(s.castTime or 0, 1.5))
+        if s.rankIgnored then
+            text = text .. "  |cffffaa33(Rang ignoriert)|r"
+        end
+        info:SetText(text)
     end
 
     local function commit()

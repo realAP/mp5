@@ -79,6 +79,7 @@ Alles über `/mp5`:
 /mp5 font <8-32>              Schriftgröße (unabhängig von der Größe)
 /mp5 width <80-400>           Breite
 /mp5 bar off|thin|full        kein Balken | dünner 5s-Strich | Statusbar
+/mp5 bardir fill|drain        Balken füllt sich auf / läuft leer
 /mp5 backdrop blizzard|thin|off
 /mp5 label on|off             Beschriftung "MANA / 5" (Standard: aus)
 /mp5 full on|off              beide Stufen "12 / 47" (hell = gilt gerade)
@@ -106,7 +107,7 @@ Position, Größe und Optionen werden pro Charakter gespeichert.
 |---|---|
 | 1 – Nackte Zahl | `backdrop off`, `bar off`, `label off`, `full off` |
 | 2 – Jetzt / Danach | `backdrop off`, `bar off`, `full on` |
-| 3 – Klassisches Panel (Standard) | `backdrop blizzard`, `bar thin`, `countdown on`, `full on`, `spells on` |
+| 3 – Klassisches Panel (Standard) | `backdrop blizzard`, `bar thin`, `bardir fill`, `countdown on`, `full on`, `spells on` |
 | 4 – Balkenanzeige | `backdrop thin`, `bar full`, `countdown on` |
 | 5 – Aufschlüsselung | `tooltip on` (beim Drüberfahren) |
 

@@ -93,7 +93,7 @@ local spellsOn = checkbox(panel, "Zauber-Leiste anzeigen", 14, -146,
 
 -- Fuenf Eingabefelder, jeweils mit Rueckmeldung dahinter.
 for i = 1, MAX_SPELLS do
-    local y = -180 - (i - 1) * 30
+    local y = -180 - (i - 1) * 28
 
     local lbl = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     lbl:SetPoint("TOPLEFT", 20, y - 6)
@@ -145,25 +145,29 @@ for i = 1, MAX_SPELLS do
     rows[i] = { box = box, describe = describe }
 end
 
-title(panel, "Darstellung", nil, 16, -340)
+title(panel, "Darstellung", nil, 16, -326)
 
-local iconSlider = slider(panel, "Icon-Groesse", 20, -376, 16, 48, 2,
+local iconSlider = slider(panel, "Icon-Groesse", 20, -360, 16, 48, 2,
     function() return ns.db.iconSize end,
     function(v) ns.db.iconSize = v end)
 
-local countCenter = checkbox(panel, "Zahl mittig auf dem Icon (sonst oben rechts)", 14, -416,
-    function() return ns.db.countAnchor == "center" end,
-    function(v) ns.db.countAnchor = v and "center" or "topright" end)
+local barFill = checkbox(panel, "Balken fuellt sich bis zur vollen Regeneration", 14, -398,
+    function() return ns.db.barDir ~= "drain" end,
+    function(v) ns.db.barDir = v and "fill" or "drain" end)
 
-local countdownOn = checkbox(panel, "Restzeit der 5-Sekunden-Regel unter dem Balken", 14, -446,
+local countdownOn = checkbox(panel, "Restzeit der 5-Sekunden-Regel unter dem Balken", 14, -424,
     function() return ns.db.showCountdown end,
     function(v) ns.db.showCountdown = v end)
+
+local countCenter = checkbox(panel, "Zahl mittig auf dem Icon (sonst oben rechts)", 14, -450,
+    function() return ns.db.countAnchor == "center" end,
+    function(v) ns.db.countAnchor = v and "center" or "topright" end)
 
 local fullOn = checkbox(panel, "Beide Stufen zeigen (waehrend des Zauberns / danach)", 14, -476,
     function() return ns.db.showFull end,
     function(v) ns.db.showFull = v end)
 
-note(panel, "Mehr Einstellungen ueber /mp5", 16, -512)
+note(panel, "Mehr Einstellungen ueber /mp5", 16, -506)
 
 -- Oeffnen und Auffrischen --------------------------------------------------
 
@@ -174,6 +178,7 @@ local function refresh()
         rows[i].describe()
     end
     spellsOn.refresh()
+    barFill.refresh()
     countCenter.refresh()
     countdownOn.refresh()
     fullOn.refresh()

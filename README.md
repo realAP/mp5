@@ -39,7 +39,27 @@ das beim Start und schaltet um:
 | Messung der Mana-Ticks | entfällt |
 | Zahlen | kommen aus `GetManaRegen()` |
 | 5-Sekunden-Regel | läuft über `UNIT_SPELLCAST_SUCCEEDED` statt über sinkendes Mana |
-| Zauber-Leiste | entfällt – sie braucht das aktuelle Mana |
+| Zauber-Leiste | über den Text der Standard-Manaleiste, siehe unten |
+
+### Das aktuelle Mana doch bekommen
+
+Die Standard-Manaleiste zeigt den Wert als **Text** an, sobald die Statustexte
+eingeschaltet sind (*Interface ▸ Statustext*) – und ein Text ist keine
+geschützte Zahl. Drei Formen werden gelesen:
+
+| Anzeige | Ergebnis |
+|---|---|
+| `1234 / 1435` | der Wert direkt, genau |
+| `1234` | der Wert direkt, genau |
+| `47%` | mit dem lesbaren Maximalmana umgerechnet, gerundet |
+
+Stammt der Wert aus einem Prozentwert, steht vor der Stückzahl eine Tilde
+(`~5`) – die Anzeige ist dann auf etwa ein Prozent des Maximalmanas genau.
+Mit numerischem Statustext fällt die Tilde weg.
+
+Gibt der Text gar nichts her, bleibt als Ersatz die Frage, ob ein Zauber
+überhaupt bezahlbar ist (`IsUsableSpell`): dann wird das Icon grau, statt
+eine Zahl zu zeigen.
 
 `/mp5 probe` zeigt, was der eigene Client hergibt; das Ergebnis landet auch
 in den SavedVariables. Fehler werden mit `/mp5 errors` angezeigt und in
@@ -140,4 +160,5 @@ Die Messlogik ist gegen einen API-Stub testbar, ohne das Spiel zu starten:
 lua5.1 tests/test_core.lua      # Messung der Mana-Ticks, 5-Sekunden-Regel
 lua5.1 tests/test_spells.lua    # die Zauber-Rechnung, u.a. gegen eine Simulation
 lua5.1 tests/test_apiregen.lua  # GetManaRegen als Quelle bei geschütztem Mana
+lua5.1 tests/test_manabar.lua   # Mana aus dem Text der Standardleiste
 ```

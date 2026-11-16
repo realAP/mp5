@@ -117,7 +117,17 @@ local function createSlot(i)
                 1, 1, 1, 1, 0.82, 0.2)
         end
         GameTooltip:AddLine(" ")
-        if not Core:ManaReadable() then
+        local src = Core:ManaSource()
+        if src == "prozent" then
+            GameTooltip:AddLine("Mana aus dem Prozentwert der Standardleiste", 1, 0.82, 0.2)
+            GameTooltip:AddLine("umgerechnet - die Zahl ist daher gerundet (~).", 1, 0.82, 0.2)
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("Genauer wird es mit numerischem Statustext:", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("Interface > Statustext > Zahlen.", 0.6, 0.6, 0.6)
+        elseif src == "text" then
+            GameTooltip:AddLine("Mana aus dem Text der Standardleiste gelesen,", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("weil der Client den Wert selbst schuetzt.", 0.6, 0.6, 0.6)
+        elseif not Core:ManaReadable() then
             if self.affordable ~= nil then
                 GameTooltip:AddLine(self.affordable
                     and "Mana reicht fuer diesen Zauber."
@@ -181,7 +191,7 @@ end
 local function updateSpells()
     local db = ns.db
     if not db then return end
-    local mana = Core:GetMana()               -- nil, wenn der Client ihn schuetzt
+    local mana, approx = Core:GetMana()       -- nil, wenn kein Weg funktioniert
     local mp5  = Core:GetMP5(true)            -- beim Durchcasten gilt die FSR-Stufe
     local mps  = mp5 and (mp5 / 5) or nil
 
@@ -198,7 +208,10 @@ local function updateSpells()
             b.casts = casts
 
             if casts then
-                b.count:SetText(fmtCasts(casts))
+                -- Stammt das Mana aus einem Prozentwert, ist die Zahl
+                -- gerundet. Das zeigt die Tilde an, statt es zu verschweigen.
+                local prefix = (approx and casts ~= math.huge) and "~" or ""
+                b.count:SetText(prefix .. fmtCasts(casts))
                 pcall(b.icon.SetDesaturated, b.icon, false)
                 if casts == math.huge then
                     color(b.count, C_MANY)

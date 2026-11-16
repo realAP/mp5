@@ -63,23 +63,87 @@ local function pickManaFn()
     return false
 end
 
-local function readMana()
-    if manaFn == nil then manaFn = pickManaFn() end
-    if not manaFn then return nil end
-    local ok, v = pcall(manaFn)
-    if ok and v ~= nil then return v end
+-- Letzter Ausweg, wenn der Wert geschuetzt ist: der Text der Standard-
+-- Manaleiste. Ein Text ist keine geschuetzte Zahl. Er ist nur gefuellt,
+-- wenn die Statustexte eingeschaltet sind (Interface > Statustext).
+--
+-- Drei Formen kommen vor:
+--   "1234 / 1435"  -> der Wert direkt
+--   "1234"         -> der Wert direkt
+--   "47%"          -> mit dem lesbaren Maximalmana umgerechnet
+--
+-- Rueckgabe: Wert, true wenn er aus einem Prozentwert stammt (also gerundet)
+local function manaBarText()
+    local fs = PlayerFrameManaBarText
+        or (PlayerFrameManaBar and PlayerFrameManaBar.TextString)
+    if not fs or not fs.GetText then return nil end
+
+    local ok, t = pcall(fs.GetText, fs)
+    if not ok or type(t) ~= "string" or t == "" then return nil end
+
+    -- "1234 / 1435" - Tausenderpunkte entfernen, der Trenner ist kein Komma
+    local a = t:match("^%s*([%d%.,%s]-%d)%s*/")
+    if a then
+        local n = tonumber((a:gsub("[%.,%s]", "")))
+        if n then return n, false end
+    end
+
+    -- "47%" oder "47,5%" - hier ist das Komma ein Dezimaltrenner
+    local pct = t:match("([%d]+[%.,]?%d*)%s*%%")
+    if pct then
+        local v = tonumber((pct:gsub(",", ".")))
+        local max = UnitPowerMax("player", MANA)
+        if v and type(max) == "number" and max > 0 then
+            return max * v / 100, true
+        end
+    end
+
+    -- nur eine Zahl
+    local n = t:match("^%s*([%d%.,%s]-%d)%s*$")
+    if n then
+        local v = tonumber((n:gsub("[%.,%s]", "")))
+        if v then return v, false end
+    end
+
     return nil
 end
 
--- Kann der Manawert ueberhaupt gelesen werden?
+local function readMana()
+    if manaFn == nil then manaFn = pickManaFn() end
+    if manaFn then
+        local ok, v = pcall(manaFn)
+        if ok and v ~= nil then return v, false, "api" end
+    end
+    -- Geschuetzt: ueber den Text der Standardleiste versuchen.
+    local ok, v, approx = pcall(manaBarText)
+    if ok and type(v) == "number" then
+        return v, approx and true or false, approx and "prozent" or "text"
+    end
+    return nil
+end
+
+-- Ist der Wert direkt aus der API lesbar? (false heisst nicht, dass es
+-- gar nicht geht - der Leistentext kann trotzdem greifen.)
 function Core:ManaReadable()
     if manaFn == nil then manaFn = pickManaFn() end
     return manaFn and true or false
 end
 
--- Aktuelles Mana, oder nil wenn der Client es schuetzt.
+-- Kommt ueberhaupt ein Wert zustande, egal auf welchem Weg?
+function Core:ManaAvailable()
+    return (readMana() ~= nil)
+end
+
+-- Aktuelles Mana, oder nil wenn der Client es schuetzt und auch der
+-- Leistentext nichts hergibt.
+-- Rueckgabe: Wert, gerundet?, Quelle ("api" | "text" | "prozent")
 function Core:GetMana()
     return readMana()
+end
+
+-- Woher kommt das aktuelle Mana gerade? nil = nirgendwo.
+function Core:ManaSource()
+    return select(3, readMana())
 end
 
 -- Zustand -----------------------------------------------------------------

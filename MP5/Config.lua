@@ -222,20 +222,35 @@ SlashCmdList["MP5"] = function(input)
     elseif cmd == "unhide" then
         db.hidden = false
     elseif cmd == "probe" then
-        local p = ns.Probe()
+        -- Nimmt auch "gar kein Argument" entgegen, nicht nur nil.
+        local function str(...)
+            if select("#", ...) == 0 then return "-" end
+            local v = ...
+            if v == nil then return "-" end
+            return tostring(v)
+        end
+        local ok, p = pcall(ns.Probe)
+        if not ok or type(p) ~= "table" then
+            msg("|cffff5555Pruefung fehlgeschlagen:|r " .. tostring(p))
+            return
+        end
         msg("Client-Pruefung:")
-        msg("  aktuelles Mana:  " .. tostring(p.manaCurrent))
-        msg("  Maximalmana:     " .. tostring(p.manaMax))
-        msg("  UnitMana:        " .. tostring(p.manaLegacy))
-        msg("  GetManaRegen:    " .. tostring(p.getManaRegen))
-        msg("  Spirit:          " .. tostring(p.spirit))
-        msg("  Intellect:       " .. tostring(p.intellect))
-        msg("  Text der Leiste: " .. tostring(p.manaBarText))
-        msg("  Wert der Leiste: " .. tostring(p.manaBarValue))
-        msg("  vergleichbar:    " .. tostring(p.manaCanCompare))
-        msg("  bezahlbar-Test:  " .. tostring(p.spellAffordable))
-        msg("  Mana-Quelle:     " .. tostring(Core:ManaSource()))
-        msg("  Mana daraus:     " .. tostring(Core:GetMana()))
+        msg("  aktuelles Mana:  " .. str(p.manaCurrent))
+        msg("  Maximalmana:     " .. str(p.manaMax))
+        msg("  UnitMana:        " .. str(p.manaLegacy))
+        msg("  GetManaRegen:    " .. str(p.getManaRegen))
+        msg("  davon Cast-Wert: " .. str(p.getManaRegenCast))
+        msg("  Spirit:          " .. str(p.spirit))
+        msg("  Intellect:       " .. str(p.intellect))
+        msg("  Text der Leiste: " .. str(p.manaBarText))
+        msg("  Wert der Leiste: " .. str(p.manaBarValue))
+        msg("  Statustext-CVar: " .. str(p.statusTextCVar))
+        msg("  vergleichbar:    " .. str(p.manaCanCompare))
+        msg("  bezahlbar-Test:  " .. str(p.spellAffordable))
+        msg("  Mana-Quelle:     " .. str(Core:ManaSource()))
+        msg("  Mana daraus:     " .. str(Core:GetMana()))
+        msg("  MP5 ausserhalb:  " .. str(Core:GetMP5(false)))
+        msg("  MP5 beim Casten: " .. str(Core:GetMP5(true)))
         msg("Vollstaendig in WTF\\Account\\<KONTO>\\SavedVariables\\MP5.lua")
         return
     elseif cmd == "errors" then

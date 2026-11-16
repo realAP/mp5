@@ -142,8 +142,12 @@ function Core:GetMana()
 end
 
 -- Woher kommt das aktuelle Mana gerade? nil = nirgendwo.
+-- Bewusst ueber eine Zuweisung statt select(3, ...): kommt kein Wert
+-- zustande, gibt select gar nichts zurueck - und ein tostring() ohne
+-- Argument bricht ab ("bad argument #1 to 'tostring'").
 function Core:ManaSource()
-    return select(3, readMana())
+    local _, _, src = readMana()
+    return src
 end
 
 -- Zustand -----------------------------------------------------------------

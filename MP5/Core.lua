@@ -250,11 +250,24 @@ end
 
 -- Abfrage ------------------------------------------------------------------
 
-local function apiMP5()
+-- GetManaRegen() liefert Mana pro Sekunde, und zwar zwei Werte:
+--   1. ausserhalb der 5-Sekunden-Regel (inkl. Geist)
+--   2. waehrend des Zauberns (nur MP5-Effekte)
+-- Nicht jeder Client fuellt den zweiten Wert sinnvoll; manche geben zweimal
+-- den Wert des gerade aktiven Zustands zurueck. Deshalb wird er nur dann
+-- fuer beide Stufen benutzt, wenn er sich vom ersten unterscheidet.
+local function apiMP5(inFSR)
     if not GetManaRegen then return nil end
-    local base = GetManaRegen()
-    if not base then return nil end
-    return base * 5
+    local ok, base, casting = pcall(GetManaRegen)
+    if not ok or type(base) ~= "number" then return nil end
+
+    if type(casting) == "number" and casting ~= base then
+        return (inFSR and casting or base) * 5
+    end
+
+    -- Nur der aktuelle Zustand ist bekannt.
+    if inFSR == (GetTime() < fsrEnd) then return base * 5 end
+    return nil
 end
 
 -- Wert fuer einen Zustand. inFSR = true  -> nur MP5-Effekte
@@ -267,11 +280,8 @@ function Core:GetMP5(inFSR)
         return m.mp5, "gemessen"
     end
 
-    -- Die API kennt nur den aktuellen Zustand.
-    if inFSR == (now < fsrEnd) then
-        local v = apiMP5()
-        if v then return v, "api" end
-    end
+    local v = apiMP5(inFSR)
+    if v then return v, "api" end
 
     if m then return m.mp5, "gemessen" end
     return nil, nil

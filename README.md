@@ -21,10 +21,29 @@ geführt:
 | innerhalb der 5-Sekunden-Regel | nur MP5-Effekte (Segen der Weisheit, Nahrung, Items, Volksfähigkeit) |
 | außerhalb | zusätzlich die Geist-Regeneration |
 
-Solange noch nichts gemessen wurde, dient `GetManaRegen()` als Überbrückung.
-Diese API liefert in Classic für beide Rückgabewerte denselben Wert (immer
-den des aktuellen Zustands) und ist bei Buffs nicht verlässlich – deshalb
-hat die Messung Vorrang. Im Tooltip steht, welche Quelle gerade greift.
+Solange noch nichts gemessen wurde, dient `GetManaRegen()` als Quelle.
+Die Funktion liefert Mana pro Sekunde, und zwar zwei Werte: außerhalb der
+5-Sekunden-Regel und während des Zauberns. Unterscheiden sie sich, werden
+beide Stufen daraus gelesen; gibt der Client zweimal denselben Wert zurück,
+ist nur der gerade aktive Zustand bekannt und die andere Stufe bleibt leer,
+statt geraten zu werden. Im Tooltip steht, welche Quelle gerade greift.
+
+## Clients, die den Manawert schützen
+
+Manche Clients geben das aktuelle Mana als *secret value* zurück – lesbar
+für das Spiel, aber Addon-Code darf damit nicht rechnen. Das Addon erkennt
+das beim Start und schaltet um:
+
+| | |
+|---|---|
+| Messung der Mana-Ticks | entfällt |
+| Zahlen | kommen aus `GetManaRegen()` |
+| 5-Sekunden-Regel | läuft über `UNIT_SPELLCAST_SUCCEEDED` statt über sinkendes Mana |
+| Zauber-Leiste | entfällt – sie braucht das aktuelle Mana |
+
+`/mp5 probe` zeigt, was der eigene Client hergibt; das Ergebnis landet auch
+in den SavedVariables. Fehler werden mit `/mp5 errors` angezeigt und in
+derselben Datei mitgeschrieben.
 
 ## Wie oft reicht das Mana noch?
 
@@ -118,6 +137,7 @@ Das Design-Handout liegt unter `docs/design-handout.html`.
 Die Messlogik ist gegen einen API-Stub testbar, ohne das Spiel zu starten:
 
 ```
-lua5.1 tests/test_core.lua      # Messung der Mana-Ticks
+lua5.1 tests/test_core.lua      # Messung der Mana-Ticks, 5-Sekunden-Regel
 lua5.1 tests/test_spells.lua    # die Zauber-Rechnung, u.a. gegen eine Simulation
+lua5.1 tests/test_apiregen.lua  # GetManaRegen als Quelle bei geschütztem Mana
 ```

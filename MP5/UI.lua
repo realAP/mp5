@@ -1,12 +1,21 @@
 -- MP5 / UI.lua
--- Anzeige im klassischen Blizzard-Stil. Frei verschiebbar, skalierbar.
+-- Entwurf 3, von oben nach unten:
+--
+--     12 / 47          beide Stufen, mittig, die gueltige hell
+--   [=========  ]      Balken der 5-Sekunden-Regel
+--       3.2s           Restzeit UNTER dem Balken (auf dunklem Grund lesbar)
+--   [#] [#] [#] [#]    Zauber-Icons mit "so oft reicht das Mana noch"
+--
 -- Der OnUpdate laeuft ausschliesslich waehrend der 5 Sekunden nach einem
 -- Zauber und schaltet sich danach selbst wieder ab.
 
 local ADDON, ns = ...
-local Core = ns.Core
+local Core   = ns.Core
+local Spells = ns.Spells
 
 local UPDATE_THROTTLE = 0.1
+local MAX_SPELLS      = 5
+local INFINITY        = "\226\136\158"     -- ∞
 
 local frame = CreateFrame("Frame", "MP5Frame", UIParent,
     BackdropTemplateMixin and "BackdropTemplate" or nil)
@@ -20,7 +29,6 @@ ns.frame = frame
 
 local label = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 local value = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-local extra = frame:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 
 local bar = CreateFrame("StatusBar", nil, frame)
 bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
@@ -30,8 +38,86 @@ local barBG = bar:CreateTexture(nil, "BACKGROUND")
 barBG:SetAllPoints()
 barBG:SetColorTexture(0, 0, 0, 0.6)
 
-local barText = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-barText:SetPoint("CENTER")
+-- Die Restzeit steht unter dem Balken, nicht darin: auf dem goldenen
+-- Balken war die Zahl nicht zu lesen.
+local countdown = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+
+-- Farben der beiden Stufen. Der gerade wirksame Wert wird hell dargestellt,
+-- der andere gedimmt - so ist auf einen Blick klar, welche Stufe gilt.
+local C_FSR  = { 0.95, 0.72, 0.22 }   -- innerhalb der 5-Sekunden-Regel (gold)
+local C_FULL = { 0.56, 0.76, 1.00 }   -- ausserhalb (manablau)
+local C_DIM  = { 0.45, 0.43, 0.38 }   -- inaktive Stufe
+local C_ZERO = { 0.60, 0.60, 0.60 }
+
+-- Ampel fuer die Zauber-Zahlen.
+local C_MANY = { 0.45, 0.90, 0.45 }
+local C_SOME = { 1.00, 0.82, 0.20 }
+local C_FEW  = { 1.00, 0.35, 0.35 }
+
+local function color(fs, c, isZero)
+    if isZero then c = C_ZERO end
+    fs:SetTextColor(c[1], c[2], c[3])
+end
+
+-- Beide Stufen stehen in EINER Fontstring, eingefaerbt ueber Farbcodes.
+-- Dadurch laesst sich die Zeile als Ganzes exakt mittig setzen.
+local function hex(c)
+    return string.format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
+end
+
+-- Zauber-Felder -----------------------------------------------------------
+
+local slots = {}
+
+local function createSlot(i)
+    local b = CreateFrame("Frame", nil, frame)
+    b:EnableMouse(true)
+
+    b.icon = b:CreateTexture(nil, "ARTWORK")
+    b.icon:SetAllPoints()
+    b.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)   -- Rand des Icons wegschneiden
+
+    b.border = b:CreateTexture(nil, "BORDER")
+    b.border:SetPoint("TOPLEFT", -1, 1)
+    b.border:SetPoint("BOTTOMRIGHT", 1, -1)
+    b.border:SetColorTexture(0, 0, 0, 1)
+
+    -- Umrandete Schrift, damit die Zahl auf jedem Icon lesbar bleibt.
+    b.count = b:CreateFontString(nil, "OVERLAY")
+    b.count:SetShadowColor(0, 0, 0, 1)
+    b.count:SetShadowOffset(1, -1)
+
+    b:SetScript("OnEnter", function(self)
+        if not ns.db.tooltip or not self.info then return end
+        local info, casts = self.info, self.casts
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(info.name .. (info.rank and (" (" .. info.rank .. ")") or ""))
+        GameTooltip:AddDoubleLine("Kosten", (info.cost or "?") .. " Mana", 1, 1, 1, 1, 1, 1)
+        GameTooltip:AddDoubleLine("Zauberzeit",
+            string.format("%.1fs", math.max(info.castTime or 0, 1.5)), 1, 1, 1, 1, 1, 1)
+        if casts == math.huge then
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("Traegt sich selbst - die Regeneration waehrend", 0.3, 0.9, 0.3)
+            GameTooltip:AddLine("der Zauberzeit deckt die Kosten.", 0.3, 0.9, 0.3)
+        elseif casts then
+            local secs = Spells.TimeLeft(casts, info.castTime)
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddDoubleLine("Reicht noch fuer", casts .. "x", 1, 1, 1, 1, 0.82, 0.2)
+            GameTooltip:AddDoubleLine("Das sind", string.format("%.0f Sekunden", secs),
+                1, 1, 1, 1, 0.82, 0.2)
+        end
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine("Bei Dauercasten, mit der Regeneration", 0.6, 0.6, 0.6)
+        GameTooltip:AddLine("innerhalb der 5-Sekunden-Regel.", 0.6, 0.6, 0.6)
+        GameTooltip:Show()
+    end)
+    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    slots[i] = b
+    return b
+end
+
+for i = 1, MAX_SPELLS do createSlot(i) end
 
 -- Darstellung -------------------------------------------------------------
 
@@ -44,19 +130,62 @@ local function fmt(v)
     return tostring(math.floor(v + 0.5))
 end
 
+local function fmtCasts(n)
+    if not n then return "?" end
+    if n == math.huge then return INFINITY end
+    if n > 99 then return "99+" end
+    return tostring(n)
+end
+
 local shown = nil        -- aktuell dargestellter Wert (fuer die Animation)
 local animating = false
 
--- Farben der beiden Stufen. Der gerade wirksame Wert wird hell dargestellt,
--- der andere gedimmt - so ist auf einen Blick klar, welche Stufe gilt.
-local C_FSR  = { 0.95, 0.72, 0.22 }   -- innerhalb der 5-Sekunden-Regel (gold)
-local C_FULL = { 0.56, 0.76, 1.00 }   -- ausserhalb (manablau)
-local C_DIM  = { 0.45, 0.43, 0.38 }   -- inaktive Stufe
-local C_ZERO = { 0.60, 0.60, 0.60 }
+-- Welche Zauber sind eingetragen und bekannt? Wird nur bei Aenderungen
+-- neu aufgeloest, nicht in jedem Frame.
+local resolved = {}
 
-local function color(fs, c, isZero)
-    if isZero then c = C_ZERO end
-    fs:SetTextColor(c[1], c[2], c[3])
+function ns.ResolveSpells()
+    local db = ns.db
+    if not db then return end         -- SPELLS_CHANGED feuert vor ADDON_LOADED
+    for i = 1, MAX_SPELLS do
+        local name = db.spells and db.spells[i]
+        resolved[i] = name and Spells:Lookup(name) or nil
+    end
+    ns.ApplyLayout()
+end
+
+local function updateSpells()
+    local db = ns.db
+    local mana = UnitPower("player", Enum and Enum.PowerType and Enum.PowerType.Mana or 0)
+    local mp5  = Core:GetMP5(true)            -- beim Durchcasten gilt die FSR-Stufe
+    local mps  = mp5 and (mp5 / 5) or nil
+
+    for i = 1, MAX_SPELLS do
+        local b, info = slots[i], resolved[i]
+        if not db.showSpells or not info then
+            b:Hide()
+        else
+            b:Show()
+            b.info = info
+            b.icon:SetTexture(info.icon)
+
+            local casts = Spells.CastsLeft(mana, info.cost, info.castTime, mps)
+            b.casts = casts
+            b.count:SetText(fmtCasts(casts))
+
+            if casts == math.huge then
+                color(b.count, C_MANY)
+            elseif not casts then
+                color(b.count, C_ZERO)
+            elseif casts <= 3 then
+                color(b.count, C_FEW)
+            elseif casts <= 10 then
+                color(b.count, C_SOME)
+            else
+                color(b.count, C_MANY)
+            end
+        end
+    end
 end
 
 local function Redraw()
@@ -82,27 +211,28 @@ local function Redraw()
     end
 
     if db.showFull then
-        -- Beide Stufen dauerhaft nebeneinander: links der Wert waehrend der
-        -- 5-Sekunden-Regel, rechts der Wert danach. Hell = gilt gerade.
+        -- Beide Stufen nebeneinander, mittig ueber dem Balken: links der
+        -- Wert waehrend der 5-Sekunden-Regel, rechts der danach.
         local left  = inFSR and shown or fsrVal
         local right = inFSR and fullVal or shown
-        extra:SetText(fmt(left) .. " /")
-        value:SetText(fmt(right))
-        color(extra, inFSR and C_FSR or C_DIM, left and left <= 0)
-        color(value, inFSR and C_DIM or C_FULL, right and right <= 0)
-        extra:Show()
+        local cl = inFSR and C_FSR or C_DIM
+        local cr = inFSR and C_DIM or C_FULL
+        if left and left <= 0 then cl = C_ZERO end
+        if right and right <= 0 then cr = C_ZERO end
+        value:SetText(hex(cl) .. fmt(left) .. "|r " .. hex(C_DIM) .. "/|r "
+                      .. hex(cr) .. fmt(right) .. "|r")
     else
-        -- Nur die gerade wirksame Stufe.
-        extra:Hide()
-        value:SetText(fmt(shown))
-        color(value, inFSR and C_FSR or C_FULL, cur and cur <= 0)
+        local c = inFSR and C_FSR or C_FULL
+        if cur and cur <= 0 then c = C_ZERO end
+        value:SetText(hex(c) .. fmt(shown) .. "|r")
     end
+
+    local rest = Core:FSRRemaining()
 
     if db.bar == "off" then
         bar:Hide()
     else
         bar:Show()
-        local rest = Core:FSRRemaining()
         bar:SetValue(rest)
         if rest > 0 then
             bar:SetStatusBarColor(0.88, 0.65, 0.16)
@@ -110,12 +240,17 @@ local function Redraw()
             bar:SetStatusBarColor(0.22, 0.42, 0.78)
             bar:SetValue(5)
         end
-        if db.showCountdown then
-            barText:SetText(rest > 0 and string.format("%.1fs", rest) or "")
-        else
-            barText:SetText("")
-        end
     end
+
+    if db.showCountdown then
+        countdown:SetText(rest > 0 and string.format("%.1fs", rest) or "")
+        color(countdown, C_FSR)
+        countdown:Show()
+    else
+        countdown:Hide()
+    end
+
+    updateSpells()
 end
 
 ns.Redraw = Redraw
@@ -152,22 +287,25 @@ function ns.ApplyLayout()
 
     label:SetFont(font, fs * 0.72, flags)
     value:SetFont(font, fs, flags)
-    extra:SetFont(font, fs * 0.82, flags)
-    barText:SetFont(font, fs * 0.55, flags)
+    countdown:SetFont(font, fs * 0.68, flags)
 
-    local pad = 4
-    -- Ein Balken mit Zeitanzeige braucht Hoehe fuer die Schrift; ohne
-    -- Countdown bleibt der duenne Balken ein 3-Pixel-Strich.
-    local barH
-    if db.bar == "full" then
-        barH = fs * 0.72
-    elseif db.showCountdown then
-        barH = math.max(9, fs * 0.58)
-    else
-        barH = 3
+    local pad   = 4
+    local rowH  = fs + 4
+    local barH  = db.bar == "full" and (fs * 0.72) or 4
+
+    -- Wie viele Zauber-Felder sind tatsaechlich belegt?
+    local used = 0
+    for i = 1, MAX_SPELLS do
+        if db.showSpells and resolved[i] then used = used + 1 end
     end
-    local rowH = fs + 4
-    local h = rowH + (db.bar ~= "off" and (barH + 3) or 0) + pad * 2
+    local iconSize = db.iconSize
+    local iconGap  = 3
+
+    local h = pad * 2 + rowH
+    if db.bar ~= "off"    then h = h + barH + 3 end
+    if db.showCountdown   then h = h + fs * 0.68 + 2 end
+    if used > 0           then h = h + iconSize + 5 end
+
     frame:SetSize(db.width, h)
     frame:SetScale(db.scale)
 
@@ -193,20 +331,47 @@ function ns.ApplyLayout()
         frame:SetBackdrop(nil)
     end
 
+    -- Beschriftung ist standardmaessig aus; der Wert erklaert sich selbst.
     label:ClearAllPoints()
     label:SetPoint("TOPLEFT", frame, "TOPLEFT", pad + 2, -pad)
     label:SetText(db.showLabel and "MANA / 5" or "")
 
+    -- Werte mittig ueber dem Balken.
     value:ClearAllPoints()
-    value:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(pad + 2), -pad + 1)
+    value:SetPoint("TOP", frame, "TOP", 0, -pad)
 
-    extra:ClearAllPoints()
-    extra:SetPoint("RIGHT", value, "LEFT", -4, -1)
+    local y = -(pad + rowH)
 
     bar:ClearAllPoints()
-    bar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", pad + 2, pad)
-    bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(pad + 2), pad)
+    bar:SetPoint("TOPLEFT", frame, "TOPLEFT", pad + 2, y)
+    bar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(pad + 2), y)
     bar:SetHeight(barH)
+    if db.bar ~= "off" then y = y - barH - 3 end
+
+    countdown:ClearAllPoints()
+    countdown:SetPoint("TOP", frame, "TOP", 0, y - 1)
+    if db.showCountdown then y = y - fs * 0.68 - 2 end
+
+    -- Zauber-Felder mittig in einer Reihe.
+    local totalW = used * iconSize + math.max(0, used - 1) * iconGap
+    local x = -totalW / 2
+    local n = 0
+    for i = 1, MAX_SPELLS do
+        local b = slots[i]
+        b:ClearAllPoints()
+        b:SetSize(iconSize, iconSize)
+        b.count:SetFont(font, math.max(10, iconSize * 0.46), "OUTLINE")
+        b.count:ClearAllPoints()
+        if db.countAnchor == "center" then
+            b.count:SetPoint("CENTER", b, "CENTER", 0, 0)
+        else
+            b.count:SetPoint("TOPRIGHT", b, "TOPRIGHT", 1, 1)
+        end
+        if db.showSpells and resolved[i] then
+            b:SetPoint("TOPLEFT", frame, "TOP", x + n * (iconSize + iconGap), y - 3)
+            n = n + 1
+        end
+    end
 
     frame:ClearAllPoints()
     frame:SetPoint(db.point, UIParent, db.point, db.x, db.y)

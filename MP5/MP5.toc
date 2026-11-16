@@ -7,5 +7,7 @@
 ## SavedVariablesPerCharacter: MP5CharDB
 
 Core.lua
+Spells.lua
 UI.lua
 Config.lua
+Options.lua

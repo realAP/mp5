@@ -90,19 +90,25 @@
   .v2 .tick{margin-left:12px;font-size:13px;color:var(--warn);min-width:34px}
 
   /* V3 */
-  .v3{width:230px;padding:7px 10px 9px}
-  .v3 .row{display:flex;justify-content:space-between;align-items:baseline}
-  .v3 .lbl{font-size:13px;color:#c9b98e;letter-spacing:.8px}
-  .v3 .vals{font-size:19px;display:inline-flex;align-items:baseline;gap:5px}
+  .v3{width:214px;padding:7px 9px 8px;text-align:center}
+  .v3 .row{display:flex;justify-content:center;align-items:baseline}
+  .v3 .vals{font-size:20px;display:inline-flex;align-items:baseline;gap:5px}
   .v3 .step{color:#6a6459}                     /* inaktive Stufe */
   .v3 .sep{color:#4d4740;font-size:15px}
   .v3 .on-fsr{color:#f2b839}                   /* gilt waehrend der 5-Sek-Regel */
   .v3 .on-full{color:#8fc3ff}                  /* gilt danach */
-  .v3 .bar{height:10px;margin-top:7px;background:#0a0a0a;border:1px solid #000;
+  .v3 .bar{height:4px;margin-top:6px;background:#0a0a0a;border:1px solid #000;
            box-shadow:inset 0 0 0 1px #242424;position:relative}
   .v3 .fill{position:absolute;inset:0 38% 0 0;background:linear-gradient(180deg,#ffd76a,#d2941f)}
-  .v3 .barnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-              font-size:9.5px;color:#f3ead6;text-shadow:1px 1px 1px #000;letter-spacing:.3px}
+  /* Restzeit UNTER dem Balken: auf dem goldenen Balken war sie nicht lesbar. */
+  .v3 .rest{display:block;margin-top:3px;font-size:11px;color:#f2b839;letter-spacing:.3px}
+  .v3 .spells{display:flex;justify-content:center;gap:3px;margin-top:5px}
+  .v3 .slot{position:relative;width:26px;height:26px;border:1px solid #000;
+            background:#2a2318;display:flex;align-items:center;justify-content:center;
+            font-size:9px;color:#6e6350;letter-spacing:-.3px}
+  .v3 .cnt{position:absolute;top:-2px;right:-1px;font-size:12px;font-weight:700;
+           color:#fff;text-shadow:0 0 2px #000,1px 1px 0 #000,-1px 1px 0 #000,1px -1px 0 #000,-1px -1px 0 #000}
+  .v3 .cnt.few{color:#ff6b6b} .v3 .cnt.some{color:#ffd23f} .v3 .cnt.many{color:#6fe06f}
 
   /* V4 */
   .v4{width:230px;padding:5px 7px 6px}
@@ -193,12 +199,18 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
   <div class="stage">
     <div class="blizframe v3">
       <div class="row">
-        <span class="lbl wowfont">MANA / 5</span>
         <span class="vals wowfont num">
           <span class="on-fsr">12</span><span class="sep">/</span><span class="step">47</span>
         </span>
       </div>
-      <div class="bar"><div class="fill"></div><span class="barnum num wowfont">3.2s</span></div>
+      <div class="bar"><div class="fill"></div></div>
+      <span class="rest num wowfont">3.2s</span>
+      <div class="spells">
+        <span class="slot">Ern<span class="cnt num many">28</span></span>
+        <span class="slot">Blitz<span class="cnt num some">7</span></span>
+        <span class="slot">Ger<span class="cnt num many">41</span></span>
+        <span class="slot">Schild<span class="cnt num few">3</span></span>
+      </div>
     </div>
   </div>
   <div>
@@ -208,19 +220,24 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
     5-Sekunden-Regel, also nur MP5-Effekte), rechts der Wert, der <b>danach</b> gilt (inkl. Geist-Regeneration).
     Die gerade g&uuml;ltige Stufe ist hell, die andere gedimmt: hier l&auml;uft die Regel noch, also gelten 12,
     gleich sind es 47.</p>
-    <p class="meta">Darunter der Balken mit der <b>Restzeit als Zahl</b> (<span class="num">3.2s</span>): er l&auml;uft
-    nach jedem Zauber von voll auf leer. Man sieht also nicht nur <i>dass</i> die Regel l&auml;uft, sondern auch
-    <i>wie lange noch</i> &ndash; und genau dann springt der helle Wert von der linken auf die rechte Stufe.</p>
+    <p class="meta">Darunter der Balken, der nach jedem Zauber von voll auf leer l&auml;uft, und <b>unter</b> dem
+    Balken die Restzeit als Zahl (<span class="num">3.2s</span>) &ndash; auf dem goldenen Balken war sie nicht
+    zu lesen, auf dem dunklen Grund darunter schon. Man sieht also nicht nur <i>dass</i> die Regel l&auml;uft,
+    sondern auch <i>wie lange noch</i> &ndash; und genau dann springt der helle Wert auf die rechte Stufe.</p>
+    <p class="meta"><b>Zauber-Leiste:</b> ganz unten bis zu f&uuml;nf frei w&auml;hlbare Zauber mit ihrem Icon und
+    einer kontrastreichen Zahl: <b>so oft reicht das Mana noch</b>, wenn man diesen Zauber durchgehend wirkt.
+    Die Zahl f&auml;llt beim Zaubern mit und f&auml;rbt sich gr&uuml;n / gelb / rot.</p>
     <ul class="meta">
       <li class="pro">+ sieht aus wie ein Teil des Originalinterfaces, dockt optisch sauber ans Charakterfenster</li>
       <li class="pro">+ beantwortet beide Fragen auf einen Blick: &bdquo;wie viel jetzt?&ldquo; und &bdquo;wie viel gleich, und wann?&ldquo;</li>
       <li class="pro">+ Farbe statt Text: gold = Regel l&auml;uft, manablau = volle Regeneration</li>
       <li class="con">&ndash; Rahmen kostet Platz und etwas Bildschirmfl&auml;che</li>
+      <li class="pro">+ die Zauber-Zahl beantwortet die Frage, die man im Kampf wirklich hat</li>
       <li class="con">&ndash; die Restzeit braucht eine laufende Aktualisierung (gedrosselt, siehe Technik)</li>
     </ul>
-    <p class="meta"><b>Optionen:</b> Restzeit ein/aus (ohne sie wird der Balken wieder ein 3&nbsp;Pixel d&uuml;nner Strich),
-    zweite Stufe ein/aus (dann nur der gerade g&uuml;ltige Wert), Rahmen ein/aus, Balken ein/aus, Panelbreite,
-    Schriftgr&ouml;&szlig;e.</p>
+    <p class="meta"><b>Optionen:</b> Zauber und ihre R&auml;nge (Interface-Optionen oder <code>/mp5 spell</code>),
+    Icon-Gr&ouml;&szlig;e, Zahl mittig oder oben rechts, Restzeit ein/aus, zweite Stufe ein/aus, Rahmen ein/aus,
+    Balken ein/aus, Panelbreite, Schriftgr&ouml;&szlig;e.</p>
   </div>
 </div>
 
@@ -306,6 +323,14 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
   <li><b>Performance:</b> Ereignisgesteuert statt Dauerschleife. Ein <code>OnUpdate</code> l&auml;uft nur w&auml;hrend
       der laufenden 5&nbsp;Sekunden und ist auf ca. 10&nbsp;Aktualisierungen/Sekunde gedrosselt; danach schaltet
       er sich ab. Keine Berechnungen im Leerlauf.</li>
+  <li><b>Die Zauber-Zahl:</b> Beim Durchcasten l&auml;uft die 5-Sekunden-Regel permanent, es gilt also die
+      Regeneration <i>innerhalb</i> der Regel. Mit Mana <code>M</code>, Kosten <code>c</code>, Zauberzeit
+      <code>t</code> (mindestens globaler Cooldown) und Regeneration <code>r</code> pro Sekunde muss vor dem
+      <code>k</code>-ten Zauber gelten <code>M + r&middot;t&middot;(k&minus;1) &ge; c&middot;k</code>, also
+      <code>k = 1 + (M &minus; c) / (c &minus; r&middot;t)</code>. Der Nenner sind die <i>Nettokosten</i>:
+      was ein Zauber kostet, abz&uuml;glich dessen, was w&auml;hrend seiner Zauberzeit zur&uuml;ckkommt.
+      Ist er &le;&nbsp;0, tr&auml;gt sich der Zauber selbst und es steht &infin; da. Die Manakosten kommen
+      aus dem Spiel (mit Talenten und Buffs), wahlweise f&uuml;r den h&ouml;chsten oder einen bestimmten Rang.</li>
   <li><b>Regelkonform:</b> Ausschlie&szlig;lich die offiziellen, von Blizzard bereitgestellten Schnittstellen.
       Reine Anzeige &ndash; keine Automatisierung, kein Eingriff ins Spielgeschehen.</li>
 </ul>

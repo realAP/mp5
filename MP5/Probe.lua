@@ -83,11 +83,33 @@ function ns.Probe()
             and (hit.name .. " | Kosten " .. tostring(hit.cost)
                  .. " | Zeit " .. tostring(hit.castTime))
             or "nicht gefunden"
+        p.spellAffordable = tostring(hit and ns.Spells:Affordable(hit))
         local ranked = ns.Spells and ns.Spells:Lookup(first .. "(Rang 1)")
         p.spellLookupWithRank = ranked
             and (ranked.name .. (ranked.rankIgnored and " (Rang ignoriert)" or ""))
             or "nicht gefunden"
     end
+
+    -- Darf man einen geschuetzten Wert wenigstens VERGLEICHEN? Wenn ja,
+    -- liesse sich das aktuelle Mana eingrenzen, ohne es zu lesen.
+    p.manaCanCompare = select(1, try(function()
+        local v = UnitPower("player", 0)
+        local ok = pcall(function() return v > 0 end)
+        return ok and "ja" or "nein"
+    end))
+
+    -- Der Text der Manaleiste ist nur gefuellt, wenn die Statustexte
+    -- eingeschaltet sind. Deshalb hier auch die Einstellung selbst.
+    p.statusTextCVar = select(1, try(function()
+        return GetCVar and (GetCVar("statusText") or GetCVar("statusTextDisplay"))
+    end))
+    p.manaBarTextAgain = select(1, try(function()
+        return PlayerFrameManaBarText and PlayerFrameManaBarText:GetText()
+    end))
+
+    -- Ersatzweg: beantwortet das Spiel, ob ein Zauber bezahlbar ist?
+    p.isUsableSpell = (IsUsableSpell ~= nil) and "ja" or "nein"
+    p.isSpellUsable = (C_Spell and C_Spell.IsSpellUsable) and "ja" or "nein"
 
     -- Welche Funktionen existieren ueberhaupt?
     local names = {

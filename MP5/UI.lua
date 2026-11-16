@@ -118,8 +118,17 @@ local function createSlot(i)
         end
         GameTooltip:AddLine(" ")
         if not Core:ManaReadable() then
-            GameTooltip:AddLine("Dieser Client schuetzt den Manawert,", 1, 0.6, 0.33)
-            GameTooltip:AddLine("daher laesst sich das nicht berechnen.", 1, 0.6, 0.33)
+            if self.affordable ~= nil then
+                GameTooltip:AddLine(self.affordable
+                    and "Mana reicht fuer diesen Zauber."
+                    or  "Mana reicht nicht - Icon ist grau.",
+                    self.affordable and 0.3 or 1,
+                    self.affordable and 0.9 or 0.4,
+                    self.affordable and 0.3 or 0.4)
+                GameTooltip:AddLine(" ")
+            end
+            GameTooltip:AddLine("Eine Stueckzahl ist nicht moeglich: dieser", 1, 0.6, 0.33)
+            GameTooltip:AddLine("Client gibt das aktuelle Mana nicht heraus.", 1, 0.6, 0.33)
         else
             GameTooltip:AddLine("Bei Dauercasten, mit der Regeneration", 0.6, 0.6, 0.6)
             GameTooltip:AddLine("innerhalb der 5-Sekunden-Regel.", 0.6, 0.6, 0.6)
@@ -187,18 +196,34 @@ local function updateSpells()
 
             local casts = Spells.CastsLeft(mana, info.cost, info.castTime, mps)
             b.casts = casts
-            b.count:SetText(fmtCasts(casts))
 
-            if casts == math.huge then
-                color(b.count, C_MANY)
-            elseif not casts then
-                color(b.count, C_ZERO)
-            elseif casts <= 3 then
-                color(b.count, C_FEW)
-            elseif casts <= 10 then
-                color(b.count, C_SOME)
+            if casts then
+                b.count:SetText(fmtCasts(casts))
+                pcall(b.icon.SetDesaturated, b.icon, false)
+                if casts == math.huge then
+                    color(b.count, C_MANY)
+                elseif casts <= 3 then
+                    color(b.count, C_FEW)
+                elseif casts <= 10 then
+                    color(b.count, C_SOME)
+                else
+                    color(b.count, C_MANY)
+                end
             else
-                color(b.count, C_MANY)
+                -- Ohne lesbares Mana laesst sich keine Stueckzahl rechnen.
+                -- Das Spiel beantwortet aber, ob der Zauber bezahlbar ist:
+                -- nicht bezahlbar -> Icon grau. Das ist die Grenze statt
+                -- der Zahl, und es kommt ohne den Manawert aus.
+                local ok = Spells:Affordable(info)
+                b.affordable = ok
+                if ok == nil then
+                    b.count:SetText("?")
+                    color(b.count, C_ZERO)
+                    pcall(b.icon.SetDesaturated, b.icon, false)
+                else
+                    b.count:SetText("")
+                    pcall(b.icon.SetDesaturated, b.icon, ok == false)
+                end
             end
         end
     end

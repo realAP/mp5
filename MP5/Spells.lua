@@ -197,3 +197,34 @@ function Spells:Ranks(name)
     end
     return out
 end
+
+-- Ersatz, wenn das aktuelle Mana nicht lesbar ist ---------------------------
+--
+-- Das Spiel beantwortet die Frage "reicht mein Mana fuer diesen Zauber?"
+-- selbst, ohne den Wert herauszugeben. Das ergibt keine Stueckzahl, aber
+-- immerhin die Grenze: ab wann geht dieser Zauber nicht mehr.
+--
+-- Rueckgabe: true = bezahlbar, false = zu wenig Mana, nil = nicht feststellbar
+function Spells:Affordable(info)
+    if not info then return nil end
+
+    if C_Spell and C_Spell.IsSpellUsable then
+        local ok, usable, noPower = pcall(C_Spell.IsSpellUsable,
+            info.spellID or info.name)
+        if ok and usable ~= nil then
+            if noPower then return false end
+            return usable and true or false
+        end
+    end
+
+    if IsUsableSpell then
+        local ok, usable, noMana = pcall(IsUsableSpell, info.query or info.name)
+        if ok and usable ~= nil then
+            if noMana then return false end
+            return usable and true or false
+        end
+    end
+
+    return nil
+end
+

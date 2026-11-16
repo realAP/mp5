@@ -234,6 +234,8 @@ SlashCmdList["MP5"] = function(input)
         msg("  Wert der Leiste: " .. tostring(p.manaBarValue))
         msg("  vergleichbar:    " .. tostring(p.manaCanCompare))
         msg("  bezahlbar-Test:  " .. tostring(p.spellAffordable))
+        msg("  Mana-Quelle:     " .. tostring(Core:ManaSource()))
+        msg("  Mana daraus:     " .. tostring(Core:GetMana()))
         msg("Vollstaendig in WTF\\Account\\<KONTO>\\SavedVariables\\MP5.lua")
         return
     elseif cmd == "errors" then
@@ -293,6 +295,16 @@ f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
         if not Core:ManaReadable() then
             msg("|cffff9955Dieser Client schuetzt den aktuellen Manawert|r "
                 .. "(\"secret value\"). Addons duerfen damit nicht rechnen.")
+            local src = Core:ManaSource()
+            if src == "prozent" then
+                msg("|cff40ff40Umweg gefunden:|r Mana wird aus dem Prozentwert "
+                    .. "der Standardleiste umgerechnet. Die Zauber-Zahlen sind "
+                    .. "daher gerundet (~). Mit numerischem Statustext werden "
+                    .. "sie genau.")
+            elseif src == "text" then
+                msg("|cff40ff40Umweg gefunden:|r Mana wird aus dem Text der "
+                    .. "Standardleiste gelesen. Die Zauber-Zahlen stimmen.")
+            end
             msg("Gemessen wird deshalb nicht; die Zahlen kommen von "
                 .. "GetManaRegen(). Die 5-Sekunden-Regel laeuft ueber die "
                 .. "Zauber selbst. Nur die Zauber-Leiste entfaellt - die "

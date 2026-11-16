@@ -174,6 +174,26 @@ function Core:FSRRemaining()
     return rest > 0 and rest or 0
 end
 
+-- Kostet dieser Zauber Mana? Nur dann startet die 5-Sekunden-Regel.
+-- Die Signatur von UNIT_SPELLCAST_SUCCEEDED ist je nach Client
+-- (unit, castGUID, spellID) oder (unit, spellName, rank).
+local function spellCostsMana(a2, a3)
+    local id = tonumber(a3) or tonumber(a2)
+    if id and GetSpellPowerCost then
+        local ok, costs = pcall(GetSpellPowerCost, id)
+        if ok and type(costs) == "table" then
+            for i = 1, #costs do
+                local c = costs[i]
+                if c and (c.type == 0 or c.name == "MANA") then
+                    return (c.cost or 0) > 0
+                end
+            end
+            return false          -- Kostentabelle da, aber kein Mana darin
+        end
+    end
+    return true                   -- unbekannt: lieber ausloesen als verpassen
+end
+
 local function startFSR()
     local now = GetTime()
     if not (now < fsrEnd) then
@@ -282,6 +302,11 @@ local function reg(event)
     pcall(f.RegisterEvent, f, event)
 end
 
+-- Der Start der Regel wird normalerweise am sinkenden Mana erkannt.
+-- Schuetzt der Client den Manawert, geht das nicht - dann dient der
+-- erfolgreiche Zauber selbst als Ausloeser. Schadet auch sonst nicht:
+-- startFSR setzt das Ende neu, egal wie oft es aufgerufen wird.
+reg("UNIT_SPELLCAST_SUCCEEDED")
 reg("UNIT_POWER_UPDATE")
 reg("UNIT_MANA")                  -- aeltere Clients
 reg("UNIT_MAXPOWER")
@@ -291,11 +316,14 @@ f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
 local auraThrottle = 0
 
-f:SetScript("OnEvent", ns.safe(function(_, event, unit, powerType)
+f:SetScript("OnEvent", ns.safe(function(_, event, unit, powerType, arg3)
     if event == "UNIT_POWER_UPDATE" or event == "UNIT_MANA" then
         if unit ~= "player" then return end
         if powerType and powerType ~= "MANA" then return end
         onManaChanged()
+    elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+        if unit ~= "player" then return end
+        if spellCostsMana(powerType, arg3) then startFSR() end
     elseif event == "UNIT_AURA" then
         if unit ~= "player" then return end
         -- Buffs koennen die Regeneration aendern. Messwerte werden nicht

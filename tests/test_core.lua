@@ -68,5 +68,27 @@ check("Messwert bleibt ueber die FSR hinaus gueltig", (Core:GetMP5(true)), 25)
 mana = maxMana
 at(30); power(0)
 at(32); power(0)
+
+-- Die 5-Sekunden-Regel muss auch ohne lesbares Mana starten: ausgeloest
+-- vom erfolgreichen Zauber selbst. Das ist der Fall auf Clients, die den
+-- Manawert als "secret value" schuetzen.
+at(40)
+check("vor dem Zauber laeuft keine Regel", Core:InFSR() and 1 or 0, 0)
+handler(nil, "UNIT_SPELLCAST_SUCCEEDED", "player", "cast-1", 585)
+check("Zauber startet die Regel", Core:InFSR() and 1 or 0, 1)
+check("volle 5 Sekunden", Core:FSRRemaining(), 5)
+
+at(43)
+check("laeuft nach 3s noch", Core:FSRRemaining(), 2)
+handler(nil, "UNIT_SPELLCAST_SUCCEEDED", "player", "cast-2", 585)
+check("zweiter Zauber setzt neu an", Core:FSRRemaining(), 5)
+
+at(49)
+check("nach Ablauf wieder aus", Core:InFSR() and 1 or 0, 0)
+
+-- Zauber eines anderen Spielers darf nichts ausloesen
+handler(nil, "UNIT_SPELLCAST_SUCCEEDED", "target", "cast-3", 585)
+check("fremder Zauber loest nicht aus", Core:InFSR() and 1 or 0, 0)
+
 print(fails == 0 and "\nAlle Tests bestanden." or ("\n" .. fails .. " Test(s) fehlgeschlagen."))
 os.exit(fails == 0 and 0 or 1)

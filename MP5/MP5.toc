@@ -7,8 +7,8 @@
 ## SavedVariablesPerCharacter: MP5CharDB
 
 Core.lua
-Probe.lua
 Spells.lua
+Probe.lua
 UI.lua
 Config.lua
 Options.lua

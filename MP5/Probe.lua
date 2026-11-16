@@ -57,6 +57,38 @@ function ns.Probe()
     end)))
     p.manaBarExists = (PlayerFrameManaBar ~= nil) and "ja" or "nein"
 
+    -- Zauber-API: welche Form existiert, und was liefert eine Abfrage?
+    p.spellApi = {
+        GetSpellInfo          = (GetSpellInfo ~= nil) and "ja" or "nein",
+        C_Spell               = (C_Spell ~= nil) and "ja" or "nein",
+        C_Spell_GetSpellInfo  = (C_Spell and C_Spell.GetSpellInfo) and "ja" or "nein",
+        GetSpellPowerCost     = (GetSpellPowerCost ~= nil) and "ja" or "nein",
+        C_Spell_GetSpellPowerCost =
+            (C_Spell and C_Spell.GetSpellPowerCost) and "ja" or "nein",
+        GetSpellBookItemName  = (GetSpellBookItemName ~= nil) and "ja" or "nein",
+        C_SpellBook           = (C_SpellBook ~= nil) and "ja" or "nein",
+    }
+
+    -- Eine echte Abfrage mit dem ersten Zauber aus dem Zauberbuch.
+    local first = select(1, try(function()
+        if GetSpellBookItemName then return (GetSpellBookItemName(1, "spell")) end
+        if C_SpellBook and C_SpellBook.GetSpellBookItemName then
+            return (C_SpellBook.GetSpellBookItemName(1, 0))
+        end
+    end))
+    p.spellBookFirst = tostring(first)
+    if type(first) == "string" then
+        local hit = ns.Spells and ns.Spells:Lookup(first)
+        p.spellLookup = hit
+            and (hit.name .. " | Kosten " .. tostring(hit.cost)
+                 .. " | Zeit " .. tostring(hit.castTime))
+            or "nicht gefunden"
+        local ranked = ns.Spells and ns.Spells:Lookup(first .. "(Rang 1)")
+        p.spellLookupWithRank = ranked
+            and (ranked.name .. (ranked.rankIgnored and " (Rang ignoriert)" or ""))
+            or "nicht gefunden"
+    end
+
     -- Welche Funktionen existieren ueberhaupt?
     local names = {
         "UnitPower", "UnitPowerMax", "UnitMana", "UnitManaMax", "GetManaRegen",

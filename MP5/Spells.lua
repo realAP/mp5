@@ -85,8 +85,11 @@ local function tooltipCost(spellID)
 end
 
 local function manaCost(spellID)
-    if GetSpellPowerCost and spellID then
-        local costs = GetSpellPowerCost(spellID)
+    local fn = GetSpellPowerCost
+        or (C_Spell and C_Spell.GetSpellPowerCost)
+    if fn and spellID then
+        local ok, costs = pcall(fn, spellID)
+        if not ok then costs = nil end
         if type(costs) == "table" then
             for i = 1, #costs do
                 local c = costs[i]
@@ -104,21 +107,62 @@ end
 -- im Makro:  "Blitzheilung"  oder  "Blitzheilung(Rang 5)".
 -- Ohne Rangangabe nimmt das Spiel automatisch den hoechsten gelernten Rang.
 -- Rueckgabe: Tabelle oder nil, wenn der Zauber nicht bekannt ist.
+-- Es gibt zwei Formen der Zauber-Abfrage:
+--   alt:  GetSpellInfo(name) -> name, rank, icon, castTime(ms), ..., spellID
+--   neu:  C_Spell.GetSpellInfo(name) -> Tabelle, ohne Rang (die gibt es dort
+--         nicht mehr), mit castTime in Millisekunden
+-- Beide werden probiert, damit das Addon auf alten wie neuen Clients laeuft.
+local function rawLookup(query)
+    if GetSpellInfo then
+        local ok, a, b, c, d, _, _, g = pcall(GetSpellInfo, query)
+        if ok and type(a) == "string" then
+            return { name = a, rank = b, icon = c, castTime = d, spellID = g }
+        end
+        -- Neuere Clients geben hier bereits eine Tabelle zurueck.
+        if ok and type(a) == "table" and a.name then
+            return { name = a.name, icon = a.iconID, castTime = a.castTime,
+                     spellID = a.spellID }
+        end
+    end
+    if C_Spell and C_Spell.GetSpellInfo then
+        local ok, info = pcall(C_Spell.GetSpellInfo, query)
+        if ok and type(info) == "table" and info.name then
+            return { name = info.name, icon = info.iconID, castTime = info.castTime,
+                     spellID = info.spellID }
+        end
+    end
+    return nil
+end
+
 function Spells:Lookup(name)
     if not name or name == "" then return nil end
-    if not GetSpellInfo then return nil end
 
-    local spellName, rank, icon, castTime, _, _, spellID = GetSpellInfo(name)
-    if not spellName then return nil end
+    local info = rawLookup(name)
+
+    -- Raenge gibt es auf neueren Clients nicht mehr. Schlaegt die Abfrage
+    -- mit Rangangabe fehl, wird sie ohne wiederholt - sonst meldet das
+    -- Addon "nicht gefunden" fuer einen Zauber, den es sehr wohl gibt.
+    local strippedRank
+    if not info then
+        local bare = name:match("^(.-)%s*%b()%s*$")
+        if bare and bare ~= "" and bare ~= name then
+            info = rawLookup(bare)
+            if info then strippedRank = name:match("%((.-)%)") end
+        end
+    end
+
+    if not info then return nil end
 
     return {
-        name     = spellName,
-        rank     = (rank ~= "" and rank) or nil,
-        icon     = icon,
-        castTime = (castTime or 0) / 1000,     -- ms -> Sekunden
-        cost     = manaCost(spellID),
-        spellID  = spellID,
-        query    = name,
+        name      = info.name,
+        rank      = (info.rank and info.rank ~= "" and info.rank) or nil,
+        icon      = info.icon,
+        castTime  = (info.castTime or 0) / 1000,     -- ms -> Sekunden
+        cost      = manaCost(info.spellID),
+        spellID   = info.spellID,
+        query     = name,
+        -- Der Client kennt keine Raenge: die Angabe wurde ignoriert.
+        rankIgnored = strippedRank,
     }
 end
 

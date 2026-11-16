@@ -17,8 +17,9 @@ ns.Core = {}
 local Core = ns.Core
 
 local GetTime             = GetTime
-local UnitPower           = UnitPower
-local UnitPowerMax        = UnitPowerMax
+-- Aeltere Clients kennen nur UnitMana/UnitManaMax.
+local UnitPower           = UnitPower    or function(u) return UnitMana(u) end
+local UnitPowerMax        = UnitPowerMax or function(u) return UnitManaMax(u) end
 local GetManaRegen        = GetManaRegen
 local MANA                = Enum and Enum.PowerType and Enum.PowerType.Mana or 0
 

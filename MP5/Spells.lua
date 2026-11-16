@@ -106,6 +106,7 @@ end
 -- Rueckgabe: Tabelle oder nil, wenn der Zauber nicht bekannt ist.
 function Spells:Lookup(name)
     if not name or name == "" then return nil end
+    if not GetSpellInfo then return nil end
 
     local spellName, rank, icon, castTime, _, _, spellID = GetSpellInfo(name)
     if not spellName then return nil end
@@ -127,6 +128,7 @@ function Spells:Ranks(name)
     local out = {}
     if not name or name == "" then return out end
 
+    if not (GetSpellInfo and GetSpellBookItemName) then return out end
     local wanted = GetSpellInfo(name)
     if not wanted then return out end
 

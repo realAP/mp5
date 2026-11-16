@@ -1,4 +1,4 @@
-## Interface: 11507
+## Interface: 16001
 ## Title: MP5
 ## Notes: Zeigt die tatsaechliche Mana-Regeneration pro 5 Sekunden, inkl. 5-Sekunden-Regel.
 ## Author: Axel

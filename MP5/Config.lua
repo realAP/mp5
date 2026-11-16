@@ -55,6 +55,8 @@ end
 -- Sichtbarkeit -------------------------------------------------------------
 
 local MANA = Enum and Enum.PowerType and Enum.PowerType.Mana or 0
+local UnitPower    = UnitPower    or function(u) return UnitMana(u) end
+local UnitPowerMax = UnitPowerMax or function(u) return UnitManaMax(u) end
 
 function ns.UpdateVisibility()
     local db = ns.db

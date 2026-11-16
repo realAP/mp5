@@ -14,6 +14,13 @@ local Core   = ns.Core
 local Spells = ns.Spells
 
 local UPDATE_THROTTLE = 0.1
+local UnitPower = UnitPower or function(u) return UnitMana(u) end
+
+-- SetColorTexture gibt es erst ab 8.0; davor nahm SetTexture die Farbe.
+local function solid(tex, r, g, b, a)
+    if tex.SetColorTexture then tex:SetColorTexture(r, g, b, a)
+    else tex:SetTexture(r, g, b, a) end
+end
 local MAX_SPELLS      = 5
 local INFINITY        = "\226\136\158"     -- ∞
 
@@ -36,7 +43,7 @@ bar:SetMinMaxValues(0, 5)
 
 local barBG = bar:CreateTexture(nil, "BACKGROUND")
 barBG:SetAllPoints()
-barBG:SetColorTexture(0, 0, 0, 0.6)
+solid(barBG, 0, 0, 0, 0.6)
 
 -- Die Restzeit steht unter dem Balken, nicht darin: auf dem goldenen
 -- Balken war die Zahl nicht zu lesen.
@@ -80,7 +87,7 @@ local function createSlot(i)
     b.border = b:CreateTexture(nil, "BORDER")
     b.border:SetPoint("TOPLEFT", -1, 1)
     b.border:SetPoint("BOTTOMRIGHT", 1, -1)
-    b.border:SetColorTexture(0, 0, 0, 1)
+    solid(b.border, 0, 0, 0, 1)
 
     -- Umrandete Schrift, damit die Zahl auf jedem Icon lesbar bleibt.
     b.count = b:CreateFontString(nil, "OVERLAY")

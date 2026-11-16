@@ -130,6 +130,51 @@
   .v5 .line span:last-child{color:var(--ink)}
   .v5 .zero{color:#777}
 
+  /* ---------- Interface-Optionen (nachgebaut) ---------- */
+  .optwrap{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:22px;margin:18px 0}
+  .optframe{
+    background:rgba(8,7,5,.92);border:1px solid #6e5a2a;
+    box-shadow:0 0 0 1px #000, inset 0 0 0 1px #241c0d;border-radius:2px;
+    padding:18px 20px 20px;max-width:660px;margin:0 auto;
+  }
+  .opt-h1{font-family:"Friz Quadrata TT",Georgia,serif;font-size:20px;color:var(--gold);margin:0 0 6px}
+  .opt-h2{font-family:"Friz Quadrata TT",Georgia,serif;font-size:14px;color:var(--gold);
+          margin:22px 0 4px;letter-spacing:.3px}
+  .opt-note{font-size:12px;color:#b9ad8d;line-height:1.5;margin:0 0 4px;max-width:58ch}
+  .opt-note code{font-size:11.5px}
+  .opt-rule{border:0;border-top:1px solid #332b18;margin:14px 0 0}
+
+  .opt-check{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink);margin:9px 0}
+  .box{width:14px;height:14px;flex:0 0 14px;border:1px solid #6b6252;background:#14110b;
+       box-shadow:inset 0 0 0 1px #000;position:relative}
+  .box.on::after{content:"";position:absolute;left:3px;top:0;width:5px;height:10px;
+                 border:solid #ffd76a;border-width:0 2px 2px 0;transform:rotate(42deg)}
+
+  .opt-row{display:flex;align-items:center;gap:10px;margin:7px 0;flex-wrap:wrap}
+  .opt-idx{width:14px;flex:0 0 14px;text-align:right;font-size:12px;color:#9c9177}
+  .opt-input{
+    width:210px;flex:0 0 210px;background:#0a0906;border:1px solid #5c5341;
+    box-shadow:inset 0 0 0 1px #000;padding:4px 7px;font-size:12.5px;color:var(--ink);
+    font-family:"Friz Quadrata TT",Georgia,serif;border-radius:2px;min-width:0;
+  }
+  .opt-input.empty{color:#5d564a}
+  .opt-fb{font-size:12px;color:var(--ink-dim);min-width:0}
+  .opt-fb .ok{color:#53d953}
+  .opt-fb .bad{color:#ff6b6b}
+
+  .opt-slider{margin:12px 0 4px;max-width:260px}
+  .opt-slider .cap{font-size:12px;color:var(--ink);text-align:center;margin-bottom:5px}
+  .opt-slider .rail{height:6px;background:#0a0906;border:1px solid #000;
+                    box-shadow:inset 0 0 0 1px #2a2419;position:relative;border-radius:3px}
+  .opt-slider .knob{position:absolute;top:50%;left:33%;width:11px;height:17px;transform:translate(-50%,-50%);
+                    background:linear-gradient(180deg,#ffd76a,#c8891a);border:1px solid #2a2008;border-radius:2px}
+  .opt-slider .ends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-dim);margin-top:3px}
+
+  @media(max-width:620px){
+    .opt-input{flex:1 1 100%;width:auto}
+    .opt-fb{flex:1 1 100%;padding-left:24px}
+  }
+
   table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
   th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
   th{background:#1b1812;color:var(--gold);font-weight:600}
@@ -294,6 +339,61 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
     <p class="meta"><b>Empfehlung:</b> als <i>Tooltip</i> von Entwurf 1&ndash;4 umsetzen statt als Dauer-Panel.</p>
   </div>
 </div>
+
+<h2>Interface-Optionen</h2>
+<p class="meta">Erreichbar &uuml;ber <code>/mp5 options</code> oder Interface&nbsp;&rsaquo;&nbsp;AddOns&nbsp;&rsaquo;&nbsp;MP5.
+Die R&uuml;ckmeldung rechts neben jedem Feld aktualisiert sich <b>beim Tippen</b>, nicht erst beim Best&auml;tigen:
+so sieht man sofort, ob der Name stimmt und welchen Rang das Spiel nimmt.</p>
+
+<div class="optwrap">
+  <div class="optframe">
+    <p class="opt-h1">MP5</p>
+    <p class="opt-note">Zeigt die gemessene Mana-Regeneration pro 5&nbsp;Sekunden und, darunter,
+    wie oft das Mana f&uuml;r einen Zauber noch reicht.</p>
+
+    <p class="opt-h2">Zauber-Leiste</p>
+    <p class="opt-note">Bis zu f&uuml;nf Zauber. Genau so schreiben wie im Makro; ein Rang ist optional,
+    ohne Rang gilt der h&ouml;chste gelernte.<br>
+    Beispiele: <code>Blitzheilung</code> &middot; <code>Erneuern(Rang 4)</code> &middot; <code>Machtwort: Schild</code></p>
+
+    <div class="opt-check"><span class="box on"></span><span>Zauber-Leiste anzeigen</span></div>
+
+    <div class="opt-row"><span class="opt-idx">1.</span>
+      <span class="opt-input">Blitzheilung</span>
+      <span class="opt-fb"><span class="ok">Blitzheilung (Rang&nbsp;7)</span> &nbsp;155 Mana, 1.5s</span></div>
+    <div class="opt-row"><span class="opt-idx">2.</span>
+      <span class="opt-input">Erneuern(Rang 4)</span>
+      <span class="opt-fb"><span class="ok">Erneuern (Rang&nbsp;4)</span> &nbsp;105 Mana, 1.5s</span></div>
+    <div class="opt-row"><span class="opt-idx">3.</span>
+      <span class="opt-input">Geringes Heilen</span>
+      <span class="opt-fb"><span class="ok">Geringes Heilen (Rang&nbsp;3)</span> &nbsp;45 Mana, 2.5s</span></div>
+    <div class="opt-row"><span class="opt-idx">4.</span>
+      <span class="opt-input">Machtwort: Schld</span>
+      <span class="opt-fb"><span class="bad">nicht gefunden</span></span></div>
+    <div class="opt-row"><span class="opt-idx">5.</span>
+      <span class="opt-input empty">&nbsp;</span>
+      <span class="opt-fb">frei</span></div>
+
+    <hr class="opt-rule">
+    <p class="opt-h2">Darstellung</p>
+
+    <div class="opt-slider">
+      <div class="cap">Icon-Gr&ouml;&szlig;e: 24</div>
+      <div class="rail"><span class="knob"></span></div>
+      <div class="ends"><span>16</span><span>48</span></div>
+    </div>
+
+    <div class="opt-check"><span class="box"></span><span>Zahl mittig auf dem Icon (sonst oben rechts)</span></div>
+    <div class="opt-check"><span class="box on"></span><span>Restzeit der 5-Sekunden-Regel unter dem Balken</span></div>
+    <div class="opt-check"><span class="box on"></span><span>Beide Stufen zeigen (w&auml;hrend des Zauberns / danach)</span></div>
+
+    <p class="opt-note" style="margin-top:14px">Mehr Einstellungen &uuml;ber <code>/mp5</code></p>
+  </div>
+</div>
+
+<p class="meta"><b>Platz:</b> Das Panel ist rund 520&nbsp;Pixel hoch. Der Inhaltsbereich der Classic-Optionen
+misst etwa 533&nbsp;Pixel &ndash; es passt, aber ohne Reserve. Kommt noch eine Einstellung dazu, muss der
+Abschnitt &bdquo;Darstellung&ldquo; zweispaltig werden.</p>
 
 <h2>Gemeinsame Einstellungen (alle Entw&uuml;rfe)</h2>
 <table>

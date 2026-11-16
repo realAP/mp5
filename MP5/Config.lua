@@ -103,6 +103,7 @@ local function usage()
     msg("  /mp5 show always|combat|notfull")
     msg("  /mp5 hide | /mp5 unhide")
     msg("  /mp5 errors [clear]           - mitgeschriebene Fehler")
+    msg("  /mp5 probe                    - was dieser Client hergibt")
     msg("  /mp5 reset                    - Standardwerte")
 end
 
@@ -216,6 +217,18 @@ SlashCmdList["MP5"] = function(input)
         db.hidden = true
     elseif cmd == "unhide" then
         db.hidden = false
+    elseif cmd == "probe" then
+        local p = ns.Probe()
+        msg("Client-Pruefung:")
+        msg("  aktuelles Mana:  " .. tostring(p.manaCurrent))
+        msg("  Maximalmana:     " .. tostring(p.manaMax))
+        msg("  UnitMana:        " .. tostring(p.manaLegacy))
+        msg("  GetManaRegen:    " .. tostring(p.getManaRegen))
+        msg("  Spirit:          " .. tostring(p.spirit))
+        msg("  Intellect:       " .. tostring(p.intellect))
+        msg("  Text der Leiste: " .. tostring(p.manaBarText))
+        msg("Vollstaendig in WTF\\Account\\<KONTO>\\SavedVariables\\MP5.lua")
+        return
     elseif cmd == "errors" then
         if arg == "clear" then
             MP5Errors = {}
@@ -267,6 +280,7 @@ f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
         MP5CharDB = applyDefaults(MP5CharDB or {})
         ns.db = MP5CharDB
     elseif event == "PLAYER_LOGIN" then
+        pcall(ns.Probe)            -- einmal aufschreiben, was der Client kann
         ns.ResolveSpells()
         ns.UpdateVisibility()
         if not Core:ManaReadable() then

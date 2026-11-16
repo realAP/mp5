@@ -47,8 +47,8 @@ Alles über `/mp5`:
 /mp5 bar off|thin|full        kein Balken | dünner 5s-Strich | Statusbar
 /mp5 backdrop blizzard|thin|off
 /mp5 label on|off             Beschriftung "MANA / 5"
-/mp5 full on|off              zweiter Wert "/ 47" während der 5-Sek-Regel
-/mp5 countdown on|off         Restzeit im Balken
+/mp5 full on|off              beide Stufen "12 / 47" (hell = gilt gerade)
+/mp5 countdown on|off         Restzeit als Zahl im Balken
 /mp5 tooltip on|off           Aufschlüsselung beim Drüberfahren
 /mp5 animate on|off           weiches Hochzählen (Standard: aus)
 /mp5 decimals 0|1
@@ -65,7 +65,7 @@ Position, Größe und Optionen werden pro Charakter gespeichert.
 |---|---|
 | 1 – Nackte Zahl | `backdrop off`, `bar off`, `label off`, `full off` |
 | 2 – Jetzt / Danach | `backdrop off`, `bar off`, `full on` |
-| 3 – Klassisches Panel (Standard) | `backdrop blizzard`, `bar thin` |
+| 3 – Klassisches Panel (Standard) | `backdrop blizzard`, `bar thin`, `countdown on`, `full on` |
 | 4 – Balkenanzeige | `backdrop thin`, `bar full`, `countdown on` |
 | 5 – Aufschlüsselung | `tooltip on` (beim Drüberfahren) |
 

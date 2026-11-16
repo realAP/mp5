@@ -47,11 +47,24 @@ end
 local shown = nil        -- aktuell dargestellter Wert (fuer die Animation)
 local animating = false
 
+-- Farben der beiden Stufen. Der gerade wirksame Wert wird hell dargestellt,
+-- der andere gedimmt - so ist auf einen Blick klar, welche Stufe gilt.
+local C_FSR  = { 0.95, 0.72, 0.22 }   -- innerhalb der 5-Sekunden-Regel (gold)
+local C_FULL = { 0.56, 0.76, 1.00 }   -- ausserhalb (manablau)
+local C_DIM  = { 0.45, 0.43, 0.38 }   -- inaktive Stufe
+local C_ZERO = { 0.60, 0.60, 0.60 }
+
+local function color(fs, c, isZero)
+    if isZero then c = C_ZERO end
+    fs:SetTextColor(c[1], c[2], c[3])
+end
+
 local function Redraw()
     local db = ns.db
     local inFSR = Core:InFSR()
-    local cur = Core:GetCurrent()
-    local full = Core:GetFull()
+    local fsrVal  = Core:GetMP5(true)    -- Stufe 1: waehrend des Castens
+    local fullVal = Core:GetMP5(false)   -- Stufe 2: nach der 5-Sekunden-Regel
+    local cur = inFSR and fsrVal or fullVal
 
     -- Optionales weiches Hochzaehlen. Standardmaessig aus: ohne Animation
     -- springt der Wert sofort und es laeuft kein zusaetzlicher OnUpdate.
@@ -68,18 +81,21 @@ local function Redraw()
         shown = cur
     end
 
-    value:SetText(fmt(shown))
-    if cur and cur <= 0 then
-        value:SetTextColor(0.6, 0.6, 0.6)
-    else
-        value:SetTextColor(0.56, 0.76, 1)
-    end
-
     if db.showFull then
-        extra:SetText(inFSR and ("/ " .. fmt(full)) or "")
+        -- Beide Stufen dauerhaft nebeneinander: links der Wert waehrend der
+        -- 5-Sekunden-Regel, rechts der Wert danach. Hell = gilt gerade.
+        local left  = inFSR and shown or fsrVal
+        local right = inFSR and fullVal or shown
+        extra:SetText(fmt(left) .. " /")
+        value:SetText(fmt(right))
+        color(extra, inFSR and C_FSR or C_DIM, left and left <= 0)
+        color(value, inFSR and C_DIM or C_FULL, right and right <= 0)
         extra:Show()
     else
+        -- Nur die gerade wirksame Stufe.
         extra:Hide()
+        value:SetText(fmt(shown))
+        color(value, inFSR and C_FSR or C_FULL, cur and cur <= 0)
     end
 
     if db.bar == "off" then
@@ -94,7 +110,7 @@ local function Redraw()
             bar:SetStatusBarColor(0.22, 0.42, 0.78)
             bar:SetValue(5)
         end
-        if db.bar == "full" and db.showCountdown then
+        if db.showCountdown then
             barText:SetText(rest > 0 and string.format("%.1fs", rest) or "")
         else
             barText:SetText("")
@@ -136,11 +152,20 @@ function ns.ApplyLayout()
 
     label:SetFont(font, fs * 0.72, flags)
     value:SetFont(font, fs, flags)
-    extra:SetFont(font, fs * 0.72, flags)
-    barText:SetFont(font, fs * 0.6, flags)
+    extra:SetFont(font, fs * 0.82, flags)
+    barText:SetFont(font, fs * 0.55, flags)
 
     local pad = 4
-    local barH = db.bar == "full" and (fs * 0.72) or 3
+    -- Ein Balken mit Zeitanzeige braucht Hoehe fuer die Schrift; ohne
+    -- Countdown bleibt der duenne Balken ein 3-Pixel-Strich.
+    local barH
+    if db.bar == "full" then
+        barH = fs * 0.72
+    elseif db.showCountdown then
+        barH = math.max(9, fs * 0.58)
+    else
+        barH = 3
+    end
     local rowH = fs + 4
     local h = rowH + (db.bar ~= "off" and (barH + 3) or 0) + pad * 2
     frame:SetSize(db.width, h)
@@ -209,13 +234,14 @@ frame:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:AddLine("Mana-Regeneration")
 
-    local cur, src = Core:GetCurrent()
-    local full, fsrc = Core:GetFull()
+    local fsrVal, src   = Core:GetMP5(true)
+    local fullVal, fsrc = Core:GetMP5(false)
     local inFSR = Core:InFSR()
 
-    GameTooltip:AddDoubleLine("Aktuell", fmt(cur) .. " / 5 Sek.", 1, 1, 1, 0.56, 0.76, 1)
-    GameTooltip:AddDoubleLine("Ausserhalb der 5-Sek-Regel", fmt(full) .. " / 5 Sek.",
-        1, 1, 1, 0.56, 0.76, 1)
+    GameTooltip:AddDoubleLine("Waehrend des Zauberns (5-Sek-Regel)",
+        fmt(fsrVal) .. " / 5 Sek.", 1, 1, 1, 0.95, 0.72, 0.22)
+    GameTooltip:AddDoubleLine("Danach (inkl. Geist)",
+        fmt(fullVal) .. " / 5 Sek.", 1, 1, 1, 0.56, 0.76, 1)
     if inFSR then
         GameTooltip:AddDoubleLine("5-Sekunden-Regel",
             string.format("noch %.1fs", Core:FSRRemaining()), 1, 1, 1, 1, 0.82, 0.2)

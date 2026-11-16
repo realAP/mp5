@@ -90,12 +90,19 @@
   .v2 .tick{margin-left:12px;font-size:13px;color:var(--warn);min-width:34px}
 
   /* V3 */
-  .v3{width:220px;padding:7px 10px 9px}
+  .v3{width:230px;padding:7px 10px 9px}
   .v3 .row{display:flex;justify-content:space-between;align-items:baseline}
   .v3 .lbl{font-size:13px;color:#c9b98e;letter-spacing:.8px}
-  .v3 .val{font-size:20px;color:#8fc3ff}
-  .v3 .bar{height:3px;background:#1c1c1c;margin-top:7px;border:1px solid #000}
-  .v3 .fill{height:100%;background:linear-gradient(90deg,#e0a62a,#ffd76a);width:62%}
+  .v3 .vals{font-size:19px;display:inline-flex;align-items:baseline;gap:5px}
+  .v3 .step{color:#6a6459}                     /* inaktive Stufe */
+  .v3 .sep{color:#4d4740;font-size:15px}
+  .v3 .on-fsr{color:#f2b839}                   /* gilt waehrend der 5-Sek-Regel */
+  .v3 .on-full{color:#8fc3ff}                  /* gilt danach */
+  .v3 .bar{height:10px;margin-top:7px;background:#0a0a0a;border:1px solid #000;
+           box-shadow:inset 0 0 0 1px #242424;position:relative}
+  .v3 .fill{position:absolute;inset:0 38% 0 0;background:linear-gradient(180deg,#ffd76a,#d2941f)}
+  .v3 .barnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+              font-size:9.5px;color:#f3ead6;text-shadow:1px 1px 1px #000;letter-spacing:.3px}
 
   /* V4 */
   .v4{width:230px;padding:5px 7px 6px}
@@ -187,21 +194,33 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
     <div class="blizframe v3">
       <div class="row">
         <span class="lbl wowfont">MANA / 5</span>
-        <span class="val wowfont num">12</span>
+        <span class="vals wowfont num">
+          <span class="on-fsr">12</span><span class="sep">/</span><span class="step">47</span>
+        </span>
       </div>
-      <div class="bar"><div class="fill"></div></div>
+      <div class="bar"><div class="fill"></div><span class="barnum num wowfont">3.2s</span></div>
     </div>
   </div>
   <div>
-    <h3><span class="tag">klassisch</span>Blizzard-Rahmen + feiner 5s-Strich</h3>
-    <p class="meta">Der klassische goldene Tooltip-Rahmen, Label links, Wert rechts. Darunter ein 3&nbsp;Pixel d&uuml;nner
-    Balken, der nach jedem Zauber von voll auf leer l&auml;uft &ndash; die 5-Sekunden-Regel wird so sichtbar, ohne Zahlen zu lesen.</p>
+    <h3><span class="tag">klassisch</span>Blizzard-Rahmen, zwei Stufen, Restzeit im Balken</h3>
+    <p class="meta">Der klassische goldene Tooltip-Rahmen, Label links, die Werte rechts. Angezeigt werden
+    <b>beide Stufen nebeneinander</b> &ndash; links der Wert, der <b>w&auml;hrend des Zauberns</b> gilt (innerhalb der
+    5-Sekunden-Regel, also nur MP5-Effekte), rechts der Wert, der <b>danach</b> gilt (inkl. Geist-Regeneration).
+    Die gerade g&uuml;ltige Stufe ist hell, die andere gedimmt: hier l&auml;uft die Regel noch, also gelten 12,
+    gleich sind es 47.</p>
+    <p class="meta">Darunter der Balken mit der <b>Restzeit als Zahl</b> (<span class="num">3.2s</span>): er l&auml;uft
+    nach jedem Zauber von voll auf leer. Man sieht also nicht nur <i>dass</i> die Regel l&auml;uft, sondern auch
+    <i>wie lange noch</i> &ndash; und genau dann springt der helle Wert von der linken auf die rechte Stufe.</p>
     <ul class="meta">
       <li class="pro">+ sieht aus wie ein Teil des Originalinterfaces, dockt optisch sauber ans Charakterfenster</li>
-      <li class="pro">+ der d&uuml;nne Strich ist Information ohne Unruhe</li>
+      <li class="pro">+ beantwortet beide Fragen auf einen Blick: &bdquo;wie viel jetzt?&ldquo; und &bdquo;wie viel gleich, und wann?&ldquo;</li>
+      <li class="pro">+ Farbe statt Text: gold = Regel l&auml;uft, manablau = volle Regeneration</li>
       <li class="con">&ndash; Rahmen kostet Platz und etwas Bildschirmfl&auml;che</li>
+      <li class="con">&ndash; die Restzeit braucht eine laufende Aktualisierung (gedrosselt, siehe Technik)</li>
     </ul>
-    <p class="meta"><b>Optionen:</b> Rahmen ein/aus, Balken ein/aus, Panelbreite, Schriftgr&ouml;&szlig;e.</p>
+    <p class="meta"><b>Optionen:</b> Restzeit ein/aus (ohne sie wird der Balken wieder ein 3&nbsp;Pixel d&uuml;nner Strich),
+    zweite Stufe ein/aus (dann nur der gerade g&uuml;ltige Wert), Rahmen ein/aus, Balken ein/aus, Panelbreite,
+    Schriftgr&ouml;&szlig;e.</p>
   </div>
 </div>
 
@@ -266,7 +285,8 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
   <tr><td>Gr&ouml;&szlig;e</td><td>Skalierung des gesamten Rahmens (50&nbsp;%&ndash;200&nbsp;%).</td></tr>
   <tr><td>Schriftgr&ouml;&szlig;e</td><td>Unabh&auml;ngig von der Rahmengr&ouml;&szlig;e einstellbar, Schriftart w&auml;hlbar.</td></tr>
   <tr><td>Rahmen / Hintergrund</td><td>Blizzard-Rahmen, d&uuml;nner Rahmen oder gar nichts.</td></tr>
-  <tr><td>Balken</td><td>Aus / d&uuml;nner Strich / volle Statusbar.</td></tr>
+  <tr><td>Balken</td><td>Aus / d&uuml;nner Strich / volle Statusbar &ndash; jeweils mit optionaler Restzeit-Anzeige (<span class="num">3.2s</span>) im Balken.</td></tr>
+  <tr><td>Stufen</td><td>Beide Werte nebeneinander (w&auml;hrend der 5-Sek-Regel / danach) oder nur der gerade g&uuml;ltige.</td></tr>
   <tr><td>Animation</td><td>Aus (Wert springt) oder weiches Hochz&auml;hlen beim Wechsel. Standard: aus.</td></tr>
   <tr><td>Sichtbarkeit</td><td>Immer / nur im Kampf / nur bei Manaklassen / ausblenden bei vollem Mana.</td></tr>
 </table>
@@ -274,8 +294,13 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
 <h2>Technischer Rahmen</h2>
 <p class="meta">Damit klar ist, was die Anzeige leistet und was sauber bleibt:</p>
 <ul class="meta">
-  <li><b>Effektiver Wert:</b> Die Anzeige addiert Geist-Regeneration (nur au&szlig;erhalb der 5-Sekunden-Regel) und alle
-      MP5-Effekte (Segen der Weisheit, Nahrung, Items, Volksf&auml;higkeiten). 0 hei&szlig;t 0.</li>
+  <li><b>Die Zahl:</b> Mana pro 5&nbsp;Sekunden &ndash; also wie viel Mana in f&uuml;nf Sekunden tats&auml;chlich zur&uuml;ckkommt
+      (zwei Ticks &agrave; 2&nbsp;Sekunden). 0 hei&szlig;t 0.</li>
+  <li><b>Zwei Stufen:</b> Beide Werte werden getrennt ermittelt &ndash; <i>innerhalb</i> der 5-Sekunden-Regel
+      (nur MP5-Effekte: Segen der Weisheit, Nahrung, Items, Volksf&auml;higkeiten) und <i>au&szlig;erhalb</i>
+      (zus&auml;tzlich die volle Geist-Regeneration). Ermittelt wird das, indem die echten Mana-Ticks
+      mitgez&auml;hlt und je nach Zustand getrennt gespeichert werden; dadurch stimmen beide Werte auch dann,
+      wenn das Spiel selbst nur den gerade aktiven Zustand meldet.</li>
   <li><b>5-Sekunden-Regel:</b> Der Timer startet beim tats&auml;chlichen Mana-Verbrauch, nicht beim Zauberbeginn
       &ndash; wird &uuml;ber die Mana-Events des eigenen Spielers erkannt.</li>
   <li><b>Performance:</b> Ereignisgesteuert statt Dauerschleife. Ein <code>OnUpdate</code> l&auml;uft nur w&auml;hrend

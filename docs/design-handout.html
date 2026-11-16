@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MP5 &ndash; Design-Handout</title>
+<style>
+  :root{
+    --bg:#0d0c0a;
+    --panel:#15130f;
+    --ink:#e8dfc8;
+    --ink-dim:#9c9177;
+    --gold:#ffd100;
+    --mana:#4a78d8;
+    --mana-dim:#2a4480;
+    --line:#3a3326;
+    --ok:#4ad04a;
+    --warn:#e08a2a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    line-height:1.55; font-size:15px;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:30px;margin:0 0 6px;color:var(--gold);letter-spacing:.5px}
+  h2{font-size:21px;margin:48px 0 4px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  h3{font-size:16px;margin:0 0 2px;color:var(--gold)}
+  p{margin:8px 0}
+  .lede{color:var(--ink-dim);max-width:72ch}
+  code{background:#000;padding:1px 5px;border-radius:3px;font-size:13px;color:#d8c89a}
+  ul{margin:8px 0;padding-left:20px}
+  li{margin:3px 0}
+  .note{border-left:3px solid var(--warn);background:#1a150c;padding:10px 14px;margin:16px 0;color:#d8c9a8;font-size:14px}
+
+  /* ---------- Entwurfs-Karten ---------- */
+  .variant{
+    display:grid;grid-template-columns:420px 1fr;gap:28px;
+    background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    padding:22px;margin:18px 0;align-items:start;
+  }
+  @media(max-width:860px){.variant{grid-template-columns:1fr}}
+  .stage{
+    background:
+      radial-gradient(ellipse at 50% 120%, #1d2a18 0%, #0b0e08 70%),
+      #0b0e08;
+    border:1px solid #262015;border-radius:3px;
+    min-height:150px;display:flex;align-items:center;justify-content:center;
+    padding:26px;position:relative;
+  }
+  .stage::after{
+    content:"Spielwelt-Hintergrund (Mockup)";
+    position:absolute;bottom:5px;right:8px;font-size:10px;color:#3d4a36;letter-spacing:.4px;
+  }
+  .tag{display:inline-block;font-size:11px;letter-spacing:.6px;text-transform:uppercase;
+       color:#0d0c0a;background:var(--gold);padding:1px 7px;border-radius:2px;margin-right:6px;vertical-align:2px}
+  .meta{font-size:13.5px;color:var(--ink-dim)}
+  .meta b{color:var(--ink);font-weight:600}
+  .pro{color:var(--ok)}
+  .con{color:#d87a7a}
+
+  /* ---------- gemeinsame WoW-Optik ---------- */
+  .wowfont{font-family:"Friz Quadrata TT","Trajan Pro",Georgia,"Times New Roman",serif}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* Blizzard-Tooltip-Rahmen (nachgebaut) */
+  .blizframe{
+    background:rgba(0,0,0,.82);
+    border:1px solid #6e5a2a;
+    box-shadow:0 0 0 1px #000, inset 0 0 0 1px #241c0d;
+    border-radius:2px;
+  }
+  .thinframe{
+    background:rgba(0,0,0,.6);
+    border:1px solid #2b2b2b;
+  }
+
+  /* V1 */
+  .v1{color:var(--ink);text-shadow:1px 1px 2px #000;font-size:22px;letter-spacing:.5px}
+  .v1 .lbl{color:var(--ink-dim);font-size:15px;margin-right:8px}
+  .v1 .val{color:#8fc3ff}
+
+  /* V2 */
+  .v2{display:flex;align-items:baseline;gap:10px;text-shadow:1px 1px 2px #000}
+  .v2 .big{font-size:30px;color:#8fc3ff;line-height:1}
+  .v2 .sep{color:#55606e;font-size:20px}
+  .v2 .small{font-size:18px;color:#5f7fae}
+  .v2 .unit{font-size:12px;color:var(--ink-dim);letter-spacing:.6px}
+  .v2 .tick{margin-left:12px;font-size:13px;color:var(--warn);min-width:34px}
+
+  /* V3 */
+  .v3{width:220px;padding:7px 10px 9px}
+  .v3 .row{display:flex;justify-content:space-between;align-items:baseline}
+  .v3 .lbl{font-size:13px;color:#c9b98e;letter-spacing:.8px}
+  .v3 .val{font-size:20px;color:#8fc3ff}
+  .v3 .bar{height:3px;background:#1c1c1c;margin-top:7px;border:1px solid #000}
+  .v3 .fill{height:100%;background:linear-gradient(90deg,#e0a62a,#ffd76a);width:62%}
+
+  /* V4 */
+  .v4{width:230px;padding:5px 7px 6px}
+  .v4 .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .v4 .val{font-size:19px;color:#8fc3ff}
+  .v4 .state{font-size:11px;letter-spacing:.8px;color:var(--warn)}
+  .v4 .bar{height:11px;background:#0a0a0a;border:1px solid #000;box-shadow:inset 0 0 0 1px #242424;position:relative}
+  .v4 .fill{position:absolute;inset:0 38% 0 0;background:linear-gradient(180deg,#5b8ae8,#2d4e96)}
+  .v4 .barnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+               font-size:10px;color:#dfe7f5;text-shadow:1px 1px 1px #000}
+
+  /* V5 */
+  .v5{width:250px;padding:8px 10px}
+  .v5 .head{display:flex;justify-content:space-between;align-items:baseline;
+            border-bottom:1px solid #332b18;padding-bottom:5px;margin-bottom:5px}
+  .v5 .val{font-size:24px;color:#8fc3ff}
+  .v5 .head .lbl{font-size:12px;color:#c9b98e;letter-spacing:.8px}
+  .v5 .line{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-dim)}
+  .v5 .line span:last-child{color:var(--ink)}
+  .v5 .zero{color:#777}
+
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:#1b1812;color:var(--gold);font-weight:600}
+  .footer{margin-top:60px;border-top:1px solid var(--line);padding-top:14px;color:var(--ink-dim);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>MP5 &ndash; Design-Handout</h1>
+<p class="lede">Ein schlichtes Anzeige-Addon f&uuml;r die <b>tats&auml;chliche</b> Mana-Regeneration pro 5&nbsp;Sekunden:
+inklusive Geist-Regeneration, 5-Sekunden-Regel, Segen der Weisheit, Food-Buffs, Items und Volksf&auml;higkeiten.
+Unten f&uuml;nf Entw&uuml;rfe zur Auswahl &ndash; alle im klassischen WoW-Look, alle frei verschiebbar und in Gr&ouml;&szlig;e/Schriftgr&ouml;&szlig;e einstellbar.</p>
+
+<div class="note">
+<b>Hinweis zur Mockup-Darstellung:</b> Die Rahmen und Schriften sind hier mit HTML/CSS nachempfunden.
+Im Spiel kommen die echten Blizzard-Texturen (<code>Tooltip-Border</code>, <code>FrizQuadrataTT</code>) zum Einsatz,
+dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
+</div>
+
+<h2>Entwurf 1 &mdash; &bdquo;Nackte Zahl&ldquo;</h2>
+<div class="variant">
+  <div class="stage">
+    <div class="v1 wowfont num"><span class="lbl">MP5</span><span class="val">38</span></div>
+  </div>
+  <div>
+    <h3><span class="tag">minimal</span>Nur Text, kein Rahmen</h3>
+    <p class="meta">Eine einzelne Zeile, kein Hintergrund, keine Linien. Schattierter Text wie die Blizzard-Standardanzeigen.
+    Der Wert ist <b>immer der effektive aktuelle Wert</b>: steht da 0, regeneriert gerade nichts.</p>
+    <ul class="meta">
+      <li class="pro">+ absolut unaufdringlich, st&ouml;rt kein bestehendes Layout</li>
+      <li class="pro">+ geringster Platzbedarf, passt unter jedes Charakterfenster</li>
+      <li class="con">&ndash; kein Hinweis, <i>warum</i> der Wert gerade niedrig ist</li>
+      <li class="con">&ndash; auf unruhigem Hintergrund schlechter lesbar (optional: dezenter Schatten/Backdrop)</li>
+    </ul>
+    <p class="meta"><b>Optionen:</b> Label ein/aus, Schriftgr&ouml;&szlig;e, Farbe, Ausrichtung.</p>
+  </div>
+</div>
+
+<h2>Entwurf 2 &mdash; &bdquo;Jetzt / Danach&ldquo;</h2>
+<div class="variant">
+  <div class="stage">
+    <div class="v2 wowfont num">
+      <span class="big">12</span>
+      <span class="sep">/</span>
+      <span class="small">47</span>
+      <span class="unit">MP5</span>
+      <span class="tick num">3.2s</span>
+    </div>
+  </div>
+  <div>
+    <h3><span class="tag">informativ</span>Aktuell gro&szlig;, Voll-Regen klein, 5-Sek.-Countdown</h3>
+    <p class="meta">Links der <b>gerade wirksame</b> Wert (innerhalb der 5-Sekunden-Regel also nur MP5-Effekte wie Segen
+    der Weisheit, Food, Items, Volksf&auml;higkeit), rechts daneben der Wert, der <b>nach Ablauf</b> der Regel gilt
+    (also inkl. Geist). Der Countdown zeigt, wann umgeschaltet wird.</p>
+    <ul class="meta">
+      <li class="pro">+ beantwortet die eigentliche Frage beim Spielen: &bdquo;wann lohnt sich Warten?&ldquo;</li>
+      <li class="pro">+ immer noch eine einzige Zeile</li>
+      <li class="con">&ndash; etwas mehr zu lesen als Entwurf 1</li>
+    </ul>
+    <p class="meta"><b>Optionen:</b> Countdown ein/aus, Zweitwert ein/aus, Dezimalstellen.</p>
+  </div>
+</div>
+
+<h2>Entwurf 3 &mdash; &bdquo;Klassisches Panel&ldquo;</h2>
+<div class="variant">
+  <div class="stage">
+    <div class="blizframe v3">
+      <div class="row">
+        <span class="lbl wowfont">MANA / 5</span>
+        <span class="val wowfont num">12</span>
+      </div>
+      <div class="bar"><div class="fill"></div></div>
+    </div>
+  </div>
+  <div>
+    <h3><span class="tag">klassisch</span>Blizzard-Rahmen + feiner 5s-Strich</h3>
+    <p class="meta">Der klassische goldene Tooltip-Rahmen, Label links, Wert rechts. Darunter ein 3&nbsp;Pixel d&uuml;nner
+    Balken, der nach jedem Zauber von voll auf leer l&auml;uft &ndash; die 5-Sekunden-Regel wird so sichtbar, ohne Zahlen zu lesen.</p>
+    <ul class="meta">
+      <li class="pro">+ sieht aus wie ein Teil des Originalinterfaces, dockt optisch sauber ans Charakterfenster</li>
+      <li class="pro">+ der d&uuml;nne Strich ist Information ohne Unruhe</li>
+      <li class="con">&ndash; Rahmen kostet Platz und etwas Bildschirmfl&auml;che</li>
+    </ul>
+    <p class="meta"><b>Optionen:</b> Rahmen ein/aus, Balken ein/aus, Panelbreite, Schriftgr&ouml;&szlig;e.</p>
+  </div>
+</div>
+
+<h2>Entwurf 4 &mdash; &bdquo;Balkenanzeige&ldquo;</h2>
+<div class="variant">
+  <div class="stage">
+    <div class="thinframe v4">
+      <div class="top">
+        <span class="val wowfont num">12</span>
+        <span class="state wowfont">5-SEK-REGEL</span>
+      </div>
+      <div class="bar">
+        <div class="fill"></div>
+        <div class="barnum num wowfont">3.2s</div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <h3><span class="tag">visuell</span>Statusbar im Stil der Castbar</h3>
+    <p class="meta">Wert oben, darunter ein echter Statusbalken, der die verbleibenden 5&nbsp;Sekunden abl&auml;uft &ndash;
+    optisch wie eine kleine Zauberleiste. Beim Ablauf kurzer Farbwechsel auf &bdquo;volle Regeneration&ldquo;.</p>
+    <ul class="meta">
+      <li class="pro">+ am schnellsten aus dem Augenwinkel erfassbar</li>
+      <li class="pro">+ passt zu Castbar/Swing-Timer-Leisten</li>
+      <li class="con">&ndash; gr&ouml;&szlig;te Variante, am meisten &bdquo;Drumherum&ldquo;</li>
+      <li class="con">&ndash; Balken braucht eine laufende Aktualisierung (sauber gedrosselt, siehe Technik)</li>
+    </ul>
+    <p class="meta"><b>Optionen:</b> Balkenh&ouml;he, Textur, Richtung (leer-/vollaufend), Balken komplett abschaltbar &rarr; wird dann Entwurf 1.</p>
+  </div>
+</div>
+
+<h2>Entwurf 5 &mdash; &bdquo;Aufschl&uuml;sselung&ldquo;</h2>
+<div class="variant">
+  <div class="stage">
+    <div class="blizframe v5">
+      <div class="head">
+        <span class="lbl wowfont">MANA / 5</span>
+        <span class="val wowfont num">12</span>
+      </div>
+      <div class="line"><span>Geist (aktiv)</span><span class="zero num">0</span></div>
+      <div class="line"><span>Segen der Weisheit</span><span class="num">10</span></div>
+      <div class="line"><span>Nahrung / Items</span><span class="num">2</span></div>
+    </div>
+  </div>
+  <div>
+    <h3><span class="tag">diagnose</span>Summe oben, Quellen darunter</h3>
+    <p class="meta">Zeigt, woraus sich der Wert zusammensetzt. Ideal zum Gegenpr&uuml;fen beim Ausr&uuml;stungs-Tuning
+    (&bdquo;bringt mir Geist oder MP5 mehr?&ldquo;). Die Detailzeilen sind einzeln abschaltbar &ndash; dann bleibt Entwurf 3 &uuml;brig.</p>
+    <ul class="meta">
+      <li class="pro">+ macht nachvollziehbar, warum der Wert so ist, wie er ist</li>
+      <li class="pro">+ lie&szlig;e sich auch nur im Tooltip beim Dr&uuml;berfahren zeigen</li>
+      <li class="con">&ndash; dauerhaft eingeblendet am unruhigsten</li>
+    </ul>
+    <p class="meta"><b>Empfehlung:</b> als <i>Tooltip</i> von Entwurf 1&ndash;4 umsetzen statt als Dauer-Panel.</p>
+  </div>
+</div>
+
+<h2>Gemeinsame Einstellungen (alle Entw&uuml;rfe)</h2>
+<table>
+  <tr><th>Einstellung</th><th>Beschreibung</th></tr>
+  <tr><td>Verschieben</td><td>Frei per Drag &amp; Drop, Position wird pro Charakter gespeichert. Optional &bdquo;fixieren&ldquo;, damit nichts verrutscht.</td></tr>
+  <tr><td>Gr&ouml;&szlig;e</td><td>Skalierung des gesamten Rahmens (50&nbsp;%&ndash;200&nbsp;%).</td></tr>
+  <tr><td>Schriftgr&ouml;&szlig;e</td><td>Unabh&auml;ngig von der Rahmengr&ouml;&szlig;e einstellbar, Schriftart w&auml;hlbar.</td></tr>
+  <tr><td>Rahmen / Hintergrund</td><td>Blizzard-Rahmen, d&uuml;nner Rahmen oder gar nichts.</td></tr>
+  <tr><td>Balken</td><td>Aus / d&uuml;nner Strich / volle Statusbar.</td></tr>
+  <tr><td>Animation</td><td>Aus (Wert springt) oder weiches Hochz&auml;hlen beim Wechsel. Standard: aus.</td></tr>
+  <tr><td>Sichtbarkeit</td><td>Immer / nur im Kampf / nur bei Manaklassen / ausblenden bei vollem Mana.</td></tr>
+</table>
+
+<h2>Technischer Rahmen</h2>
+<p class="meta">Damit klar ist, was die Anzeige leistet und was sauber bleibt:</p>
+<ul class="meta">
+  <li><b>Effektiver Wert:</b> Die Anzeige addiert Geist-Regeneration (nur au&szlig;erhalb der 5-Sekunden-Regel) und alle
+      MP5-Effekte (Segen der Weisheit, Nahrung, Items, Volksf&auml;higkeiten). 0 hei&szlig;t 0.</li>
+  <li><b>5-Sekunden-Regel:</b> Der Timer startet beim tats&auml;chlichen Mana-Verbrauch, nicht beim Zauberbeginn
+      &ndash; wird &uuml;ber die Mana-Events des eigenen Spielers erkannt.</li>
+  <li><b>Performance:</b> Ereignisgesteuert statt Dauerschleife. Ein <code>OnUpdate</code> l&auml;uft nur w&auml;hrend
+      der laufenden 5&nbsp;Sekunden und ist auf ca. 10&nbsp;Aktualisierungen/Sekunde gedrosselt; danach schaltet
+      er sich ab. Keine Berechnungen im Leerlauf.</li>
+  <li><b>Regelkonform:</b> Ausschlie&szlig;lich die offiziellen, von Blizzard bereitgestellten Schnittstellen.
+      Reine Anzeige &ndash; keine Automatisierung, kein Eingriff ins Spielgeschehen.</li>
+</ul>
+
+<div class="note">
+<b>Offener Punkt f&uuml;r die Umsetzung:</b> In Classic liefert das Spiel den MP5-Anteil aus Buffs und Items nicht
+immer direkt als Zahl. Je nach Client muss ein Teil davon aus den Buff-/Item-Beschreibungen gelesen werden.
+Das kl&auml;re ich vor der Implementierung gegen den konkreten Client ab &ndash; die Anzeige-Entw&uuml;rfe oben sind davon
+nicht betroffen.
+</div>
+
+<div class="footer">
+MP5 &ndash; Design-Handout &middot; Stand 16.11.2026 &middot; Entwurf zur Auswahl, noch keine Implementierung.
+</div>
+
+</div>
+</body>
+</html>

@@ -104,6 +104,7 @@ local function usage()
     msg("  /mp5 hide | /mp5 unhide")
     msg("  /mp5 errors [clear]           - mitgeschriebene Fehler")
     msg("  /mp5 probe                    - was dieser Client hergibt")
+    msg("  /mp5 why                      - warum steht da keine Zahl?")
     msg("  /mp5 reset                    - Standardwerte")
 end
 
@@ -221,6 +222,49 @@ SlashCmdList["MP5"] = function(input)
         db.hidden = true
     elseif cmd == "unhide" then
         db.hidden = false
+    elseif cmd == "why" then
+        -- Die Stueckzahl braucht vier Werte. Hier steht, welcher fehlt.
+        local function str(...)
+            if select("#", ...) == 0 then return "-" end
+            local v = ...
+            if v == nil then return "|cffff5555FEHLT|r" end
+            return tostring(v)
+        end
+
+        local mana  = Core:GetMana()
+        local mp5   = Core:GetMP5(true)
+        local mps   = mp5 and (mp5 / 5) or 0
+        msg("Warum keine Zahl? Die Rechnung braucht vier Werte:")
+        msg("  aktuelles Mana:   " .. str(mana) .. "  (Quelle: "
+            .. str(Core:ManaSource()) .. ")")
+        msg("  Regen beim Casten: " .. str(mp5) .. " MP5"
+            .. (mp5 and "" or "  -> wird mit 0 gerechnet"))
+
+        local any = false
+        for i = 1, MAX_SPELLS do
+            local name = db.spells[i]
+            if name then
+                any = true
+                local s2 = ns.Spells:Lookup(name)
+                if not s2 then
+                    msg("  " .. i .. ") " .. name
+                        .. ": |cffff5555Zauber nicht gefunden|r")
+                else
+                    local casts = ns.Spells.CastsLeft(mana, s2.cost, s2.castTime, mps)
+                    msg("  " .. i .. ") " .. s2.name
+                        .. "  Kosten " .. str(s2.cost)
+                        .. " (" .. str(s2.costFrom) .. ")"
+                        .. "  Zeit " .. str(s2.castTime)
+                        .. "  ID " .. str(s2.spellID)
+                        .. "  -> " .. str(casts))
+                end
+            end
+        end
+        if not any then
+            msg("  |cffff5555Kein Zauber eingetragen.|r "
+                .. "Zum Beispiel: /mp5 spell 1 Blitzheilung")
+        end
+        return
     elseif cmd == "probe" then
         -- Nimmt auch "gar kein Argument" entgegen, nicht nur nil.
         local function str(...)

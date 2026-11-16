@@ -84,7 +84,45 @@ local function tooltipCost(spellID)
     return nil
 end
 
-local function manaCost(spellID)
+-- Position eines Zaubers im Zauberbuch, fuer die Tooltip-Abfrage ohne ID.
+local function bookIndex(name)
+    local getName = GetSpellBookItemName
+        or (C_SpellBook and C_SpellBook.GetSpellBookItemName)
+    if not (getName and name) then return nil end
+    local book = BOOKTYPE_SPELL or "spell"
+    for i = 1, 1024 do
+        local ok, n = pcall(getName, i, book)
+        if not ok or not n then return nil end
+        if n == name then return i, book end
+    end
+    return nil
+end
+
+-- Kosten aus der Zauberbeschreibung, wahlweise ueber die ID oder, wenn
+-- es keine gibt, ueber die Position im Zauberbuch.
+local function tooltipCostByBook(name)
+    local idx, book = bookIndex(name)
+    if not idx then return nil end
+    if not scanner then
+        scanner = CreateFrame("GameTooltip", "MP5ScanTooltip", nil, "GameTooltipTemplate")
+        scanner:SetOwner(UIParent, "ANCHOR_NONE")
+    end
+    scanner:ClearLines()
+    if not scanner.SetSpellBookItem then return nil end
+    if not pcall(scanner.SetSpellBookItem, scanner, idx, book) then return nil end
+    for i = 2, scanner:NumLines() do
+        local line = _G["MP5ScanTooltipTextLeft" .. i]
+        local text = line and line:GetText()
+        if text then
+            local n = text:match("(%d+)%s+[Mm]ana")
+            if n then return tonumber(n) end
+        end
+    end
+    return nil
+end
+
+-- Rueckgabe: Kosten, Weg ("api" | "tooltip" | "zauberbuch") oder nil
+local function manaCost(spellID, name)
     local fn = GetSpellPowerCost
         or (C_Spell and C_Spell.GetSpellPowerCost)
     if fn and spellID then
@@ -95,12 +133,19 @@ local function manaCost(spellID)
                 local c = costs[i]
                 -- 0 = Mana
                 if c and (c.type == 0 or c.name == "MANA") and c.cost then
-                    return c.cost
+                    return c.cost, "api"
                 end
             end
         end
     end
-    return tooltipCost(spellID)
+
+    local v = tooltipCost(spellID)
+    if v then return v, "tooltip" end
+
+    v = tooltipCostByBook(name)
+    if v then return v, "zauberbuch" end
+
+    return nil, nil
 end
 
 -- Angaben zu einem Zauber. "name" darf auch einen Rang tragen, genau wie
@@ -153,12 +198,15 @@ function Spells:Lookup(name)
 
     if not info then return nil end
 
+    local cost, costFrom = manaCost(info.spellID, info.name)
+
     return {
         name      = info.name,
         rank      = (info.rank and info.rank ~= "" and info.rank) or nil,
         icon      = info.icon,
         castTime  = (info.castTime or 0) / 1000,     -- ms -> Sekunden
-        cost      = manaCost(info.spellID),
+        cost      = cost,
+        costFrom  = costFrom,
         spellID   = info.spellID,
         query     = name,
         -- Der Client kennt keine Raenge: die Angabe wurde ignoriert.

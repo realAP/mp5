@@ -286,9 +286,10 @@ f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
         if not Core:ManaReadable() then
             msg("|cffff9955Dieser Client schuetzt den aktuellen Manawert|r "
                 .. "(\"secret value\"). Addons duerfen damit nicht rechnen.")
-            msg("Die gemessenen Zahlen und die Zauber-Leiste entfallen "
-                .. "deshalb. Die 5-Sekunden-Regel laeuft weiter - sie wird "
-                .. "ueber die Zauber selbst erkannt, nicht ueber das Mana.")
+            msg("Gemessen wird deshalb nicht; die Zahlen kommen von "
+                .. "GetManaRegen(). Die 5-Sekunden-Regel laeuft ueber die "
+                .. "Zauber selbst. Nur die Zauber-Leiste entfaellt - die "
+                .. "braucht das aktuelle Mana.")
         end
     elseif event == "LEARNED_SPELL_IN_TAB" or event == "SPELLS_CHANGED" then
         -- Neuer Rang gelernt: Kosten und Icon koennen sich geaendert haben.

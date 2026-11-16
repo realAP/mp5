@@ -50,6 +50,13 @@ function ns.Probe()
         return PlayerFrameManaBarText and PlayerFrameManaBarText:GetText()
     end))
 
+    -- Zweiter Versuch fuer das aktuelle Mana: der Wert der Standardleiste.
+    -- Ein StatusBar-Wert ist eine gewoehnliche Zahl, kein geschuetzter Wert.
+    p.manaBarValue = kind(select(1, try(function()
+        return PlayerFrameManaBar and PlayerFrameManaBar:GetValue()
+    end)))
+    p.manaBarExists = (PlayerFrameManaBar ~= nil) and "ja" or "nein"
+
     -- Welche Funktionen existieren ueberhaupt?
     local names = {
         "UnitPower", "UnitPowerMax", "UnitMana", "UnitManaMax", "GetManaRegen",

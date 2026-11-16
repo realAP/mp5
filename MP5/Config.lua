@@ -17,6 +17,7 @@ local defaults = {
     -- Aussehen
     backdrop      = "blizzard",  -- blizzard | thin | off
     bar           = "thin",      -- thin | full | off
+    barDir        = "fill",      -- fill (fuellt sich hoch) | drain (laeuft leer)
     showLabel     = false,       -- "MANA / 5" - der Wert erklaert sich selbst
     showFull      = true,        -- beide Stufen "12 / 47"
     showCountdown = true,        -- Restzeit unter dem Balken
@@ -86,6 +87,7 @@ local function usage()
     msg("  /mp5 font <8-32>              - Schriftgroesse")
     msg("  /mp5 width <80-400>           - Breite")
     msg("  /mp5 bar off|thin|full        - Balken")
+    msg("  /mp5 bardir fill|drain        - Balken fuellt sich / laeuft leer")
     msg("  /mp5 backdrop blizzard|thin|off")
     msg("  /mp5 label|full|countdown|tooltip|animate on|off")
     msg("  /mp5 spells on|off            - Zauber-Leiste")
@@ -181,6 +183,12 @@ SlashCmdList["MP5"] = function(input)
     elseif cmd == "bar" then
         if arg == "off" or arg == "thin" or arg == "full" then db.bar = arg
         else msg("bar off|thin|full"); return end
+    elseif cmd == "bardir" then
+        if arg == "fill" or arg == "drain" then
+            db.barDir = arg
+            msg(arg == "fill" and "Balken fuellt sich bis zur vollen Regeneration."
+                               or "Balken laeuft die 5 Sekunden leer.")
+        else msg("bardir fill|drain"); return end
     elseif cmd == "backdrop" then
         if arg == "blizzard" or arg == "thin" or arg == "off" then db.backdrop = arg
         else msg("backdrop blizzard|thin|off"); return end

@@ -99,7 +99,7 @@
   .v3 .on-full{color:#8fc3ff}                  /* gilt danach */
   .v3 .bar{height:4px;margin-top:6px;background:#0a0a0a;border:1px solid #000;
            box-shadow:inset 0 0 0 1px #242424;position:relative}
-  .v3 .fill{position:absolute;inset:0 38% 0 0;background:linear-gradient(180deg,#ffd76a,#d2941f)}
+  .v3 .fill{position:absolute;inset:0 64% 0 0;background:linear-gradient(180deg,#ffd76a,#d2941f)}
   /* Restzeit UNTER dem Balken: auf dem goldenen Balken war sie nicht lesbar. */
   .v3 .rest{display:block;margin-top:3px;font-size:11px;color:#f2b839;letter-spacing:.3px}
   .v3 .spells{display:flex;justify-content:center;gap:3px;margin-top:5px}
@@ -265,7 +265,10 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
     5-Sekunden-Regel, also nur MP5-Effekte), rechts der Wert, der <b>danach</b> gilt (inkl. Geist-Regeneration).
     Die gerade g&uuml;ltige Stufe ist hell, die andere gedimmt: hier l&auml;uft die Regel noch, also gelten 12,
     gleich sind es 47.</p>
-    <p class="meta">Darunter der Balken, der nach jedem Zauber von voll auf leer l&auml;uft, und <b>unter</b> dem
+    <p class="meta">Darunter der Balken, der sich &uuml;ber die f&uuml;nf Sekunden <b>auff&uuml;llt</b> &ndash;
+    voll bedeutet damit immer dasselbe: volle Regeneration. L&auml;uft er stattdessen leer, hei&szlig;t voll
+    zweierlei (&bdquo;gerade gezaubert&ldquo; und &bdquo;alles gut&ldquo;) und nur die Farbe trennt die F&auml;lle;
+    umstellbar &uuml;ber <code>/mp5 bardir drain</code>. Und <b>unter</b> dem
     Balken die Restzeit als Zahl (<span class="num">3.2s</span>) &ndash; auf dem goldenen Balken war sie nicht
     zu lesen, auf dem dunklen Grund darunter schon. Man sieht also nicht nur <i>dass</i> die Regel l&auml;uft,
     sondern auch <i>wie lange noch</i> &ndash; und genau dann springt der helle Wert auf die rechte Stufe.</p>
@@ -280,7 +283,8 @@ dadurch sitzt es nahtlos neben Charakterfenster und Standard-UI.
       <li class="pro">+ die Zauber-Zahl beantwortet die Frage, die man im Kampf wirklich hat</li>
       <li class="con">&ndash; die Restzeit braucht eine laufende Aktualisierung (gedrosselt, siehe Technik)</li>
     </ul>
-    <p class="meta"><b>Optionen:</b> Zauber und ihre R&auml;nge (Interface-Optionen oder <code>/mp5 spell</code>),
+    <p class="meta"><b>Optionen:</b> Balkenrichtung (auff&uuml;llend / leerlaufend),
+    Zauber und ihre R&auml;nge (Interface-Optionen oder <code>/mp5 spell</code>),
     Icon-Gr&ouml;&szlig;e, Zahl mittig oder oben rechts, Restzeit ein/aus, zweite Stufe ein/aus, Rahmen ein/aus,
     Balken ein/aus, Panelbreite, Schriftgr&ouml;&szlig;e.</p>
   </div>
@@ -383,17 +387,19 @@ so sieht man sofort, ob der Name stimmt und welchen Rang das Spiel nimmt.</p>
       <div class="ends"><span>16</span><span>48</span></div>
     </div>
 
-    <div class="opt-check"><span class="box"></span><span>Zahl mittig auf dem Icon (sonst oben rechts)</span></div>
+    <div class="opt-check"><span class="box on"></span><span>Balken f&uuml;llt sich bis zur vollen Regeneration</span></div>
     <div class="opt-check"><span class="box on"></span><span>Restzeit der 5-Sekunden-Regel unter dem Balken</span></div>
+    <div class="opt-check"><span class="box"></span><span>Zahl mittig auf dem Icon (sonst oben rechts)</span></div>
     <div class="opt-check"><span class="box on"></span><span>Beide Stufen zeigen (w&auml;hrend des Zauberns / danach)</span></div>
 
     <p class="opt-note" style="margin-top:14px">Mehr Einstellungen &uuml;ber <code>/mp5</code></p>
   </div>
 </div>
 
-<p class="meta"><b>Platz:</b> Das Panel ist rund 520&nbsp;Pixel hoch. Der Inhaltsbereich der Classic-Optionen
-misst etwa 533&nbsp;Pixel &ndash; es passt, aber ohne Reserve. Kommt noch eine Einstellung dazu, muss der
-Abschnitt &bdquo;Darstellung&ldquo; zweispaltig werden.</p>
+<p class="meta"><b>Platz:</b> Mit dem vierten Schalter waere das Panel ueber die verf&uuml;gbaren
+533&nbsp;Pixel hinausgewachsen, deshalb sind die Zauberfelder und der Abschnitt &bdquo;Darstellung&ldquo;
+enger gesetzt: tiefste Koordinate jetzt 506&nbsp;Pixel. F&uuml;r eine f&uuml;nfte Einstellung muss der
+Abschnitt zweispaltig werden.</p>
 
 <h2>Gemeinsame Einstellungen (alle Entw&uuml;rfe)</h2>
 <table>

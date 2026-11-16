@@ -240,12 +240,18 @@ local function Redraw()
         bar:Hide()
     else
         bar:Show()
-        bar:SetValue(rest)
+        -- "fill": der Balken fuellt sich ueber die 5 Sekunden auf, voll heisst
+        -- also immer dasselbe - volle Regeneration. "drain": er laeuft leer,
+        -- dann heisst voll zweierlei und nur die Farbe trennt die Faelle.
+        if db.barDir == "drain" then
+            bar:SetValue(rest > 0 and rest or 5)
+        else
+            bar:SetValue(5 - rest)
+        end
         if rest > 0 then
             bar:SetStatusBarColor(0.88, 0.65, 0.16)
         else
             bar:SetStatusBarColor(0.22, 0.42, 0.78)
-            bar:SetValue(5)
         end
     end
 

@@ -63,23 +63,14 @@ local function pickManaFn()
     return false
 end
 
--- Letzter Ausweg, wenn der Wert geschuetzt ist: der Text der Standard-
--- Manaleiste. Ein Text ist keine geschuetzte Zahl. Er ist nur gefuellt,
--- wenn die Statustexte eingeschaltet sind (Interface > Statustext).
+-- Letzter Ausweg, wenn der Wert geschuetzt ist: die Standard-Manaleiste.
+-- Ein Text ist keine geschuetzte Zahl, und ein StatusBar-Wert auch nicht.
 --
--- Drei Formen kommen vor:
---   "1234 / 1435"  -> der Wert direkt
---   "1234"         -> der Wert direkt
---   "47%"          -> mit dem lesbaren Maximalmana umgerechnet
---
--- Rueckgabe: Wert, true wenn er aus einem Prozentwert stammt (also gerundet)
-local function manaBarText()
-    local fs = PlayerFrameManaBarText
-        or (PlayerFrameManaBar and PlayerFrameManaBar.TextString)
-    if not fs or not fs.GetText then return nil end
+-- Die Fontstring heisst nicht auf jedem Client PlayerFrameManaBarText,
+-- deshalb werden die Regionen der Leiste durchsucht statt Namen geraten.
 
-    local ok, t = pcall(fs.GetText, fs)
-    if not ok or type(t) ~= "string" or t == "" then return nil end
+local function parseManaText(t)
+    if type(t) ~= "string" or t == "" then return nil end
 
     -- "1234 / 1435" - Tausenderpunkte entfernen, der Trenner ist kein Komma
     local a = t:match("^%s*([%d%.,%s]-%d)%s*/")
@@ -108,16 +99,90 @@ local function manaBarText()
     return nil
 end
 
+-- Alle Fontstrings, die den Manawert tragen koennten.
+local function barCandidates()
+    local out = {}
+    local function add(label, fs)
+        if fs and fs.GetText then out[#out + 1] = { label = label, fs = fs } end
+    end
+
+    add("PlayerFrameManaBarText", PlayerFrameManaBarText)
+
+    local bar = PlayerFrameManaBar
+    if bar then
+        add("ManaBar.TextString", bar.TextString)
+        if bar.GetRegions then
+            local ok, regions = pcall(function() return { bar:GetRegions() } end)
+            if ok and type(regions) == "table" then
+                for i = 1, #regions do
+                    add("ManaBar-Region " .. i, regions[i])
+                end
+            end
+        end
+    end
+
+    -- Manche Clients haengen den Text ans Spielerfenster, nicht an die Leiste.
+    if PlayerFrame and PlayerFrame.GetRegions then
+        local ok, regions = pcall(function() return { PlayerFrame:GetRegions() } end)
+        if ok and type(regions) == "table" then
+            for i = 1, #regions do
+                add("PlayerFrame-Region " .. i, regions[i])
+            end
+        end
+    end
+
+    return out
+end
+
+-- Fuer /mp5 why: was liefert jeder Kandidat?
+function Core:ManaBarCandidates()
+    local out, c = {}, barCandidates()
+    for i = 1, #c do
+        local ok, t = pcall(c[i].fs.GetText, c[i].fs)
+        local v = ok and parseManaText(t) or nil
+        out[#out + 1] = {
+            label = c[i].label,
+            text  = ok and tostring(t) or "FEHLER",
+            value = v,
+        }
+    end
+    return out
+end
+
+local function indirectMana()
+    -- Der Wert der Leiste selbst. Der Vergleich muss mit im pcall stehen:
+    -- auf einem geschuetzten Wert bricht schon ">" ab.
+    local bar = PlayerFrameManaBar
+    if bar and bar.GetValue then
+        local ok, v = pcall(function()
+            local x = bar:GetValue()
+            if type(x) == "number" and x > 0 then return x end
+        end)
+        if ok and type(v) == "number" then return v, false, "leistenwert" end
+    end
+
+    local c = barCandidates()
+    for i = 1, #c do
+        local ok, t = pcall(c[i].fs.GetText, c[i].fs)
+        if ok then
+            local v, approx = parseManaText(t)
+            if v then return v, approx, approx and "prozent" or "text" end
+        end
+    end
+
+    return nil
+end
+
 local function readMana()
     if manaFn == nil then manaFn = pickManaFn() end
     if manaFn then
         local ok, v = pcall(manaFn)
         if ok and v ~= nil then return v, false, "api" end
     end
-    -- Geschuetzt: ueber den Text der Standardleiste versuchen.
-    local ok, v, approx = pcall(manaBarText)
+    -- Geschuetzt: ueber die Standardleiste versuchen.
+    local ok, v, approx, src = pcall(indirectMana)
     if ok and type(v) == "number" then
-        return v, approx and true or false, approx and "prozent" or "text"
+        return v, approx and true or false, src
     end
     return nil
 end

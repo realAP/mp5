@@ -237,6 +237,19 @@ SlashCmdList["MP5"] = function(input)
         msg("Warum keine Zahl? Die Rechnung braucht vier Werte:")
         msg("  aktuelles Mana:   " .. str(mana) .. "  (Quelle: "
             .. str(Core:ManaSource()) .. ")")
+        if mana == nil then
+            msg("  Durchsuchte Stellen der Manaleiste:")
+            local cands = Core:ManaBarCandidates()
+            if #cands == 0 then
+                msg("    |cffff5555keine gefunden|r - Standard-Spielerfenster "
+                    .. "nicht vorhanden oder von einem anderen Addon ersetzt?")
+            end
+            for i = 1, #cands do
+                local c = cands[i]
+                msg("    " .. c.label .. ": \"" .. tostring(c.text) .. "\""
+                    .. (c.value and ("  -> " .. tostring(c.value)) or ""))
+            end
+        end
         msg("  Regen beim Casten: " .. str(mp5) .. " MP5"
             .. (mp5 and "" or "  -> wird mit 0 gerechnet"))
 

@@ -76,6 +76,29 @@ check("und nichts verfuegbar", Core:ManaAvailable(), false)
 barText = "900 / 1435"
 check("mit Text wieder verfuegbar", Core:ManaAvailable(), true)
 
+-- Der Text muss auch dann gefunden werden, wenn er nicht
+-- PlayerFrameManaBarText heisst, sondern irgendeine Region der Leiste ist.
+PlayerFrameManaBarText = nil
+local hidden = { GetText = function() return "750 / 1435" end }
+-- GetRegions gibt im Spiel mehrere Werte zurueck, keine Tabelle.
+PlayerFrameManaBar = {
+    GetRegions = function() return {}, hidden end,
+}
+check("Text in einer Region der Leiste", (Core:GetMana()), 750)
+check("  Quelle ist der Text", Core:ManaSource(), "text")
+
+-- Der Wert der Leiste selbst hat Vorrang, er ist genauer als Prozent.
+PlayerFrameManaBar.GetValue = function() return 812 end
+check("Wert der Leiste gewinnt", (Core:GetMana()), 812)
+check("  Quelle ist der Leistenwert", Core:ManaSource(), "leistenwert")
+
+-- Ein geschuetzter Leistenwert darf nicht abbrechen, sondern zum Text fuehren
+PlayerFrameManaBar.GetValue = function() error("secret number value", 0) end
+check("geschuetzter Leistenwert faellt zurueck", (Core:GetMana()), 750)
+
+PlayerFrameManaBar = nil
+PlayerFrameManaBarText = { GetText = function() return barText end }
+
 -- ManaSource muss genau EINEN Wert liefern. Gab readMana nichts her,
 -- lieferte select(3, ...) gar nichts - und tostring() ohne Argument
 -- bricht ab ("bad argument #1 to 'tostring'").

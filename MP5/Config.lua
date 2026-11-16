@@ -70,7 +70,8 @@ function ns.UpdateVisibility()
     if db.visibility == "combat" then
         show = InCombatLockdown() or UnitAffectingCombat("player")
     elseif db.visibility == "notfull" then
-        show = UnitPower("player", MANA) < UnitPowerMax("player", MANA)
+        local cur = Core:GetMana()
+        show = cur == nil or cur < UnitPowerMax("player", MANA)
     end
     if show then ns.frame:Show() else ns.frame:Hide() end
 end
@@ -101,6 +102,7 @@ local function usage()
     msg("  /mp5 decimals 0|1")
     msg("  /mp5 show always|combat|notfull")
     msg("  /mp5 hide | /mp5 unhide")
+    msg("  /mp5 errors [clear]           - mitgeschriebene Fehler")
     msg("  /mp5 reset                    - Standardwerte")
 end
 
@@ -214,6 +216,25 @@ SlashCmdList["MP5"] = function(input)
         db.hidden = true
     elseif cmd == "unhide" then
         db.hidden = false
+    elseif cmd == "errors" then
+        if arg == "clear" then
+            MP5Errors = {}
+            Core:ClearErrors()
+            msg("Fehlerspeicher geleert.")
+            return
+        end
+        local list = MP5Errors
+        if type(list) ~= "table" or #list == 0 then
+            msg("Keine Fehler mitgeschrieben.")
+        else
+            msg(#list .. " verschiedene Fehler:")
+            for i = 1, #list do
+                msg("  " .. i .. ") x" .. (list[i].count or 1) .. "  " .. list[i].msg)
+            end
+            msg("Vollstaendig mit Stacktrace in:")
+            msg("  WTF\\Account\\<KONTO>\\SavedVariables\\MP5.lua")
+        end
+        return
     elseif cmd == "reset" then
         for k in pairs(db) do db[k] = nil end
         applyDefaults(db)
@@ -235,23 +256,33 @@ f:RegisterEvent("PLAYER_LOGIN")
 f:RegisterEvent("PLAYER_REGEN_DISABLED")
 f:RegisterEvent("PLAYER_REGEN_ENABLED")
 f:RegisterEvent("UNIT_MAXPOWER")
-f:RegisterEvent("LEARNED_SPELL_IN_TAB")
-f:RegisterEvent("SPELLS_CHANGED")
 
-f:SetScript("OnEvent", function(_, event, arg1)
+-- Diese Events kennt nicht jeder Client; RegisterEvent bricht dort ab.
+for _, e in ipairs({ "LEARNED_SPELL_IN_TAB", "SPELLS_CHANGED" }) do
+    pcall(f.RegisterEvent, f, e)
+end
+
+f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == ADDON then
         MP5CharDB = applyDefaults(MP5CharDB or {})
         ns.db = MP5CharDB
     elseif event == "PLAYER_LOGIN" then
         ns.ResolveSpells()
         ns.UpdateVisibility()
+        if not Core:ManaReadable() then
+            msg("|cffff9955Dieser Client schuetzt den aktuellen Manawert|r "
+                .. "(\"secret value\"). Addons duerfen damit nicht rechnen.")
+            msg("Die Messung der Mana-Ticks und die Zauber-Zahlen entfallen "
+                .. "deshalb; es bleibt der Wert aus GetManaRegen(), sofern "
+                .. "der Client ihn liefert.")
+        end
     elseif event == "LEARNED_SPELL_IN_TAB" or event == "SPELLS_CHANGED" then
         -- Neuer Rang gelernt: Kosten und Icon koennen sich geaendert haben.
         ns.ResolveSpells()
     else
         ns.UpdateVisibility()
     end
-end)
+end))
 
 Core:RegisterCallback(function()
     if ns.db and ns.db.visibility == "notfull" then ns.UpdateVisibility() end

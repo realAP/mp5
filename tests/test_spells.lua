@@ -72,6 +72,14 @@ for _ = 1, 500 do
 end
 check("500 Zufallsfaelle gegen die Simulation", mismatch, 0)
 
+-- Ist die Regeneration waehrend des Zauberns unbekannt, rechnet die
+-- Anzeige mit 0 weiter. Das Ergebnis ist die Untergrenze - nil waere
+-- falsch, denn Mana und Kosten sind ja bekannt.
+check("mit 0 Regeneration kommt eine Zahl", Spells.CastsLeft(900, 155, 1.5, 0), 5)
+check("nil bei fehlender Regeneration", Spells.CastsLeft(900, 155, 1.5, nil), nil)
+check("  Untergrenze <= echtem Wert",
+      Spells.CastsLeft(900, 155, 1.5, 0) <= Spells.CastsLeft(900, 155, 1.5, 2.4), true)
+
 -- Restzeit -------------------------------------------------------------------
 check("Restzeit bei 10 Zaubern a 2s", Spells.TimeLeft(10, 2.0), 20)
 check("Restzeit nutzt den GCD", Spells.TimeLeft(10, 0), 15)

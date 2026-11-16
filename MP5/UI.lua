@@ -77,6 +77,11 @@ end
 
 -- Zauber-Felder -----------------------------------------------------------
 
+-- Ist die Regeneration waehrend des Zauberns unbekannt? Wird in
+-- updateSpells gesetzt und im Tooltip gelesen, der weiter oben
+-- definiert wird - deshalb muss die Deklaration hier vorne stehen.
+local regenUnknownShown = false
+
 local slots = {}
 
 local function createSlot(i)
@@ -117,6 +122,12 @@ local function createSlot(i)
                 1, 1, 1, 1, 0.82, 0.2)
         end
         GameTooltip:AddLine(" ")
+        if regenUnknownShown then
+            GameTooltip:AddLine("Die Regeneration waehrend des Zauberns ist", 1, 0.82, 0.2)
+            GameTooltip:AddLine("unbekannt, gerechnet wird daher mit 0 -", 1, 0.82, 0.2)
+            GameTooltip:AddLine("die Stueckzahl ist also die Untergrenze.", 1, 0.82, 0.2)
+            GameTooltip:AddLine(" ")
+        end
         local src = Core:ManaSource()
         if src == "prozent" then
             GameTooltip:AddLine("Mana aus dem Prozentwert der Standardleiste", 1, 0.82, 0.2)
@@ -178,6 +189,7 @@ local animating = false
 -- neu aufgeloest, nicht in jedem Frame.
 local resolved = {}
 
+
 function ns.ResolveSpells()
     local db = ns.db
     if not db then return end         -- SPELLS_CHANGED feuert vor ADDON_LOADED
@@ -193,7 +205,18 @@ local function updateSpells()
     if not db then return end
     local mana, approx = Core:GetMana()       -- nil, wenn kein Weg funktioniert
     local mp5  = Core:GetMP5(true)            -- beim Durchcasten gilt die FSR-Stufe
-    local mps  = mp5 and (mp5 / 5) or nil
+    local mps, regenUnknown
+    if mp5 then
+        mps = mp5 / 5
+    else
+        -- Die Regeneration waehrend des Zauberns ist unbekannt: der Client
+        -- liefert fuer beide Stufen denselben Wert, und geraten wird nicht.
+        -- Dann mit 0 rechnen - das unterschaetzt die Stueckzahl, statt mehr
+        -- zu versprechen als da ist. Vorher brach die Rechnung hier ab und
+        -- es stand dauerhaft "?" da, obwohl Mana und Kosten bekannt waren.
+        mps, regenUnknown = 0, true
+    end
+    regenUnknownShown = regenUnknown and true or false
 
     for i = 1, MAX_SPELLS do
         local b, info = slots[i], resolved[i]
@@ -210,7 +233,8 @@ local function updateSpells()
             if casts then
                 -- Stammt das Mana aus einem Prozentwert, ist die Zahl
                 -- gerundet. Das zeigt die Tilde an, statt es zu verschweigen.
-                local prefix = (approx and casts ~= math.huge) and "~" or ""
+                local unsure = (approx or regenUnknown) and casts ~= math.huge
+                local prefix = unsure and "~" or ""
                 b.count:SetText(prefix .. fmtCasts(casts))
                 pcall(b.icon.SetDesaturated, b.icon, false)
                 if casts == math.huge then

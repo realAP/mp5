@@ -76,6 +76,15 @@ check("und nichts verfuegbar", Core:ManaAvailable(), false)
 barText = "900 / 1435"
 check("mit Text wieder verfuegbar", Core:ManaAvailable(), true)
 
+-- ManaSource muss genau EINEN Wert liefern. Gab readMana nichts her,
+-- lieferte select(3, ...) gar nichts - und tostring() ohne Argument
+-- bricht ab ("bad argument #1 to 'tostring'").
+barText = nil
+check("ManaSource liefert genau einen Wert", select("#", Core:ManaSource()), 1)
+check("  und tostring darauf geht", tostring(Core:ManaSource()), "nil")
+barText = "900 / 1435"
+check("mit Text ebenfalls genau einer", select("#", Core:ManaSource()), 1)
+
 -- Die Zauber-Rechnung bekommt damit wieder eine Zahl
 local spells = {}
 assert(loadfile((os.getenv("MP5_SRC") or "MP5") .. "/Spells.lua"))("MP5", spells)

@@ -69,7 +69,10 @@ end
 -- Beide Stufen stehen in EINER Fontstring, eingefaerbt ueber Farbcodes.
 -- Dadurch laesst sich die Zeile als Ganzes exakt mittig setzen.
 local function hex(c)
-    return string.format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
+    -- Ganzzahlen erzwingen: %x bricht auf manchen Lua-Builds bei
+    -- Fliesskommazahlen ab, und zwar bei jedem Neuzeichnen.
+    return string.format("|cff%02x%02x%02x",
+        math.floor(c[1] * 255), math.floor(c[2] * 255), math.floor(c[3] * 255))
 end
 
 -- Zauber-Felder -----------------------------------------------------------
@@ -163,6 +166,7 @@ end
 
 local function updateSpells()
     local db = ns.db
+    if not db then return end
     local mana = UnitPower("player", Enum and Enum.PowerType and Enum.PowerType.Mana or 0)
     local mp5  = Core:GetMP5(true)            -- beim Durchcasten gilt die FSR-Stufe
     local mps  = mp5 and (mp5 / 5) or nil
@@ -197,6 +201,7 @@ end
 
 local function Redraw()
     local db = ns.db
+    if not db then return end     -- Events koennen vor ADDON_LOADED feuern
     local inFSR = Core:InFSR()
     local fsrVal  = Core:GetMP5(true)    -- Stufe 1: waehrend des Castens
     local fullVal = Core:GetMP5(false)   -- Stufe 2: nach der 5-Sekunden-Regel

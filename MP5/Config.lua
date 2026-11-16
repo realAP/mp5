@@ -61,6 +61,7 @@ local UnitPowerMax = UnitPowerMax or function(u) return UnitManaMax(u) end
 
 function ns.UpdateVisibility()
     local db = ns.db
+    if not db or not ns.frame then return end
     if db.hidden or not Core:HasMana() then
         ns.frame:Hide()
         return

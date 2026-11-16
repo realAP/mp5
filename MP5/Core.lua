@@ -43,10 +43,32 @@ local measured = {
 
 Core.callbacks = {}
 
+-- Ein Fehler in der Anzeige darf nicht bei jedem Mana-Tick erneut
+-- hochkommen. Jede Fehlermeldung wird genau einmal ausgegeben; danach
+-- laeuft das Addon weiter, ohne den Chat zuzumuellen.
+local reported = {}
+
+local function report(err)
+    if reported[err] then return end
+    reported[err] = true
+    local out = DEFAULT_CHAT_FRAME
+    if out then
+        out:AddMessage("|cffffd100MP5|r |cffff5555Fehler:|r " .. tostring(err))
+        out:AddMessage("|cffffd100MP5|r Diese Meldung kommt nur einmal. "
+            .. "Bitte genau so weitergeben.")
+    end
+end
+
 local function fire()
     for i = 1, #Core.callbacks do
-        Core.callbacks[i]()
+        local ok, err = pcall(Core.callbacks[i])
+        if not ok then report(err) end
     end
+end
+
+-- Damit sich ein Fehler nach einem Fix wieder melden kann.
+function Core:ClearErrors()
+    reported = {}
 end
 
 function Core:RegisterCallback(fn)

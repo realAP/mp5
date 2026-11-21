@@ -197,6 +197,38 @@ local ok5 = pcall(ns.Redraw)
 check("Zeichnen mit lesbarem Mana laeuft durch", ok5, true)
 protectedMana = true
 
+-- Die Manazeile in der Anzeige ------------------------------------------------
+
+local function findText(pattern)
+  for i = 1, #frames do
+    local f = frames[i]
+    if f.kind == "FontString" and f.parent == frame
+       and type(f.text) == "string" and f.text:find(pattern) then
+      return f
+    end
+  end
+end
+
+ns.db.manaDisplay = "off"
+ns.ApplyLayout()
+local hOff = frame.h
+
+ns.db.manaDisplay = "full"
+ns.ApplyLayout()
+check("Manazeile macht den Rahmen hoeher", frame.h > hOff, true)
+check("Manazeile zeigt Wert und Maximum", findText("^%d+ / %d+$") ~= nil, true)
+
+ns.db.manaDisplay = "percent"
+ns.Redraw()
+check("Prozentanzeige", findText("^%d+%%$") ~= nil, true)
+
+ns.db.manaDisplay = "value"
+ns.Redraw()
+check("nur der Wert", findText("^%d+$") ~= nil, true)
+
+ns.db.manaDisplay = "off"
+ns.ApplyLayout()
+
 -- Das Debug-Fenster -----------------------------------------------------------
 
 check("Fenster ist zu", ns.DebugShown(), false)

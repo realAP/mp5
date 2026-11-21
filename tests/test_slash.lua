@@ -144,6 +144,13 @@ check("/mp5 button on", run("button on") or ns.db.showResetButton, true)
 check("/mp5 bar nimmt gueltige Werte", run("bar full") or ns.db.bar, "full")
 check("/mp5 bar lehnt Unsinn ab", run("bar quatsch") or ns.db.bar, "full")
 
+-- Die Manazeile -----------------------------------------------------------------
+
+check("/mp5 mana full", run("mana full") or ns.db.manaDisplay, "full")
+check("/mp5 mana percent", run("mana percent") or ns.db.manaDisplay, "percent")
+check("/mp5 mana off", run("mana off") or ns.db.manaDisplay, "off")
+check("/mp5 mana lehnt Unsinn ab", run("mana quatsch") or ns.db.manaDisplay, "off")
+
 -- Das Mana-Modell ----------------------------------------------------------------
 
 check("/mp5 estimate off", run("estimate off") or ns.db.estimate, false)

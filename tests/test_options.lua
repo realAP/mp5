@@ -95,6 +95,7 @@ local ns = {
     spells = { [1] = "Blitzheilung" },
     showSpells = true, showFull = true, showCountdown = true,
     barDir = "fill", countAnchor = "topright", locked = false, showLogo = false,
+    manaDisplay = "off",
     estimate = true,
     width = 150, iconSize = 24, scale = 1.0, fontSize = 16,
   },
@@ -191,7 +192,7 @@ for i = 1, #frames do
     if f.Text and f.Text.text then byText[f.Text.text] = f end
   end
 end
-check("acht Haken vorhanden", #boxes, 8)
+check("neun Haken vorhanden", #boxes, 9)
 check("jeder Haken hat eine Beschriftung", #boxes, (function()
   local n = 0
   for _ in pairs(byText) do n = n + 1 end
@@ -210,6 +211,8 @@ check("Position fixieren wird gespeichert",
       click("Position fixieren", true) or ns.db.locked, true)
 check("Zeichen in der Anzeige wird gespeichert",
       click("Zeichen in der Anzeige", true) or ns.db.showLogo, true)
+check("Mana-Zeile laesst sich einschalten",
+      click("Aktuelles Mana anzeigen", true) or ns.db.manaDisplay, "full")
 check("Mitrechnen laesst sich abschalten",
       click("Mana mitrechnen (geschuetzter Wert)", false) or ns.db.estimate, false)
 check("und wird an das Modell weitergegeben", ns.Estimate.on, false)

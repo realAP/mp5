@@ -152,6 +152,18 @@ Position, Größe und Optionen werden pro Charakter gespeichert.
 
 Das Design-Handout liegt unter `docs/design-handout.html`.
 
+## Logo
+
+Sechs Entwürfe in Anlehnung an die MP5, als Mana-Waffe mit Zeitmesser:
+`docs/logo/index.html` im Browser öffnen. Jeder Entwurf hat eine Einzelseite
+und liegt als SVG daneben, dunkel und hell.
+
+Noch ist keiner davon irgendwo eingebaut. Neu erzeugen:
+
+```
+python3 tools/logo/gen.py docs/logo
+```
+
 ## Tests
 
 Die Messlogik ist gegen einen API-Stub testbar, ohne das Spiel zu starten:

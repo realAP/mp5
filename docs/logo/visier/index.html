@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MP5 Logo &ndash; Das Visier</title><style>
+  :root{
+    --bg:#0d0c0a; --panel:#15130f; --ink:#e8dfc8; --dim:#9c9177;
+    --gold:#ffd100; --line:#3a3326; --ok:#4ad04a; --bad:#d87a7a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.55;font-size:15px;
+       font-family:"Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:30px;margin:0 0 6px;color:var(--gold);letter-spacing:.5px}
+  h2{font-size:21px;margin:48px 0 4px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  h3{font-size:15px;margin:14px 0 4px;color:var(--gold)}
+  a{color:#8fc3ff}
+  p{margin:8px 0}
+  .lede{color:var(--dim);max-width:72ch}
+  code{background:#000;padding:1px 5px;border-radius:3px;font-size:13px;color:#d8c89a}
+  ul{margin:6px 0;padding-left:20px}
+  li{margin:3px 0}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.6px;text-transform:uppercase;
+       color:#0d0c0a;background:var(--gold);padding:1px 7px;border-radius:2px;
+       margin-right:6px;vertical-align:2px}
+  .variant{display:grid;grid-template-columns:300px 1fr;gap:28px;background:var(--panel);
+           border:1px solid var(--line);border-radius:4px;padding:22px;margin:18px 0;
+           align-items:start}
+  @media(max-width:820px){.variant{grid-template-columns:1fr}}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+  .big{width:200px;height:200px;border:1px solid #241f14;border-radius:3px}
+  .sizes{display:flex;align-items:flex-end;gap:14px}
+  .sizes figure{margin:0;text-align:center}
+  .sizes figcaption{font-size:10px;color:#5d5747;margin-top:4px}
+  .meta{font-size:13.5px;color:var(--dim)}
+  .pro{color:var(--ok)} .con{color:var(--bad)}
+  .pro span,.con span{color:var(--dim)}
+  .note{border-left:3px solid #e08a2a;background:#1a150c;padding:10px 14px;margin:16px 0;
+        color:#d8c9a8;font-size:14px}
+  .footer{margin-top:60px;border-top:1px solid var(--line);padding-top:14px;
+          color:var(--dim);font-size:13px}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:#1b1812;color:var(--gold);font-weight:600}
+  /* Die SVGs tragen nur ein viewBox, kein width/height - ohne diese Regel
+     faellt der Browser auf 300x150 zurueck. */
+  svg{display:block;width:100%;height:100%}
+
+  .pair{display:flex;gap:18px;flex-wrap:wrap;margin:18px 0}
+  .pair div{border:1px solid var(--line);border-radius:3px;padding:18px}
+  .light{background:#efe7d4}
+</style></head><body><div class="wrap">
+<p class="meta"><a href="../index.html">&larr; alle Entw&uuml;rfe</a></p>
+<h1>Das Visier</h1>
+<p class="lede">Das Trommelvisier der MP5, umgedeutet als Fünf-Sekunden-Ring: fünf Segmente, die beim Zaubern volllaufen. In der Mitte die Visierscheibe mit ihren vier Diopterlöchern und dem Manatropfen.</p>
+<div class="pair">
+  <div style="width:260px;height:260px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#13110c"/>
+  <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
+  <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 108.33 51.71 A 46.00 46.00 0 0 1 92.64 100.00" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 89.39 102.36 A 46.00 46.00 0 0 1 38.61 102.36" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 35.36 100.00 A 46.00 46.00 0 0 1 19.67 51.71" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 20.91 47.89 A 46.00 46.00 0 0 1 61.99 18.04" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <circle cx="64.00" cy="64.00" r="31.00" fill="#b07f18"/>
+  <circle cx="64.00" cy="64.00" r="27.00" fill="#0a0906"/>
+  <circle cx="78.14" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="49.86" r="3.40" fill="#b07f18"/>
+  <circle cx="78.14" cy="49.86" r="3.40" fill="#b07f18"/>
+  <polygon points="64.00,36.00 64.00,36.00 66.54,39.21 68.83,42.17 70.89,44.91 72.72,47.43 74.35,49.77 75.78,51.93 77.02,53.92 78.09,55.78 79.00,57.50 79.76,59.11 80.39,60.63 80.89,62.07 81.28,63.45 81.57,64.79 81.78,66.09 81.91,67.39 81.98,68.68 82.00,70.00 82.00,70.00 81.88,72.11 81.53,74.15 80.96,76.09 80.18,77.94 79.21,79.68 78.06,81.28 76.75,82.75 75.28,84.06 73.68,85.21 71.94,86.18 70.09,86.96 68.15,87.53 66.11,87.88 64.00,88.00 64.00,88.00 61.89,87.88 59.85,87.53 57.91,86.96 56.06,86.18 54.32,85.21 52.72,84.06 51.25,82.75 49.94,81.28 48.79,79.68 47.82,77.94 47.04,76.09 46.47,74.15 46.12,72.11 46.00,70.00 46.00,70.00 46.02,68.68 46.09,67.39 46.22,66.09 46.43,64.79 46.72,63.45 47.11,62.07 47.61,60.63 48.24,59.11 49.00,57.50 49.91,55.78 50.98,53.92 52.22,51.93 53.65,49.77 55.28,47.43 57.11,44.91 59.17,42.17 61.46,39.21 64.00,36.00" fill="#8fc3ff"/>
+</svg></div>
+  <div class="light" style="width:260px;height:260px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#efe7d4"/>
+  <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
+  <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 108.33 51.71 A 46.00 46.00 0 0 1 92.64 100.00" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 89.39 102.36 A 46.00 46.00 0 0 1 38.61 102.36" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 35.36 100.00 A 46.00 46.00 0 0 1 19.67 51.71" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 20.91 47.89 A 46.00 46.00 0 0 1 61.99 18.04" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <circle cx="64.00" cy="64.00" r="31.00" fill="#b07f18"/>
+  <circle cx="64.00" cy="64.00" r="27.00" fill="#2b2721"/>
+  <circle cx="78.14" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="49.86" r="3.40" fill="#b07f18"/>
+  <circle cx="78.14" cy="49.86" r="3.40" fill="#b07f18"/>
+  <polygon points="64.00,36.00 64.00,36.00 66.54,39.21 68.83,42.17 70.89,44.91 72.72,47.43 74.35,49.77 75.78,51.93 77.02,53.92 78.09,55.78 79.00,57.50 79.76,59.11 80.39,60.63 80.89,62.07 81.28,63.45 81.57,64.79 81.78,66.09 81.91,67.39 81.98,68.68 82.00,70.00 82.00,70.00 81.88,72.11 81.53,74.15 80.96,76.09 80.18,77.94 79.21,79.68 78.06,81.28 76.75,82.75 75.28,84.06 73.68,85.21 71.94,86.18 70.09,86.96 68.15,87.53 66.11,87.88 64.00,88.00 64.00,88.00 61.89,87.88 59.85,87.53 57.91,86.96 56.06,86.18 54.32,85.21 52.72,84.06 51.25,82.75 49.94,81.28 48.79,79.68 47.82,77.94 47.04,76.09 46.47,74.15 46.12,72.11 46.00,70.00 46.00,70.00 46.02,68.68 46.09,67.39 46.22,66.09 46.43,64.79 46.72,63.45 47.11,62.07 47.61,60.63 48.24,59.11 49.00,57.50 49.91,55.78 50.98,53.92 52.22,51.93 53.65,49.77 55.28,47.43 57.11,44.91 59.17,42.17 61.46,39.21 64.00,36.00" fill="#8fc3ff"/>
+</svg></div>
+</div>
+<p class="meta">Links wie im Spiel, rechts auf hellem Grund. Die Aussparungen
+&ndash; Kerben, Stege, Punzen &ndash; nehmen den Hintergrund jeweils mit, sonst
+st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
+<div class="sizes"><figure><div style="width:64px;height:64px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#13110c"/>
+  <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
+  <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 108.33 51.71 A 46.00 46.00 0 0 1 92.64 100.00" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 89.39 102.36 A 46.00 46.00 0 0 1 38.61 102.36" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 35.36 100.00 A 46.00 46.00 0 0 1 19.67 51.71" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 20.91 47.89 A 46.00 46.00 0 0 1 61.99 18.04" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <circle cx="64.00" cy="64.00" r="31.00" fill="#b07f18"/>
+  <circle cx="64.00" cy="64.00" r="27.00" fill="#0a0906"/>
+  <circle cx="78.14" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="49.86" r="3.40" fill="#b07f18"/>
+  <circle cx="78.14" cy="49.86" r="3.40" fill="#b07f18"/>
+  <polygon points="64.00,36.00 64.00,36.00 66.54,39.21 68.83,42.17 70.89,44.91 72.72,47.43 74.35,49.77 75.78,51.93 77.02,53.92 78.09,55.78 79.00,57.50 79.76,59.11 80.39,60.63 80.89,62.07 81.28,63.45 81.57,64.79 81.78,66.09 81.91,67.39 81.98,68.68 82.00,70.00 82.00,70.00 81.88,72.11 81.53,74.15 80.96,76.09 80.18,77.94 79.21,79.68 78.06,81.28 76.75,82.75 75.28,84.06 73.68,85.21 71.94,86.18 70.09,86.96 68.15,87.53 66.11,87.88 64.00,88.00 64.00,88.00 61.89,87.88 59.85,87.53 57.91,86.96 56.06,86.18 54.32,85.21 52.72,84.06 51.25,82.75 49.94,81.28 48.79,79.68 47.82,77.94 47.04,76.09 46.47,74.15 46.12,72.11 46.00,70.00 46.00,70.00 46.02,68.68 46.09,67.39 46.22,66.09 46.43,64.79 46.72,63.45 47.11,62.07 47.61,60.63 48.24,59.11 49.00,57.50 49.91,55.78 50.98,53.92 52.22,51.93 53.65,49.77 55.28,47.43 57.11,44.91 59.17,42.17 61.46,39.21 64.00,36.00" fill="#8fc3ff"/>
+</svg></div><figcaption>64 px</figcaption></figure><figure><div style="width:32px;height:32px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#13110c"/>
+  <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
+  <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 108.33 51.71 A 46.00 46.00 0 0 1 92.64 100.00" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 89.39 102.36 A 46.00 46.00 0 0 1 38.61 102.36" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 35.36 100.00 A 46.00 46.00 0 0 1 19.67 51.71" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 20.91 47.89 A 46.00 46.00 0 0 1 61.99 18.04" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <circle cx="64.00" cy="64.00" r="31.00" fill="#b07f18"/>
+  <circle cx="64.00" cy="64.00" r="27.00" fill="#0a0906"/>
+  <circle cx="78.14" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="49.86" r="3.40" fill="#b07f18"/>
+  <circle cx="78.14" cy="49.86" r="3.40" fill="#b07f18"/>
+  <polygon points="64.00,36.00 64.00,36.00 66.54,39.21 68.83,42.17 70.89,44.91 72.72,47.43 74.35,49.77 75.78,51.93 77.02,53.92 78.09,55.78 79.00,57.50 79.76,59.11 80.39,60.63 80.89,62.07 81.28,63.45 81.57,64.79 81.78,66.09 81.91,67.39 81.98,68.68 82.00,70.00 82.00,70.00 81.88,72.11 81.53,74.15 80.96,76.09 80.18,77.94 79.21,79.68 78.06,81.28 76.75,82.75 75.28,84.06 73.68,85.21 71.94,86.18 70.09,86.96 68.15,87.53 66.11,87.88 64.00,88.00 64.00,88.00 61.89,87.88 59.85,87.53 57.91,86.96 56.06,86.18 54.32,85.21 52.72,84.06 51.25,82.75 49.94,81.28 48.79,79.68 47.82,77.94 47.04,76.09 46.47,74.15 46.12,72.11 46.00,70.00 46.00,70.00 46.02,68.68 46.09,67.39 46.22,66.09 46.43,64.79 46.72,63.45 47.11,62.07 47.61,60.63 48.24,59.11 49.00,57.50 49.91,55.78 50.98,53.92 52.22,51.93 53.65,49.77 55.28,47.43 57.11,44.91 59.17,42.17 61.46,39.21 64.00,36.00" fill="#8fc3ff"/>
+</svg></div><figcaption>32 px</figcaption></figure><figure><div style="width:16px;height:16px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#13110c"/>
+  <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
+  <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 108.33 51.71 A 46.00 46.00 0 0 1 92.64 100.00" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 89.39 102.36 A 46.00 46.00 0 0 1 38.61 102.36" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 35.36 100.00 A 46.00 46.00 0 0 1 19.67 51.71" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <path d="M 20.91 47.89 A 46.00 46.00 0 0 1 61.99 18.04" fill="none" stroke="#3f6bb8" stroke-width="11.00" stroke-linecap="butt"/>
+  <circle cx="64.00" cy="64.00" r="31.00" fill="#b07f18"/>
+  <circle cx="64.00" cy="64.00" r="27.00" fill="#0a0906"/>
+  <circle cx="78.14" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="78.14" r="3.40" fill="#b07f18"/>
+  <circle cx="49.86" cy="49.86" r="3.40" fill="#b07f18"/>
+  <circle cx="78.14" cy="49.86" r="3.40" fill="#b07f18"/>
+  <polygon points="64.00,36.00 64.00,36.00 66.54,39.21 68.83,42.17 70.89,44.91 72.72,47.43 74.35,49.77 75.78,51.93 77.02,53.92 78.09,55.78 79.00,57.50 79.76,59.11 80.39,60.63 80.89,62.07 81.28,63.45 81.57,64.79 81.78,66.09 81.91,67.39 81.98,68.68 82.00,70.00 82.00,70.00 81.88,72.11 81.53,74.15 80.96,76.09 80.18,77.94 79.21,79.68 78.06,81.28 76.75,82.75 75.28,84.06 73.68,85.21 71.94,86.18 70.09,86.96 68.15,87.53 66.11,87.88 64.00,88.00 64.00,88.00 61.89,87.88 59.85,87.53 57.91,86.96 56.06,86.18 54.32,85.21 52.72,84.06 51.25,82.75 49.94,81.28 48.79,79.68 47.82,77.94 47.04,76.09 46.47,74.15 46.12,72.11 46.00,70.00 46.00,70.00 46.02,68.68 46.09,67.39 46.22,66.09 46.43,64.79 46.72,63.45 47.11,62.07 47.61,60.63 48.24,59.11 49.00,57.50 49.91,55.78 50.98,53.92 52.22,51.93 53.65,49.77 55.28,47.43 57.11,44.91 59.17,42.17 61.46,39.21 64.00,36.00" fill="#8fc3ff"/>
+</svg></div><figcaption>16 px</figcaption></figure></div>
+<h3>Was tr&auml;gt</h3><ul class="meta"><li class='pro'>+ <span>Rund und mittig — das ideale Format für ein Icon.</span></li><li class='pro'>+ <span>Der Ring ist eine echte Anzeige: drei von fünf Segmenten gefüllt heißt drei Sekunden vorbei. Lässt sich im Addon tatsächlich animieren.</span></li><li class='pro'>+ <span>Bleibt bei 16 Pixeln als Ring mit Punkt lesbar.</span></li></ul>
+<h3>Was nicht</h3><ul class="meta"><li class='con'>&ndash; <span>Die Anspielung auf die Waffe ist die leiseste von allen. Wer die MP5 nicht kennt, sieht einen Timer — was nicht schlimm ist, aber den Witz kostet.</span></li></ul>
+<h3>Wof&uuml;r</h3><p class="meta">Überall. Icon, Favicon, Minimap-Knopf.</p>
+<p class="meta">Dateien: <code>visier.svg</code>, <code>visier-hell.svg</code>,
+<code>visier.png</code> (128&nbsp;px), <code>visier-32.png</code></p>
+<div class="footer">MP5 &ndash; Logo-Entw&uuml;rfe &middot; Stand 21.11.2026</div>
+</div></body></html>

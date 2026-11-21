@@ -85,6 +85,7 @@ Alles geht auch per Chatbefehl:
 /mp5 logo on|off              das Zeichen links in der Anzeige
 /mp5 voll                     „mein Mana ist jetzt voll“ – setzt das Modell
 /mp5 button on|off            Knopf „Mana ist voll“ in der Ecke der Anzeige
+/mp5 mana off|value|full|percent  aktuelles Mana als Zeile in der Anzeige
 /mp5 debug                    Fenster: was denkt das Addon gerade?
 ```
 

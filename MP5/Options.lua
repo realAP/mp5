@@ -224,6 +224,10 @@ local fullOn = checkbox(panel, "Beide Stufen zeigen", COL2 - 6, -498,
     function() return ns.db.showFull end,
     function(v) ns.db.showFull = v end)
 
+local manaOn = checkbox(panel, "Aktuelles Mana anzeigen", COL2 - 6, -546,
+    function() return ns.db.manaDisplay and ns.db.manaDisplay ~= "off" end,
+    function(v) ns.db.manaDisplay = v and "full" or "off" end)
+
 local lockedOn = checkbox(panel, "Position fixieren", 14, -522,
     function() return ns.db.locked end,
     function(v) ns.db.locked = v end)
@@ -242,16 +246,15 @@ local estimateOn = checkbox(panel, "Mana mitrechnen (geschuetzter Wert)", COL2 -
 -- Der Knopf fuer den Fall, dass das Modell danebenliegt: ein Klick sagt
 -- ihm, dass der Tank gerade voll ist - ab da rechnet es wieder exakt.
 local fullBtn = build("Button", panel, { "UIPanelButtonTemplate" })
-fullBtn:SetPoint("TOPLEFT", COL2 - 2, -544)
+fullBtn:SetPoint("TOPLEFT", 14, -568)
 fullBtn:SetSize(210, 22)
 fullBtn:SetText("Mein Mana ist jetzt voll")
 fullBtn:SetScript("OnClick", function()
     if ns.MarkManaFull then ns.MarkManaFull() end
 end)
 
-note(panel, "|cff808080Mitrechnen: Kosten abziehen, Regeneration dazu - dann "
-          .. "Untergrenze (~), exakt sobald der Tank voll war. Alles auch "
-          .. "ueber /mp5, Herleitung mit /mp5 why|r", 20, -570, 560)
+note(panel, "|cff808080Untergrenze (~), exakt sobald der Tank voll war. "
+          .. "Alles auch ueber /mp5|r", 236, -574, 340)
 
 -- Oeffnen und Auffrischen --------------------------------------------------
 
@@ -268,6 +271,7 @@ local function refresh()
     fullOn.refresh()
     lockedOn.refresh()
     logoOn.refresh()
+    manaOn.refresh()
     estimateOn.refresh()
     iconSlider.refresh()
     widthSlider.refresh()

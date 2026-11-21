@@ -25,6 +25,7 @@ local defaults = {
     showLogo      = false,       -- das Zeichen links in der Wertezeile
     showResetButton = true,      -- Knopf "Mana ist voll" in der Ecke
     debug         = false,       -- Fenster "was das Addon denkt"
+    manaDisplay   = "off",       -- off | value | full | percent
     decimals      = 0,
     animate       = false,
 
@@ -127,6 +128,8 @@ local function usage()
     msg("  /mp5 count topright|center    - wo die Zahl auf dem Icon sitzt")
     msg("  /mp5 logo on|off              - das Zeichen in der Anzeige")
     msg("  /mp5 button on|off            - Knopf \"Mana ist voll\" in der Ecke")
+    msg("  /mp5 mana off|value|full|percent")
+    msg("                                  - aktuelles Mana in der Anzeige")
     msg("  /mp5 debug                    - Fenster: was denkt das Addon")
     msg("  /mp5 voll                     - \"mein Mana ist jetzt voll\":")
     msg("                                  setzt das Modell auf den Anschlag")
@@ -241,6 +244,18 @@ SlashCmdList["MP5"] = function(input)
         db[toggles[cmd]] = (arg == "on")
     elseif cmd == "icon" then
         db.iconSize = math.max(16, math.min(48, tonumber(arg) or db.iconSize))
+    elseif cmd == "mana" then
+        if arg == "off" or arg == "value" or arg == "full" or arg == "percent" then
+            db.manaDisplay = arg
+            if arg ~= "off" then
+                msg("Aktuelles Mana steht jetzt in der Anzeige."
+                    .. (Core:ManaSource() == "modell"
+                        and " Die Tilde heisst: gerechnet, nicht gelesen." or ""))
+            end
+        else
+            msg("mana off|value|full|percent")
+            return
+        end
     elseif cmd == "debug" then
         -- Ohne Argument umschalten. Bewusst mit if statt mit "and/or":
         -- "x and nil or y" kann niemals nil ergeben, der nil-Zweig faellt

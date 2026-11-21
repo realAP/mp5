@@ -117,6 +117,14 @@ solid(barBG, 0, 0, 0, 0.6)
 -- Balken war die Zahl nicht zu lesen.
 local countdown = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 
+-- Das aktuelle Mana als eigene Zeile unter den Werten. Abschaltbar und
+-- standardmaessig aus: auf Clients, die den Wert herausgeben, steht er
+-- ohnehin in der Manaleiste. Gerechnet wird er aber nirgends sonst
+-- sichtbar - und das Debug-Fenster ist nichts fuer den Kampf.
+local manaText  = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+local manaTilde = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+manaTilde:Hide()
+
 -- Farben der beiden Stufen. Der gerade wirksame Wert wird hell dargestellt,
 -- der andere gedimmt - so ist auf einen Blick klar, welche Stufe gilt.
 local C_FSR  = { 0.95, 0.72, 0.22 }   -- innerhalb der 5-Sekunden-Regel (gold)
@@ -303,6 +311,33 @@ local function updateSpells()
     local plain = ns.plain or function(v) return v end
     local mana, approx, src = Core:GetMana()  -- nil, wenn kein Weg funktioniert
     mana = plain(mana)
+
+    -- Die Manazeile: je nach Einstellung Wert, Wert/Maximum oder Prozent.
+    -- Die Tilde steht wie bei den Stueckzahlen davor, wenn der Wert nur
+    -- eine Untergrenze ist.
+    if db.manaDisplay and db.manaDisplay ~= "off" then
+        local max = Core.GetMaxMana and Core:GetMaxMana()
+        if not mana then
+            manaText:SetText("|cff808080Mana ?|r")
+            manaTilde:Hide()
+        else
+            local t
+            if db.manaDisplay == "percent" and max and max > 0 then
+                t = string.format("%d%%", math.floor(mana / max * 100 + 0.5))
+            elseif db.manaDisplay == "full" and max then
+                t = string.format("%d / %d", math.floor(mana), math.floor(max))
+            else
+                t = tostring(math.floor(mana))
+            end
+            manaText:SetText(t)
+            local exact = not approx
+            color(manaText, exact and C_FULL or C_DIM)
+            color(manaTilde, exact and C_FULL or C_DIM)
+            if exact then manaTilde:Hide() else manaTilde:Show() end
+        end
+    else
+        manaTilde:Hide()
+    end
 
     -- Der Knopf "Mana ist voll" gehoert nur dorthin, wo der Wert gerechnet
     -- und nicht gelesen wird. Steht er auf "Untergrenze", leuchtet er; ist
@@ -514,7 +549,10 @@ function ns.ApplyLayout()
         if needed > w then w = needed end
     end
 
+    local manaH = (db.manaDisplay and db.manaDisplay ~= "off") and (fs * 0.72 + 1) or 0
+
     local h = pad * 2 + rowH
+    h = h + manaH
     if db.bar ~= "off"    then h = h + barH + 3 end
     if db.showCountdown   then h = h + fs * 0.68 + 2 end
     if used > 0           then h = h + iconSize + 5 end
@@ -570,6 +608,21 @@ function ns.ApplyLayout()
     value:SetPoint("TOP", frame, "TOP", 0, -pad)
 
     local y = -(pad + rowH)
+
+    -- Manazeile direkt unter den Werten, kleiner und in Manablau.
+    manaText:SetFont(font, fs * 0.72, flags)
+    manaTilde:SetFont(font, fs * 0.64, flags)
+    manaText:ClearAllPoints()
+    manaTilde:ClearAllPoints()
+    if manaH > 0 then
+        manaText:SetPoint("TOP", frame, "TOP", 0, y)
+        manaTilde:SetPoint("RIGHT", manaText, "LEFT", 1, -fs * 0.72 * TILDE_DROP)
+        manaText:Show()
+        y = y - manaH
+    else
+        manaText:Hide()
+        manaTilde:Hide()
+    end
 
     bar:ClearAllPoints()
     bar:SetPoint("TOPLEFT", frame, "TOPLEFT", pad + 2, y)

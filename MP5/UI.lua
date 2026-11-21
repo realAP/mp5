@@ -410,12 +410,22 @@ function ns.ApplyLayout()
     local iconSize = db.iconSize
     local iconGap  = 3
 
+    -- Breite der Zauber-Reihe. Sie bestimmt die Mindestbreite des Rahmens:
+    -- sonst stehen groessere Icons ueber den Rand hinaus, statt dass der
+    -- Rahmen mitwaechst. Die eingestellte Breite bleibt die Untergrenze.
+    local totalW = used * iconSize + math.max(0, used - 1) * iconGap
+    local w = db.width
+    if used > 0 then
+        local needed = totalW + (pad + 2) * 2
+        if needed > w then w = needed end
+    end
+
     local h = pad * 2 + rowH
     if db.bar ~= "off"    then h = h + barH + 3 end
     if db.showCountdown   then h = h + fs * 0.68 + 2 end
     if used > 0           then h = h + iconSize + 5 end
 
-    frame:SetSize(db.width, h)
+    frame:SetSize(w, h)
     frame:SetScale(db.scale)
 
     if db.backdrop ~= "off" and frame.SetBackdrop then
@@ -462,7 +472,6 @@ function ns.ApplyLayout()
     if db.showCountdown then y = y - fs * 0.68 - 2 end
 
     -- Zauber-Felder mittig in einer Reihe.
-    local totalW = used * iconSize + math.max(0, used - 1) * iconGap
     local x = -totalW / 2
     local n = 0
     for i = 1, MAX_SPELLS do

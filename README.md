@@ -55,7 +55,7 @@ Alles geht auch per Chatbefehl:
 | `/mp5 lock` · `unlock` | Position fixieren / verschiebbar machen |
 | `/mp5 scale <0.5-2>` | Gesamtgröße |
 | `/mp5 font <8-32>` | Schriftgröße, unabhängig von der Gesamtgröße |
-| `/mp5 width <80-400>` | Breite |
+| `/mp5 width <80-400>` | Breite – Mindestbreite, die Zauber-Reihe darf breiter werden |
 | `/mp5 bar off\|thin\|full` | kein Balken, dünner 5s-Strich oder Statusbar |
 | `/mp5 bardir fill\|drain` | Balken füllt sich auf oder läuft leer |
 | `/mp5 backdrop blizzard\|thin\|off` | Rahmen |

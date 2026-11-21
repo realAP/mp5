@@ -8,6 +8,7 @@
 
 Core.lua
 Spells.lua
+Estimate.lua
 Probe.lua
 UI.lua
 Config.lua

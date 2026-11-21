@@ -199,11 +199,26 @@ function Core:ManaAvailable()
     return (readMana() ~= nil)
 end
 
--- Aktuelles Mana, oder nil wenn der Client es schuetzt und auch der
--- Leistentext nichts hergibt.
--- Rueckgabe: Wert, gerundet?, Quelle ("api" | "text" | "prozent")
+-- Aktuelles Mana, oder nil wenn kein Weg zum Wert fuehrt.
+-- Rueckgabe: Wert, gerundet?, Quelle ("api" | "text" | "prozent" | "modell")
+--
+-- Das Modell steht bewusst erst am Ende: es rechnet den Wert nur nach
+-- (Kosten abziehen, Regeneration dazu) und ist eine Untergrenze, solange
+-- der Volltank-Anker nicht gegriffen hat. Ein direkt gelesener Wert ist
+-- immer besser. Die Messung der Mana-Ticks benutzt das Modell nicht -
+-- sie wuerde sonst die eigene Annahme als Tick messen.
 function Core:GetMana()
-    return readMana()
+    local v, approx, src = readMana()
+    if v then return v, approx, src end
+
+    local Est = ns.Estimate
+    if Est then
+        local ok, m, exact = pcall(Est.Get, Est)
+        if ok and type(m) == "number" then
+            return m, not exact, "modell"
+        end
+    end
+    return nil
 end
 
 -- Woher kommt das aktuelle Mana gerade? nil = nirgendwo.
@@ -211,7 +226,7 @@ end
 -- zustande, gibt select gar nichts zurueck - und ein tostring() ohne
 -- Argument bricht ab ("bad argument #1 to 'tostring'").
 function Core:ManaSource()
-    local _, _, src = readMana()
+    local _, _, src = Core:GetMana()
     return src
 end
 

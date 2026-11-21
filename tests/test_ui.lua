@@ -47,6 +47,7 @@ local function newFrame(kind, name, parent)
     GetPoint      = function(self) return "CENTER", nil, "CENTER", 0, 0 end,
     CreateTexture = function(self, n, layer)
       local t = newFrame("Texture", n, self)
+      t.layer = layer
       self.kids[#self.kids + 1] = t
       return t
     end,
@@ -158,6 +159,17 @@ for i = 1, #frames do
   end
 end
 check("Knopf ist angelegt", fullBtn ~= nil, true)
+
+-- Das Symbol muss sagen, was der Klick tut - nicht das Addon-Zeichen sein.
+local icon
+for i = 1, #frames do
+  local t = frames[i]
+  if t.kind == "Texture" and t.parent == fullBtn and t.layer == "ARTWORK" then
+    icon = t.texture
+  end
+end
+check("Knopf traegt das Nachfuell-Symbol", icon,
+      "Interface\\AddOns\\MP5\\Textures\\refill.tga")
 
 -- Mana wird gerechnet (der Client schuetzt es) -> Knopf sichtbar
 ns.Redraw()

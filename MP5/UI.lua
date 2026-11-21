@@ -52,9 +52,19 @@ logo:Hide()
 local fullBtn = CreateFrame("Button", nil, frame)
 fullBtn:SetSize(14, 14)
 
+-- Dunkle Platte darunter, damit der Knopf auch ohne Rahmen als Knopf
+-- zu erkennen ist.
+local fullBG = fullBtn:CreateTexture(nil, "BACKGROUND")
+fullBG:SetAllPoints()
+solid(fullBG, 0, 0, 0, 0.55)
+
+-- Das Symbol sagt, was passiert: Pfeil nach oben an den Anschlag. Das
+-- Addon-Zeichen stand hier vorher - es sagt "MP5", aber nicht, was der
+-- Klick tut.
 local fullIcon = fullBtn:CreateTexture(nil, "ARTWORK")
-fullIcon:SetAllPoints()
-fullIcon:SetTexture("Interface\\AddOns\\MP5\\Textures\\icon.tga")
+fullIcon:SetPoint("TOPLEFT", 2, -2)
+fullIcon:SetPoint("BOTTOMRIGHT", -2, 2)
+fullIcon:SetTexture("Interface\\AddOns\\MP5\\Textures\\refill.tga")
 
 local fullHi = fullBtn:CreateTexture(nil, "HIGHLIGHT")
 fullHi:SetAllPoints()
@@ -551,7 +561,7 @@ function ns.ApplyLayout()
 
     -- Der Knopf sitzt in der oberen rechten Ecke, innerhalb des Rands.
     fullBtn:ClearAllPoints()
-    local btnSize = math.max(12, math.floor(rowH * 0.7))
+    local btnSize = math.max(16, math.floor(rowH * 0.85))
     fullBtn:SetSize(btnSize, btnSize)
     fullBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(pad - 1), -(pad - 1))
 

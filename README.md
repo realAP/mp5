@@ -113,7 +113,8 @@ und als PNG daneben.
 Im Spiel steckt es in `MP5/Textures/` als TGA – das einzige Bildformat neben
 BLP, das WoW lädt. `logo.tga` (128×64) steht über den Interface-Optionen,
 `icon.tga` (64×64, das Trommelvisier) ist das Symbol in der AddOn-Liste und
-lässt sich mit `/mp5 logo on` links in die Anzeige holen.
+lässt sich mit `/mp5 logo on` links in die Anzeige holen. `refill.tga` ist der
+Pfeil auf dem Knopf „Mana ist voll“.
 
 ## Tests
 

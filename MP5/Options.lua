@@ -53,22 +53,43 @@ local function checkbox(parent, text, x, y, get, set)
     return cb
 end
 
-local function slider(parent, text, x, y, min, max, step, get, set)
-    local s = CreateFrame("Slider", "MP5Slider" .. y, parent, "OptionsSliderTemplate")
+-- Ein Schieber. "show" formatiert den Wert ueber dem Schieber; ohne Angabe
+-- wird ganzzahlig gerundet. Der Name muss eindeutig sein, weil die Vorlage
+-- ihre Beschriftungen ueber globale Namen findet - deshalb gehen x und y
+-- hinein und nicht nur y (zwei Schieber in einer Zeile haben dasselbe y).
+local function slider(parent, text, x, y, min, max, step, get, set, show)
+    local id = "MP5Slider" .. math.abs(x) .. "_" .. math.abs(y)
+    local s = CreateFrame("Slider", id, parent, "OptionsSliderTemplate")
     s:SetPoint("TOPLEFT", x, y)
-    s:SetWidth(200)
+    s:SetWidth(190)
     s:SetMinMaxValues(min, max)
     s:SetValueStep(step)
     if s.SetObeyStepOnDrag then pcall(s.SetObeyStepOnDrag, s, true) end
+
+    local fmt = show or function(v) return tostring(math.floor(v + 0.5)) end
     local name = s:GetName()
-    if _G[name .. "Low"]  then _G[name .. "Low"]:SetText(min) end
-    if _G[name .. "High"] then _G[name .. "High"]:SetText(max) end
+    if _G[name .. "Low"]  then _G[name .. "Low"]:SetText(fmt(min)) end
+    if _G[name .. "High"] then _G[name .. "High"]:SetText(fmt(max)) end
     local lbl = _G[name .. "Text"]
-    local function show(v) if lbl then lbl:SetText(text .. ": " .. math.floor(v)) end end
-    s.refresh = function() local v = get(); s:SetValue(v); show(v) end
-    s:SetScript("OnValueChanged", function(self, v)
-        v = math.floor(v + 0.5)
-        show(v)
+
+    local function label(v) if lbl then lbl:SetText(text .. ": " .. fmt(v)) end end
+
+    -- Beim Auffrischen darf das Setzen des Wertes nicht wieder speichern,
+    -- sonst schreibt das Oeffnen des Menues den gerundeten Wert zurueck.
+    local quiet = false
+    s.refresh = function()
+        quiet = true
+        local v = get()
+        s:SetValue(v)
+        label(v)
+        quiet = false
+    end
+    s:SetScript("OnValueChanged", function(_, v)
+        -- Auf ein Vielfaches der Schrittweite legen, damit der Wert nicht
+        -- mit Nachkommastellen aus dem Ziehen stehen bleibt.
+        v = math.floor(v / step + 0.5) * step
+        label(v)
+        if quiet then return end
         set(v)
         ns.ApplyLayout()
     end)
@@ -149,42 +170,65 @@ for i = 1, MAX_SPELLS do
     rows[i] = { box = box, describe = describe }
 end
 
-title(panel, "Darstellung", nil, 16, -326)
+title(panel, "Groesse", nil, 16, -326)
 
-local iconSlider = slider(panel, "Icon-Groesse", 20, -360, 16, 48, 2,
+local COL1, COL2 = 20, 290
+
+local widthSlider = slider(panel, "Breite", COL1, -358, 80, 400, 10,
+    function() return ns.db.width end,
+    function(v) ns.db.width = v end)
+
+local iconSlider = slider(panel, "Icon-Groesse", COL2, -358, 16, 48, 2,
     function() return ns.db.iconSize end,
     function(v) ns.db.iconSize = v end)
 
-local barFill = checkbox(panel, "Balken fuellt sich bis zur vollen Regeneration", 14, -398,
+local scaleSlider = slider(panel, "Gesamtgroesse", COL1, -402, 0.5, 2, 0.05,
+    function() return ns.db.scale end,
+    function(v) ns.db.scale = v end,
+    function(v) return string.format("%.2f", v) end)
+
+local fontSlider = slider(panel, "Schriftgroesse", COL2, -402, 8, 32, 1,
+    function() return ns.db.fontSize end,
+    function(v) ns.db.fontSize = v end)
+
+note(panel, "Die Breite ist eine Mindestbreite - braucht die Zauber-Reihe mehr "
+          .. "Platz, waechst der Rahmen mit.", 20, -434, 540)
+
+-- Ab hier zweispaltig: das Optionen-Fenster schneidet alles ab, was tiefer
+-- als etwa 580 Punkte liegt.
+title(panel, "Darstellung", nil, 16, -450)
+
+local barFill = checkbox(panel, "Balken fuellt sich auf (sonst leer)", 14, -474,
     function() return ns.db.barDir ~= "drain" end,
     function(v) ns.db.barDir = v and "fill" or "drain" end)
 
-local countdownOn = checkbox(panel, "Restzeit der 5-Sekunden-Regel unter dem Balken", 14, -424,
-    function() return ns.db.showCountdown end,
-    function(v) ns.db.showCountdown = v end)
-
-local countCenter = checkbox(panel, "Zahl mittig auf dem Icon (sonst oben rechts)", 14, -450,
+local countCenter = checkbox(panel, "Zahl mittig auf dem Icon", COL2 - 6, -474,
     function() return ns.db.countAnchor == "center" end,
     function(v) ns.db.countAnchor = v and "center" or "topright" end)
 
-local fullOn = checkbox(panel, "Beide Stufen zeigen (waehrend des Zauberns / danach)", 14, -476,
+local countdownOn = checkbox(panel, "Restzeit unter dem Balken", 14, -498,
+    function() return ns.db.showCountdown end,
+    function(v) ns.db.showCountdown = v end)
+
+local fullOn = checkbox(panel, "Beide Stufen zeigen", COL2 - 6, -498,
     function() return ns.db.showFull end,
     function(v) ns.db.showFull = v end)
 
-local estimateOn = checkbox(panel, "Mana mitrechnen, wenn der Client es nicht herausgibt", 14, -502,
+local lockedOn = checkbox(panel, "Position fixieren", 14, -522,
+    function() return ns.db.locked end,
+    function(v) ns.db.locked = v end)
+
+local estimateOn = checkbox(panel, "Mana mitrechnen (geschuetzter Wert)", COL2 - 6, -522,
     function() return ns.db.estimate end,
     function(v)
         ns.db.estimate = v
         if ns.Estimate then ns.Estimate:SetEnabled(v) end
     end)
 
-note(panel, "Manche Clients geben das aktuelle Mana nicht heraus. Dann wird es "
-          .. "mitgerechnet: Kosten der gewirkten Zauber abziehen, Regeneration "
-          .. "dazu. Die Stueckzahlen sind damit eine Untergrenze (~) und werden "
-          .. "exakt, sobald der Manatank einmal voll war. Herleitung: /mp5 why",
-     32, -524, 540)
-
-note(panel, "Mehr Einstellungen ueber /mp5", 16, -586)
+note(panel, "Mitrechnen: Kosten der Zauber abziehen, Regeneration dazu - fuer "
+          .. "Clients, die das Mana nicht herausgeben. Dann Untergrenze (~), "
+          .. "exakt sobald der Tank voll war.  |cff808080Alles auch ueber "
+          .. "/mp5, Herleitung mit /mp5 why|r", 20, -546, 560)
 
 -- Oeffnen und Auffrischen --------------------------------------------------
 
@@ -199,8 +243,12 @@ local function refresh()
     countCenter.refresh()
     countdownOn.refresh()
     fullOn.refresh()
+    lockedOn.refresh()
     estimateOn.refresh()
     iconSlider.refresh()
+    widthSlider.refresh()
+    scaleSlider.refresh()
+    fontSlider.refresh()
 end
 
 panel.refresh = refresh          -- neue Settings-API

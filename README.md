@@ -45,8 +45,10 @@ verschieben, dann `/mp5 lock`.
 
 ## Configuration
 
-Grafisch unter *Interface ▸ AddOns ▸ MP5* oder mit `/mp5 options` – dort zeigt
-jedes Zauberfeld direkt die erkannten Kosten und die Zauberzeit an.
+Grafisch unter *Interface ▸ AddOns ▸ MP5* oder mit `/mp5 options`: die fünf
+Zauberplätze (jedes Feld zeigt direkt die erkannten Kosten und die Zauberzeit),
+Schieber für Breite, Icon-Größe, Gesamtgröße und Schrift sowie die Haken für
+Balken, Restzeit, beide Stufen, Position und das Mitrechnen.
 
 Alles geht auch per Chatbefehl:
 
@@ -108,6 +110,7 @@ lua5.1 tests/test_apiregen.lua  # GetManaRegen als Quelle
 lua5.1 tests/test_manabar.lua   # Mana aus dem Text der Standardleiste
 lua5.1 tests/test_estimate.lua  # das Mana-Modell, gegen eine Simulation
 lua5.1 tests/test_tainted.lua   # geschützte Werte im Kampf
+lua5.1 tests/test_options.lua   # das Optionen-Panel
 ```
 
 ## Lizenz

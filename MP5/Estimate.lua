@@ -52,6 +52,16 @@ local GetTime      = GetTime
 local UnitPowerMax = UnitPowerMax or function(u) return UnitManaMax(u) end
 local MANA         = Enum and Enum.PowerType and Enum.PowerType.Mana or 0
 
+-- Jeder Wert vom Client laeuft durch diese Sperre: im Kampf schuetzt dieser
+-- Client auch das Maximalmana und die Regeneration, und ein geschuetzter
+-- Wert faerbt alles ab, was aus ihm entsteht.
+local plain = ns.plain or function(v) return type(v) == "number" and v or nil end
+
+local function maxMana()
+    local ok, v = pcall(UnitPowerMax, "player", MANA)
+    return ok and plain(v) or nil
+end
+
 -- Sicherheitszuschlag fuer den Volltank-Anker. Die Regeneration wird aus
 -- GetManaRegen() gelesen; liegt die Funktion zu hoch, waere der Anker zu
 -- frueh gesetzt. Es muss also mehr aufgelaufen sein als ein voller Tank.
@@ -301,7 +311,7 @@ local QUIET       = 3.0        -- Regeneration tickt alle 2s, mit Luft nach oben
 local function regenPerSec()
     local Core = ns.Core
     if not Core then return nil end
-    local mp5 = Core:GetMP5(Core:InFSR())
+    local mp5 = plain(Core:GetMP5(Core:InFSR()))
     return mp5 and mp5 / 5 or nil
 end
 
@@ -315,7 +325,7 @@ local function quietMeansFull(now)
 end
 
 local function refresh(now)
-    model:SetMax(UnitPowerMax("player", MANA))
+    model:SetMax(maxMana())
     model:Advance(now, regenPerSec())
     if quietMeansFull(now) then model:MarkFull() end
     if now - lastBounds >= BOUNDS_INTERVAL then
@@ -328,10 +338,12 @@ end
 -- Aktuelles Mana aus dem Modell. Rueckgabe: Wert, exakt?
 function Est:Get()
     if not enabled then return nil end
-    local max = UnitPowerMax("player", MANA)
-    if type(max) ~= "number" or max <= 0 then return nil end
+    -- Ohne Maximalmana kann das Modell nichts rechnen. Im Kampf kann der
+    -- Wert verschwinden; dann bleibt der zuletzt bekannte stehen.
+    if (model.max or 0) <= 0 and not maxMana() then return nil end
     refresh(GetTime())
-    return model:Get()
+    local v, exact = model:Get()
+    return plain(v), exact
 end
 
 function Est:Enabled()  return enabled end
@@ -400,7 +412,7 @@ f:SetScript("OnEvent", (ns.safe or function(fn) return fn end)(function(_, event
         if unit ~= "player" then return end
         local now = GetTime()
         quietFrom = now + FSR_DURATION
-        model:SetMax(UnitPowerMax("player", MANA))
+        model:SetMax(maxMana())
         model:Advance(now, regenPerSec())
         -- Die Signatur ist je nach Client (unit, castGUID, spellID) oder
         -- (unit, spellName, rank); die ID ist das, was eine Zahl ist.
@@ -408,14 +420,14 @@ f:SetScript("OnEvent", (ns.safe or function(fn) return fn end)(function(_, event
         model:Spend(costOf(id))
     elseif event == "UNIT_MAXPOWER" then
         if unit ~= "player" then return end
-        model:SetMax(UnitPowerMax("player", MANA))
+        model:SetMax(maxMana())
     elseif event == "SPELLS_CHANGED" or event == "LEARNED_SPELL_IN_TAB" then
         ladder = nil
         costCache = {}
     else
         -- Tod, Auferstehung, Zonenwechsel: das Spiel setzt das Mana selbst.
         model:Forget()
-        model:SetMax(UnitPowerMax("player", MANA))
+        model:SetMax(maxMana())
         -- Die Stille erst ab jetzt zaehlen, sonst wuerde der Ladebildschirm
         -- als "voll" durchgehen.
         lastEvent, quietFrom = GetTime(), GetTime()

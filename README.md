@@ -107,6 +107,7 @@ lua5.1 tests/test_spells.lua    # die Zauber-Rechnung, gegen eine Simulation
 lua5.1 tests/test_apiregen.lua  # GetManaRegen als Quelle
 lua5.1 tests/test_manabar.lua   # Mana aus dem Text der Standardleiste
 lua5.1 tests/test_estimate.lua  # das Mana-Modell, gegen eine Simulation
+lua5.1 tests/test_tainted.lua   # geschützte Werte im Kampf
 ```
 
 ## Lizenz

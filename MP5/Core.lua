@@ -39,13 +39,35 @@ local MEASURE_TTL    = 180       -- Messwerte so lange als gueltig ansehen (Sek.
 
 local manaFn = nil          -- nil = noch nicht geprueft, false = kein Zugriff
 
+-- Die Sperre an jeder Grenze zum Client.
+--
+-- Ein geschuetzter Wert sieht wie eine Zahl aus, bricht aber bei der ersten
+-- Rechnung oder dem ersten Vergleich ab - und er faerbt alles ab, was aus
+-- ihm entsteht. Im Kampf schuetzt dieser Client mehr Werte als davor
+-- (beobachtet an GetManaRegen und UnitPowerMax), weshalb ein einmaliger
+-- Test beim Start nicht genuegt: jeder Wert, der von aussen kommt, laeuft
+-- hier durch, bevor mit ihm gerechnet wird.
+--
+-- Rueckgabe: die Zahl, oder nil wenn sie nicht benutzbar ist.
+local function plain(v)
+    if type(v) ~= "number" then return nil end
+    -- Rechnung UND Vergleich pruefen: manche Werte lassen das eine zu und
+    -- das andere nicht.
+    local ok, fine = pcall(function() return (v + 0) > -1 or true end)
+    if not ok or fine ~= true then return nil end
+    return v
+end
+
+ns.plain = plain
+
 local function usable(v)
-    if type(v) ~= "number" then
-        -- Ein secret value ist kein echtes number, oder verhaelt sich nicht so.
-        local ok = pcall(function() return v + 0 end)
-        if not ok then return false end
-    end
-    return pcall(function() return v + 0 > -1 end)
+    return plain(v) ~= nil
+end
+
+-- Maximalmana, oder nil wenn der Client es gerade schuetzt.
+local function maxMana()
+    local ok, v = pcall(UnitPowerMax, "player", MANA)
+    return ok and plain(v) or nil
 end
 
 local function pickManaFn()
@@ -83,8 +105,8 @@ local function parseManaText(t)
     local pct = t:match("([%d]+[%.,]?%d*)%s*%%")
     if pct then
         local v = tonumber((pct:gsub(",", ".")))
-        local max = UnitPowerMax("player", MANA)
-        if v and type(max) == "number" and max > 0 then
+        local max = maxMana()
+        if v and max and max > 0 then
             return max * v / 100, true
         end
     end
@@ -177,7 +199,12 @@ local function readMana()
     if manaFn == nil then manaFn = pickManaFn() end
     if manaFn then
         local ok, v = pcall(manaFn)
-        if ok and v ~= nil then return v, false, "api" end
+        -- Auch hier durch die Sperre: ein Client, der den Wert ausserhalb
+        -- des Kampfes herausgibt, kann ihn im Kampf schuetzen.
+        if ok then
+            local n = plain(v)
+            if n then return n, false, "api" end
+        end
     end
     -- Geschuetzt: ueber die Standardleiste versuchen.
     local ok, v, approx, src = pcall(indirectMana)
@@ -360,7 +387,7 @@ local function onManaChanged()
     local now  = GetTime()
     local cur  = readMana()
     if not cur then return end        -- Client schuetzt den Wert: nicht messbar
-    local max  = UnitPowerMax("player", MANA)
+    local max  = maxMana()
     local delta = cur - lastMana
     lastMana = cur
 
@@ -374,7 +401,7 @@ local function onManaChanged()
     if delta <= 0 then return end
 
     -- Am Manamaximum wird der Tick abgeschnitten, der Wert waere zu klein.
-    if cur >= max then
+    if max and cur >= max then
         pending = nil
         return
     end
@@ -404,12 +431,28 @@ end
 -- Nicht jeder Client fuellt den zweiten Wert sinnvoll; manche geben zweimal
 -- den Wert des gerade aktiven Zustands zurueck. Deshalb wird er nur dann
 -- fuer beide Stufen benutzt, wenn er sich vom ersten unterscheidet.
-local function apiMP5(inFSR)
-    if not GetManaRegen then return nil end
-    local ok, base, casting = pcall(GetManaRegen)
-    if not ok or type(base) ~= "number" then return nil end
+-- Der zuletzt benutzbare API-Wert je Stufe, und ob die letzte Abfrage an
+-- einem geschuetzten Wert gescheitert ist.
+local lastApi = {}
+local tainted = false
 
-    if type(casting) == "number" and casting ~= base then
+local function apiMP5(inFSR)
+    tainted = false
+    if not GetManaRegen then return nil end
+    local ok, b, c = pcall(GetManaRegen)
+    if not ok then return nil end
+    -- Im Kampf schuetzt dieser Client auch diese Rueckgaben. Dann lieber
+    -- keine Zahl als eine, die bei der naechsten Rechnung abbricht.
+    local base, casting = plain(b), plain(c)
+    if not base then
+        -- Es KAM etwas, es war nur nicht benutzbar. Das ist der Kampf-Fall
+        -- und unterscheidet sich von "diese Stufe ist unbekannt": hier darf
+        -- der zuletzt gelesene Wert weiterhin gelten.
+        tainted = (b ~= nil)
+        return nil
+    end
+
+    if casting and casting ~= base then
         return (inFSR and casting or base) * 5
     end
 
@@ -425,13 +468,23 @@ function Core:GetMP5(inFSR)
     local now = GetTime()
     local m = measured[inFSR]
     if m and (now - m.t) < MEASURE_TTL then
-        return m.mp5, "gemessen"
+        return plain(m.mp5), "gemessen"
     end
 
-    local v = apiMP5(inFSR)
-    if v then return v, "api" end
+    local v = plain(apiMP5(inFSR))
+    if v then
+        lastApi[inFSR] = v
+        return v, "api"
+    end
 
-    if m then return m.mp5, "gemessen" end
+    -- Geschuetzt (im Kampf): der zuletzt gelesene Wert ist die beste
+    -- Auskunft, die es gibt - besser als ein "?" fuer die Dauer des Kampfes.
+    -- Nur bei echter Taint, nicht wenn die Stufe nie bekannt war.
+    if tainted and lastApi[inFSR] then
+        return lastApi[inFSR], "zuletzt"
+    end
+
+    if m then return plain(m.mp5), "gemessen" end
     return nil, nil
 end
 
@@ -445,8 +498,17 @@ function Core:GetFull()
     return Core:GetMP5(false)
 end
 
+-- Maximalmana nach aussen, oder nil wenn der Client es gerade schuetzt.
+function Core:GetMaxMana()
+    return maxMana()
+end
+
 function Core:HasMana()
-    return UnitPowerMax("player", MANA) > 0
+    local max = maxMana()
+    -- Schuetzt der Client den Wert gerade (im Kampf), ist das kein Grund,
+    -- die Anzeige zu verstecken: wer Mana hat, hat es weiterhin.
+    if not max then return true end
+    return max > 0
 end
 
 -- Events -------------------------------------------------------------------

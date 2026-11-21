@@ -72,8 +72,11 @@ function ns.UpdateVisibility()
     if db.visibility == "combat" then
         show = InCombatLockdown() or UnitAffectingCombat("player")
     elseif db.visibility == "notfull" then
-        local cur = Core:GetMana()
-        show = cur == nil or cur < UnitPowerMax("player", MANA)
+        -- Beide Werte koennen geschuetzt sein (im Kampf auch das Maximum);
+        -- dann wird angezeigt, statt zu vergleichen und abzubrechen.
+        local cur = ns.plain and ns.plain(Core:GetMana()) or Core:GetMana()
+        local max = Core.GetMaxMana and Core:GetMaxMana() or nil
+        show = (cur == nil) or (max == nil) or (cur < max)
     end
     if show then ns.frame:Show() else ns.frame:Hide() end
 end

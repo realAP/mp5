@@ -216,8 +216,10 @@ end
 local function updateSpells()
     local db = ns.db
     if not db then return end
+    local plain = ns.plain or function(v) return v end
     local mana, approx = Core:GetMana()       -- nil, wenn kein Weg funktioniert
-    local mp5  = Core:GetMP5(true)            -- beim Durchcasten gilt die FSR-Stufe
+    mana = plain(mana)
+    local mp5  = plain(Core:GetMP5(true))     -- beim Durchcasten gilt die FSR-Stufe
     local mps, regenUnknown
     if mp5 then
         mps = mp5 / 5
@@ -240,7 +242,11 @@ local function updateSpells()
             b.info = info
             b.icon:SetTexture(info.icon)
 
-            local casts = Spells.CastsLeft(mana, info.cost, info.castTime, mps)
+            -- Letzte Sicherung: kommt doch ein geschuetzter Wert durch,
+            -- darf das keinen Fehler werfen - dann steht eben "?" da.
+            local ok, casts = pcall(Spells.CastsLeft, mana, info.cost,
+                info.castTime, mps)
+            if not ok then casts = nil end
             b.casts = casts
 
             if casts then
@@ -356,7 +362,12 @@ ns.Redraw = Redraw
 -- OnUpdate nur solange die 5-Sekunden-Regel laeuft -------------------------
 
 local elapsed = 0
-local function OnUpdate(_, e)
+local OnUpdate
+
+-- Beide Einstiege laufen durch ns.safe: ein Fehler im Zeichnen wird genau
+-- einmal gemeldet und mitgeschrieben, statt zehnmal pro Sekunde im Chat zu
+-- landen.
+OnUpdate = ns.safe(function(_, e)
     elapsed = elapsed + e
     if elapsed < UPDATE_THROTTLE then return end
     elapsed = 0
@@ -364,15 +375,15 @@ local function OnUpdate(_, e)
     if not Core:InFSR() and not animating then
         frame:SetScript("OnUpdate", nil)   -- Leerlauf: keine Berechnung mehr
     end
-end
+end)
 
-local function OnChanged()
+local OnChanged = ns.safe(function()
     Redraw()
     if (Core:InFSR() or animating) and not frame:GetScript("OnUpdate") then
         elapsed = 0
         frame:SetScript("OnUpdate", OnUpdate)
     end
-end
+end)
 
 Core:RegisterCallback(OnChanged)
 

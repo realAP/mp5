@@ -50,6 +50,13 @@ local function newFrame(kind, name)
   function f:GetValue()           return self.value end
   function f:Show()               end
   function f:Hide()               end
+  function f:CreateTexture(n, layer)
+    local t = newFrame("Texture", n)
+    function t:SetTexture(path) self.path = path end
+    function t:SetTexCoord() end
+    self.children[#self.children + 1] = t
+    return t
+  end
   function f:CreateFontString(n, layer, template)
     local fs = newFrame("FontString", n)
     self.children[#self.children + 1] = fs
@@ -64,6 +71,10 @@ UIParent = newFrame("Frame", "UIParent")
 
 CreateFrame = function(kind, name, parent, template)
   local f = newFrame(kind, name)
+  -- Die Haken-Vorlage bringt ihre Beschriftung als .Text mit.
+  if kind == "CheckButton" and template then
+    f.Text = newFrame("FontString", nil)
+  end
   -- Die Vorlage OptionsSliderTemplate legt drei benannte Beschriftungen an.
   if template == "OptionsSliderTemplate" and name then
     for _, suffix in ipairs({ "Low", "High", "Text" }) do
@@ -82,7 +93,7 @@ local ns = {
   db = {
     spells = { [1] = "Blitzheilung" },
     showSpells = true, showFull = true, showCountdown = true,
-    barDir = "fill", countAnchor = "topright", locked = false,
+    barDir = "fill", countAnchor = "topright", locked = false, showLogo = false,
     estimate = true,
     width = 150, iconSize = 24, scale = 1.0, fontSize = 16,
   },
@@ -168,36 +179,46 @@ check("Icon-Groesse rastet auf gerade Werte", ns.db.iconSize, 42)
 
 -- Haken setzen ---------------------------------------------------------------
 
-local function checkboxByText(text)
-  for i = 1, #frames do
-    local f = frames[i]
-    if f.kind == "CheckButton" then
-      for j = 1, #f.children do
-        if f.children[j].text == text then return f end
-      end
-      if f.Text and f.Text.text == text then return f end
-    end
+-- Haken werden ueber ihre Beschriftung gesucht, nicht ueber die
+-- Reihenfolge: sonst bricht der Test bei jedem neuen Haken.
+local boxes, byText = {}, {}
+for i = 1, #frames do
+  local f = frames[i]
+  if f.kind == "CheckButton" then
+    boxes[#boxes + 1] = f
+    if f.Text and f.Text.text then byText[f.Text.text] = f end
   end
 end
+check("acht Haken vorhanden", #boxes, 8)
+check("jeder Haken hat eine Beschriftung", #boxes, (function()
+  local n = 0
+  for _ in pairs(byText) do n = n + 1 end
+  return n
+end)())
 
--- Die Haken tragen ihren Text in einer eigenen Fontstring; ohne Vorlage
--- legt checkbox() keine an, deshalb hier ueber die Reihenfolge.
-local boxes = {}
-for i = 1, #frames do
-  if frames[i].kind == "CheckButton" then boxes[#boxes + 1] = frames[i] end
+local function click(text, state)
+  local b = byText[text]
+  if not b then return "Haken nicht gefunden: " .. text end
+  b:SetChecked(state)
+  b.scripts["OnClick"](b)
+  return nil
 end
-check("sieben Haken vorhanden", #boxes, 7)
 
-local locked = boxes[6]      -- Reihenfolge: spells, bar, count, countdown, full, locked, estimate
-locked:SetChecked(true)
-locked.scripts["OnClick"](locked)
-check("Position fixieren wird gespeichert", ns.db.locked, true)
-
-local estimate = boxes[7]
-estimate:SetChecked(false)
-estimate.scripts["OnClick"](estimate)
-check("Mitrechnen laesst sich abschalten", ns.db.estimate, false)
+check("Position fixieren wird gespeichert",
+      click("Position fixieren", true) or ns.db.locked, true)
+check("Zeichen in der Anzeige wird gespeichert",
+      click("Zeichen in der Anzeige", true) or ns.db.showLogo, true)
+check("Mitrechnen laesst sich abschalten",
+      click("Mana mitrechnen (geschuetzter Wert)", false) or ns.db.estimate, false)
 check("und wird an das Modell weitergegeben", ns.Estimate.on, false)
+
+-- Das Zeichen oben im Panel
+local logoTex
+for i = 1, #frames do
+  if frames[i].kind == "Texture" and frames[i].path then logoTex = frames[i] end
+end
+check("Zeichen im Panel vorhanden",
+      logoTex and logoTex.path, "Interface\\AddOns\\MP5\\Textures\\logo.tga")
 
 -- Nichts darf unter den Rand des Fensters rutschen ---------------------------
 --

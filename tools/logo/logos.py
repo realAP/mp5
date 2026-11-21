@@ -52,56 +52,134 @@ def magazin(fill=0.58):
     return {"name": "magazin", "size": (S, S), "bg": BG, "shapes": shapes}
 
 
-# ------------------------------------------------------------ 2 Silhouette
+# ----------------------------------- 2 Silhouette und 2+6 Kombination
 
-def silhouette(fill=0.55):
-    """Vereinfachte MP5-Seitenansicht, der Handschutz ist der Balken."""
-    shapes = []
-    # Schulterstuetze: am Gehaeuse angesetzt statt schwebend
-    shapes.append({"t": "poly", "pts": [(102, 48), (122, 50), (122, 58), (102, 58)],
-                   "fill": GOLD_D})
-    shapes.append({"t": "poly", "pts": [(110, 58), (122, 58), (122, 74), (112, 70)],
-                   "fill": GOLD_D})
+SW, SH = 200, 100   # Breitformat fuer die Silhouetten
+
+
+def _kern(shapes, fill=GOLD, detail=GOLD_D):
+    """Gemeinsame Teile: Lauf, Korn, Spannhebel, Gehaeuse, Visier, Griff."""
+    # Lauf
+    shapes.append({"t": "poly", "pts": [(8, 36), (28, 36), (28, 44), (8, 44)], "fill": detail})
+    # Gekapseltes Korn: Ring auf einem Sockel - das auffaelligste Teil vorn
+    shapes.append({"t": "poly", "pts": [(26, 24), (38, 24), (36, 36), (28, 36)], "fill": fill})
+    shapes.append({"t": "ring", "c": (32, 20), "r": 8, "w": 4, "fill": fill})
+    # Spannrohr oben, mit dem Knick nach vorn-oben
+    shapes.append({"t": "poly", "pts": [(38, 22), (88, 22), (88, 31), (38, 31)], "fill": detail})
+    # Spannhebel: sitzt hinter dem Korn, nicht darueber - vorher kreuzte
+    # er den Ring und las sich als Haken.
+    shapes.append({"t": "poly", "pts": thick((58, 27), (47, 11), 9), "fill": fill})
     # Gehaeuse
-    shapes.append({"t": "poly", "pts": [(56, 44), (108, 44), (108, 66), (56, 66)],
-                   "fill": GOLD})
-    # Spannrohr oben
-    shapes.append({"t": "poly", "pts": [(18, 38), (58, 38), (58, 46), (18, 46)],
-                   "fill": GOLD_D})
+    shapes.append({"t": "poly", "pts": [(78, 28), (150, 28), (150, 50), (78, 50)], "fill": fill})
+    # Auswurffenster
+    shapes.append({"t": "poly", "pts": [(96, 33), (116, 33), (116, 40), (96, 40)], "fill": BG})
+    # Trommelvisier hinten
+    shapes.append({"t": "poly", "pts": [(132, 22), (152, 22), (152, 30), (132, 30)], "fill": detail})
+    shapes.append({"t": "circle", "c": (142, 17), "r": 10, "fill": fill})
+    shapes.append({"t": "circle", "c": (142, 17), "r": 4.5, "fill": BG})
+    # Abzugsgruppe: Gehaeuse, dann der Buegel als Ring mit offener Mitte.
+    # Vorher verschmolz er mit dem Griff zu einem Klumpen.
+    shapes.append({"t": "poly", "pts": [(112, 50), (154, 50), (154, 60), (112, 60)], "fill": fill})
+    shapes.append({"t": "poly", "pts": [(114, 60), (142, 60), (140, 80), (116, 80)], "fill": fill})
+    shapes.append({"t": "poly", "pts": [(119, 63), (137, 63), (135, 75), (121, 75)], "fill": BG})
+    shapes.append({"t": "poly", "pts": [(124, 60), (130, 60), (128, 72), (123, 71)], "fill": detail})
+    # Pistolengriff, deutlich nach hinten geneigt und schmaler als das Magazin
+    shapes.append({"t": "poly", "pts": [(138, 60), (156, 60), (152, 96), (136, 93)], "fill": fill})
+    # Schulterstuetze
+    shapes.append({"t": "poly", "pts": [(150, 32), (188, 36), (188, 46), (150, 48)], "fill": detail})
+    shapes.append({"t": "poly", "pts": [(186, 28), (196, 28), (196, 58), (186, 56)], "fill": fill})
+
+
+def _magazin(shapes, fill=GOLD, mana=0.62):
+    """Nach vorn gekruemmtes Magazin, aussen Gold, innen Mana."""
+    top_l, top_r = (80, 50), (106, 50)
+    outer = ([top_l]
+             + bez2((80, 50), (74, 76), (66, 96), 16)
+             + [(88, 99)]
+             + bez2((88, 99), (100, 76), (106, 50), 16)[::-1]
+             + [top_r])
+    shapes.append({"t": "poly", "pts": outer, "fill": fill})
+    inner = ([(85, 54)]
+             + bez2((85, 54), (79, 76), (73, 92), 16)
+             + [(85, 94)]
+             + bez2((85, 94), (96, 76), (101, 54), 16)[::-1]
+             + [(101, 54)])
+    shapes.append({"t": "poly", "pts": inner, "fill": DARK})
+    from render import clip_below
+    ytop = 54 + (94 - 54) * (1 - mana)
+    shapes.append({"t": "poly", "pts": clip_below(inner, ytop), "fill": MANA})
+
+
+# ------------------------------------------------------------------ 2a treu
+
+def treu(fill=0.55):
+    shapes = []
     # Handschutz = Fortschrittsbalken
-    hs = [(14, 48), (56, 48), (56, 64), (14, 64)]
-    shapes.append({"t": "poly", "pts": hs, "fill": DARK})
-    xend = 16 + (54 - 16) * fill
-    shapes.append({"t": "poly", "pts": [(16, 50), (xend, 50), (xend, 62), (16, 62)],
-                   "fill": MANA})
-    shapes.append({"t": "poly", "pts": [(14, 48), (56, 48), (56, 50), (14, 50)],
-                   "fill": GOLD})
-    shapes.append({"t": "poly", "pts": [(14, 62), (56, 62), (56, 64), (14, 64)],
-                   "fill": GOLD})
-    # Korn vorne
-    shapes.append({"t": "poly", "pts": [(22, 26), (30, 26), (28, 38), (24, 38)],
-                   "fill": GOLD})
-    # Trommelvisier: sitzt auf dem Gehaeuse auf
-    shapes.append({"t": "poly", "pts": [(94, 38), (106, 38), (106, 46), (94, 46)],
-                   "fill": GOLD})
-    shapes.append({"t": "circle", "c": (100, 32), "r": 9, "fill": GOLD})
-    shapes.append({"t": "circle", "c": (100, 32), "r": 4, "fill": BG})
-    # Magazin: schmaler und deutlich nach vorn geneigt
-    shapes.append({"t": "poly", "pts": [(60, 66), (76, 66), (68, 110), (54, 107)],
-                   "fill": GOLD})
-    shapes.append({"t": "poly", "pts": [(64, 72), (72, 72), (66, 104), (59, 102)],
-                   "fill": MANA})
-    # Abzugsbuegel
-    shapes.append({"t": "poly", "pts": [(84, 66), (104, 66), (104, 71), (84, 71)],
-                   "fill": GOLD})
-    shapes.append({"t": "poly", "pts": [(86, 71), (90, 71), (90, 80), (86, 80)],
-                   "fill": GOLD})
-    shapes.append({"t": "poly", "pts": [(86, 80), (102, 80), (100, 85), (88, 85)],
-                   "fill": GOLD})
-    # Pistolengriff, nach hinten geneigt
-    shapes.append({"t": "poly", "pts": [(92, 71), (106, 71), (102, 104), (90, 101)],
-                   "fill": GOLD})
-    return {"name": "silhouette", "size": (S, S), "bg": BG, "shapes": shapes}
+    shapes.append({"t": "poly", "pts": [(28, 31), (82, 31), (82, 50), (28, 50)], "fill": GOLD})
+    shapes.append({"t": "poly", "pts": [(32, 35), (78, 35), (78, 46), (32, 46)], "fill": DARK})
+    xe = 34 + (76 - 34) * fill
+    shapes.append({"t": "poly", "pts": [(34, 37), (xe, 37), (xe, 44), (34, 44)], "fill": MANA})
+    _kern(shapes)
+    _magazin(shapes)
+    return {"name": "sil-treu", "size": (SW, SH), "bg": BG, "shapes": shapes}
+
+
+# ------------------------------------- 2+6 kombiniert: Patronen im Magazin
+
+def _magazin_patronen(shapes, voll=3, n=5):
+    """Durchsichtiges Magazin mit n Manapatronen - eine je Sekunde.
+
+    Im Magazin liegen die Patronen quer, Spitze nach vorn, und stapeln sich
+    nach unten. Die Kruemmung versetzt jede Reihe etwas weiter nach vorn.
+    """
+    # Magazinkoerper, nach vorn gekruemmt
+    outer = ([(80, 48)]
+             + bez2((80, 48), (73, 76), (62, 100), 18)
+             + [(86, 104)]
+             + bez2((86, 104), (102, 76), (108, 48), 18)[::-1]
+             + [(108, 48)])
+    shapes.append({"t": "poly", "pts": outer, "fill": GOLD})
+    inner = ([(85, 53)]
+             + bez2((85, 53), (78, 76), (69, 96), 18)
+             + [(85, 99)]
+             + bez2((85, 99), (97, 76), (103, 53), 18)[::-1]
+             + [(103, 53)])
+    shapes.append({"t": "poly", "pts": inner, "fill": DARK})
+
+    # Die Patronen: Huelse plus Spitze, Spitze zeigt nach vorn (links)
+    for i in range(n):
+        y = 56.5 + i * 8.2
+        dx = i * 3.4                      # folgt der Kruemmung nach vorn
+        x0, x1 = 86 - dx, 102 - dx
+        hell = i < voll
+        case = MANA if hell else DIM
+        tip = MANA_D if hell else "#3b3626"
+        shapes.append({"t": "poly",
+                       "pts": [(x0 + 4, y), (x1, y), (x1, y + 6), (x0 + 4, y + 6)],
+                       "fill": case})
+        shapes.append({"t": "poly",
+                       "pts": [(x0 + 4, y), (x0 + 4, y + 6), (x0 - 2, y + 3)],
+                       "fill": tip})
+
+    # Bodenplatte
+    shapes.append({"t": "poly", "pts": [(60, 100), (88, 104), (86, 110), (58, 106)],
+                   "fill": GOLD_D})
+
+
+def kombi(voll=3):
+    """Entwurf 2 mit Entwurf 6: die Silhouette, und im Magazin stecken
+    fuenf Manapatronen - eine je Sekunde der Regel."""
+    shapes = []
+    # Handschutz schlicht, damit das Magazin die Anzeige traegt
+    shapes.append({"t": "poly", "pts": [(28, 31), (82, 31), (82, 50), (28, 50)], "fill": GOLD})
+    shapes.append({"t": "poly", "pts": [(33, 36), (77, 36), (77, 45), (33, 45)], "fill": DARK})
+    for i in range(3):
+        x = 36 + i * 14
+        shapes.append({"t": "poly", "pts": [(x, 38), (x + 9, 38), (x + 9, 43), (x, 43)],
+                       "fill": GOLD_D})
+    _kern(shapes)
+    _magazin_patronen(shapes, voll)
+    return {"name": "sil-kombi", "size": (SW, SH), "bg": BG, "shapes": shapes}
 
 
 # ---------------------------------------------------------------- 3 Visier
@@ -270,7 +348,8 @@ def fuenfschuss(level=(1.0, 1.0, 1.0, 0.55, 0.0)):
 
 ALL = [
     ("magazin",     "Das Magazin",      magazin),
-    ("silhouette",  "Die Silhouette",   silhouette),
+    ("silhouette",  "Die Silhouette",   treu),
+    ("kombi",       "Die Kombination",  kombi),
     ("visier",      "Das Visier",       visier),
     ("wortmarke",   "Die Wortmarke",    wortmarke),
     ("kimme",       "Das Zielbild",     kimme),

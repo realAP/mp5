@@ -27,7 +27,10 @@
            align-items:start}
   @media(max-width:820px){.variant{grid-template-columns:1fr}}
   .stage{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
-  .big{width:200px;height:200px;border:1px solid #241f14;border-radius:3px}
+  .big{width:230px;border:1px solid #241f14;border-radius:3px}
+  .states{display:flex;flex-direction:column;gap:6px;width:230px}
+  .states div{border:1px solid #241f14;border-radius:3px}
+  .states p{margin:0;font-size:11px;color:#5d5747;text-align:center}
   .sizes{display:flex;align-items:flex-end;gap:14px}
   .sizes figure{margin:0;text-align:center}
   .sizes figcaption{font-size:10px;color:#5d5747;margin-top:4px}
@@ -43,7 +46,7 @@
   th{background:#1b1812;color:var(--gold);font-weight:600}
   /* Die SVGs tragen nur ein viewBox, kein width/height - ohne diese Regel
      faellt der Browser auf 300x150 zurueck. */
-  svg{display:block;width:100%;height:100%}
+  svg{display:block;width:100%;height:auto}
 
   .pair{display:flex;gap:18px;flex-wrap:wrap;margin:18px 0}
   .pair div{border:1px solid var(--line);border-radius:3px;padding:18px}
@@ -53,7 +56,7 @@
 <h1>Das Visier</h1>
 <p class="lede">Das Trommelvisier der MP5, umgedeutet als Fünf-Sekunden-Ring: fünf Segmente, die beim Zaubern volllaufen. In der Mitte die Visierscheibe mit ihren vier Diopterlöchern und dem Manatropfen.</p>
 <div class="pair">
-  <div style="width:260px;height:260px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <div style="width:280px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#13110c"/>
   <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
   <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
@@ -69,7 +72,7 @@
   <circle cx="78.14" cy="49.86" r="3.40" fill="#b07f18"/>
   <polygon points="64.00,36.00 64.00,36.00 66.54,39.21 68.83,42.17 70.89,44.91 72.72,47.43 74.35,49.77 75.78,51.93 77.02,53.92 78.09,55.78 79.00,57.50 79.76,59.11 80.39,60.63 80.89,62.07 81.28,63.45 81.57,64.79 81.78,66.09 81.91,67.39 81.98,68.68 82.00,70.00 82.00,70.00 81.88,72.11 81.53,74.15 80.96,76.09 80.18,77.94 79.21,79.68 78.06,81.28 76.75,82.75 75.28,84.06 73.68,85.21 71.94,86.18 70.09,86.96 68.15,87.53 66.11,87.88 64.00,88.00 64.00,88.00 61.89,87.88 59.85,87.53 57.91,86.96 56.06,86.18 54.32,85.21 52.72,84.06 51.25,82.75 49.94,81.28 48.79,79.68 47.82,77.94 47.04,76.09 46.47,74.15 46.12,72.11 46.00,70.00 46.00,70.00 46.02,68.68 46.09,67.39 46.22,66.09 46.43,64.79 46.72,63.45 47.11,62.07 47.61,60.63 48.24,59.11 49.00,57.50 49.91,55.78 50.98,53.92 52.22,51.93 53.65,49.77 55.28,47.43 57.11,44.91 59.17,42.17 61.46,39.21 64.00,36.00" fill="#8fc3ff"/>
 </svg></div>
-  <div class="light" style="width:260px;height:260px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <div class="light" style="width:280px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#efe7d4"/>
   <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
   <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
@@ -89,7 +92,7 @@
 <p class="meta">Links wie im Spiel, rechts auf hellem Grund. Die Aussparungen
 &ndash; Kerben, Stege, Punzen &ndash; nehmen den Hintergrund jeweils mit, sonst
 st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
-<div class="sizes"><figure><div style="width:64px;height:64px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+<div class="sizes"><figure><div style="width:64px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#13110c"/>
   <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
   <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
@@ -104,7 +107,7 @@ st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
   <circle cx="49.86" cy="49.86" r="3.40" fill="#b07f18"/>
   <circle cx="78.14" cy="49.86" r="3.40" fill="#b07f18"/>
   <polygon points="64.00,36.00 64.00,36.00 66.54,39.21 68.83,42.17 70.89,44.91 72.72,47.43 74.35,49.77 75.78,51.93 77.02,53.92 78.09,55.78 79.00,57.50 79.76,59.11 80.39,60.63 80.89,62.07 81.28,63.45 81.57,64.79 81.78,66.09 81.91,67.39 81.98,68.68 82.00,70.00 82.00,70.00 81.88,72.11 81.53,74.15 80.96,76.09 80.18,77.94 79.21,79.68 78.06,81.28 76.75,82.75 75.28,84.06 73.68,85.21 71.94,86.18 70.09,86.96 68.15,87.53 66.11,87.88 64.00,88.00 64.00,88.00 61.89,87.88 59.85,87.53 57.91,86.96 56.06,86.18 54.32,85.21 52.72,84.06 51.25,82.75 49.94,81.28 48.79,79.68 47.82,77.94 47.04,76.09 46.47,74.15 46.12,72.11 46.00,70.00 46.00,70.00 46.02,68.68 46.09,67.39 46.22,66.09 46.43,64.79 46.72,63.45 47.11,62.07 47.61,60.63 48.24,59.11 49.00,57.50 49.91,55.78 50.98,53.92 52.22,51.93 53.65,49.77 55.28,47.43 57.11,44.91 59.17,42.17 61.46,39.21 64.00,36.00" fill="#8fc3ff"/>
-</svg></div><figcaption>64 px</figcaption></figure><figure><div style="width:32px;height:32px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+</svg></div><figcaption>64 px</figcaption></figure><figure><div style="width:32px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#13110c"/>
   <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
   <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>
@@ -119,7 +122,7 @@ st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
   <circle cx="49.86" cy="49.86" r="3.40" fill="#b07f18"/>
   <circle cx="78.14" cy="49.86" r="3.40" fill="#b07f18"/>
   <polygon points="64.00,36.00 64.00,36.00 66.54,39.21 68.83,42.17 70.89,44.91 72.72,47.43 74.35,49.77 75.78,51.93 77.02,53.92 78.09,55.78 79.00,57.50 79.76,59.11 80.39,60.63 80.89,62.07 81.28,63.45 81.57,64.79 81.78,66.09 81.91,67.39 81.98,68.68 82.00,70.00 82.00,70.00 81.88,72.11 81.53,74.15 80.96,76.09 80.18,77.94 79.21,79.68 78.06,81.28 76.75,82.75 75.28,84.06 73.68,85.21 71.94,86.18 70.09,86.96 68.15,87.53 66.11,87.88 64.00,88.00 64.00,88.00 61.89,87.88 59.85,87.53 57.91,86.96 56.06,86.18 54.32,85.21 52.72,84.06 51.25,82.75 49.94,81.28 48.79,79.68 47.82,77.94 47.04,76.09 46.47,74.15 46.12,72.11 46.00,70.00 46.00,70.00 46.02,68.68 46.09,67.39 46.22,66.09 46.43,64.79 46.72,63.45 47.11,62.07 47.61,60.63 48.24,59.11 49.00,57.50 49.91,55.78 50.98,53.92 52.22,51.93 53.65,49.77 55.28,47.43 57.11,44.91 59.17,42.17 61.46,39.21 64.00,36.00" fill="#8fc3ff"/>
-</svg></div><figcaption>32 px</figcaption></figure><figure><div style="width:16px;height:16px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+</svg></div><figcaption>32 px</figcaption></figure><figure><div style="width:16px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#13110c"/>
   <circle cx="64.00" cy="64.00" r="46.00" fill="none" stroke="#4a4433" stroke-width="4.00"/>
   <path d="M 66.01 18.04 A 46.00 46.00 0 0 1 107.09 47.89" fill="none" stroke="#f2b839" stroke-width="11.00" stroke-linecap="butt"/>

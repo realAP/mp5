@@ -27,18 +27,42 @@ TEXT = {
                "Kerben weglassen."],
         use="Addon-Icon, README-Kopf, Kurator-Eintrag.",
     ),
+    "kombi": dict(
+        title="Die Kombination",
+        tag="Empfehlung",
+        idea="Entwurf 2 und Entwurf 6 in einem: die Silhouette, und im Magazin "
+             "stecken fünf Manapatronen — eine je Sekunde der Regel. Sie liegen "
+             "quer, Spitze nach vorn, und folgen der Krümmung des Magazins nach "
+             "unten. Beim Zaubern erlöschen sie von oben nach unten.",
+        works=["Die Fünf ist nicht mehr dekoriert, sie <b>ist</b> der Inhalt: "
+               "fünf Patronen, fünf Sekunden. Das Logo erklärt das Addon, "
+               "ohne ein Wort zu brauchen.",
+               "Das Magazin trägt die Anzeige, der Handschutz bleibt frei — "
+               "vorher kämpften zwei Anzeigeflächen um dieselbe Aufmerksamkeit.",
+               "Lässt sich im Addon wirklich mitlaufen lassen: eine Patrone "
+               "je verstrichener Sekunde."],
+        fails=["Breitformat. Als quadratisches Icon bleibt oben und unten Luft.",
+               "Unter 48&nbsp;px verschmelzen die Patronen zu einem blauen "
+               "Streifen. Die Waffe bleibt erkennbar, die Fünf nicht.",
+               "Die deutlichste Waffe im ganzen Satz — wenn das Addon "
+               "irgendwo öffentlich gelistet wird, ist das der Entwurf, der "
+               "am ehesten aneckt."],
+        use="Kopfgrafik, Titelbild, Addon-Seite. Fürs kleine Icon Entwurf 4.",
+        states=[("fünf Sekunden übrig", 5), ("drei", 3), ("eine", 1)],
+    ),
     "silhouette": dict(
         title="Die Silhouette",
-        tag="am deutlichsten",
-        idea="Die ganze Waffe in der Seitenansicht. Der Handschutz ist der "
-             "Fortschrittsbalken, das Magazin ist der Manavorrat.",
+        tag="neu gezeichnet",
+        idea="Dieselbe Waffe ohne die Patronen: der Handschutz ist der "
+             "Fortschrittsbalken, das Magazin der Manavorrat. Neu gezeichnet mit "
+             "den Teilen, an denen man eine MP5 wirklich erkennt — gekapseltes "
+             "Korn, Spannhebel mit dem Knick nach vorn, Trommelvisier.",
         works=["Niemand muss raten, worauf der Name anspielt.",
-               "Zwei Anzeigeflächen in einem Bild: Balken vorn, Vorrat unten."],
-        fails=["Breitformat, und es braucht Platz. Unter 32 Pixeln fällt es "
-               "zu einem goldenen Fleck zusammen.",
-               "Am stärksten als Waffe lesbar — wenn das Addon irgendwo "
-               "gelistet wird, ist das der Entwurf, der am ehesten aneckt."],
-        use="Kopfgrafik, Titelbild einer Addon-Seite. Nicht als kleines Icon.",
+               "Ruhiger als die Kombination: eine Anzeigefläche statt zwei."],
+        fails=["Der Balken im Handschutz ist klein und liegt dort, wo man "
+               "zuletzt hinsieht.",
+               "Unter 48&nbsp;px ein goldener Fleck."],
+        use="Wenn die Patronen zu verspielt wirken.",
     ),
     "visier": dict(
         title="Das Visier",
@@ -105,7 +129,8 @@ TEXT = {
     ),
 }
 
-ORDER = ["magazin", "silhouette", "visier", "wortmarke", "kimme", "fuenfschuss"]
+ORDER = ["kombi", "silhouette", "magazin", "visier", "wortmarke",
+         "kimme", "fuenfschuss"]
 
 CSS = """
   :root{
@@ -133,7 +158,10 @@ CSS = """
            align-items:start}
   @media(max-width:820px){.variant{grid-template-columns:1fr}}
   .stage{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
-  .big{width:200px;height:200px;border:1px solid #241f14;border-radius:3px}
+  .big{width:230px;border:1px solid #241f14;border-radius:3px}
+  .states{display:flex;flex-direction:column;gap:6px;width:230px}
+  .states div{border:1px solid #241f14;border-radius:3px}
+  .states p{margin:0;font-size:11px;color:#5d5747;text-align:center}
   .sizes{display:flex;align-items:flex-end;gap:14px}
   .sizes figure{margin:0;text-align:center}
   .sizes figcaption{font-size:10px;color:#5d5747;margin-top:4px}
@@ -149,15 +177,15 @@ CSS = """
   th{background:#1b1812;color:var(--gold);font-weight:600}
   /* Die SVGs tragen nur ein viewBox, kein width/height - ohne diese Regel
      faellt der Browser auf 300x150 zurueck. */
-  svg{display:block;width:100%;height:100%}
+  svg{display:block;width:100%;height:auto}
 """
 
 
 def sizes_block(svg):
     out = []
     for px, cap in ((64, "64 px"), (32, "32 px"), (16, "16 px")):
-        out.append('<figure><div style="width:%dpx;height:%dpx">%s</div>'
-                   '<figcaption>%s</figcaption></figure>' % (px, px, svg, cap))
+        out.append('<figure><div style="width:%dpx">%s</div>'
+                   '<figcaption>%s</figcaption></figure>' % (px, svg, cap))
     return '<div class="sizes">%s</div>' % "".join(out)
 
 
@@ -195,8 +223,8 @@ def main():
 <h1>%s</h1>
 <p class="lede">%s</p>
 <div class="pair">
-  <div style="width:260px;height:260px">%s</div>
-  <div class="light" style="width:260px;height:260px">%s</div>
+  <div style="width:280px">%s</div>
+  <div class="light" style="width:280px">%s</div>
 </div>
 <p class="meta">Links wie im Spiel, rechts auf hellem Grund. Die Aussparungen
 &ndash; Kerben, Stege, Punzen &ndash; nehmen den Hintergrund jeweils mit, sonst
@@ -218,11 +246,18 @@ st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
     cards = []
     for i, key in enumerate(ORDER, 1):
         t = TEXT[key]
+        states = ""
+        if t.get("states"):
+            rows = "".join(
+                '<div>%s</div><p>%s</p>'
+                % (to_svg(fns[key](v)), cap) for cap, v in t["states"])
+            states = '<div class="states">%s</div>' % rows
         cards.append("""
 <h2>Entwurf %d &mdash; &bdquo;%s&ldquo;</h2>
 <div class="variant">
   <div class="stage">
     <div class="big">%s</div>
+    %s
     %s
   </div>
   <div>
@@ -233,7 +268,7 @@ st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
     <a href="%s/index.html">Einzelansicht</a> &middot;
     <a href="%s.svg">SVG</a></p>
   </div>
-</div>""" % (i, t["title"], svgs[key], sizes_block(svgs[key]), t["tag"], t["title"],
+</div>""" % (i, t["title"], svgs[key], sizes_block(svgs[key]), states, t["tag"], t["title"],
              t["idea"],
              "".join("<li class='pro'>+ <span>%s</span></li>" % w for w in t["works"]),
              "".join("<li class='con'>&ndash; <span>%s</span></li>" % w for w in t["fails"]),
@@ -258,24 +293,26 @@ und die Farben lassen sich einzeln &auml;ndern.
 %s
 <h2>Gegen&uuml;berstellung</h2>
 <table>
-  <tr><th>Entwurf</th><th>Format</th><th>Noch lesbar bei</th><th>Anspielung auf die Waffe</th></tr>
-  <tr><td>1 &ndash; Magazin</td><td>hoch</td><td>32&nbsp;px</td><td>stark</td></tr>
-  <tr><td>2 &ndash; Silhouette</td><td>breit</td><td>48&nbsp;px</td><td>unmissverst&auml;ndlich</td></tr>
-  <tr><td>3 &ndash; Visier</td><td>quadratisch</td><td>16&nbsp;px</td><td>leise</td></tr>
-  <tr><td>4 &ndash; Wortmarke</td><td>breit</td><td>16&nbsp;px</td><td>nur im Namen</td></tr>
-  <tr><td>5 &ndash; Zielbild</td><td>quadratisch</td><td>24&nbsp;px</td><td>braucht die Bildunterschrift</td></tr>
-  <tr><td>6 &ndash; F&uuml;nf Schuss</td><td>quadratisch</td><td>32&nbsp;px</td><td>Munition, keine Waffe</td></tr>
+  <tr><th>Entwurf</th><th>Format</th><th>Noch lesbar bei</th><th>Zeigt die f&uuml;nf Sekunden</th></tr>
+  <tr><td><b>1 &ndash; Kombination</b></td><td>breit</td><td>48&nbsp;px</td><td><b>ja, als f&uuml;nf Patronen</b></td></tr>
+  <tr><td>2 &ndash; Silhouette</td><td>breit</td><td>48&nbsp;px</td><td>nur als Balken</td></tr>
+  <tr><td>3 &ndash; Magazin</td><td>hoch</td><td>32&nbsp;px</td><td>als Kerben</td></tr>
+  <tr><td>4 &ndash; Visier</td><td>quadratisch</td><td>16&nbsp;px</td><td>ja, als Ringsegmente</td></tr>
+  <tr><td>5 &ndash; Wortmarke</td><td>breit</td><td>16&nbsp;px</td><td>nein</td></tr>
+  <tr><td>6 &ndash; Zielbild</td><td>quadratisch</td><td>24&nbsp;px</td><td>als Marken</td></tr>
+  <tr><td>7 &ndash; F&uuml;nf Schuss</td><td>quadratisch</td><td>32&nbsp;px</td><td>ja, als f&uuml;nf Patronen</td></tr>
 </table>
 
 <h2>Empfehlung</h2>
-<p class="meta"><b>Entwurf 3 als Icon, Entwurf 4 als Wortmarke.</b> Das Visier ist das
-einzige, das bei 16&nbsp;Pixeln noch etwas sagt, und sein Ring kann im Addon
-tats&auml;chlich mitlaufen &ndash; das Logo w&auml;re dann dieselbe Anzeige wie der Balken.
-Die Wortmarke daneben nennt den Namen, den das Icon nicht zeigen kann. Zusammen
-decken sie beide F&auml;lle ab, ohne dass man den Witz erkl&auml;ren muss.</p>
-<p class="meta">Wenn es ein einzelnes Bild sein soll und Gr&ouml;&szlig;e keine Rolle
-spielt: <b>Entwurf 1</b>. Die Magazinkr&uuml;mmung ist die einpr&auml;gsamste Form im
-ganzen Satz, und ein F&uuml;llstand ist schon von sich aus das, was das Addon tut.</p>
+<p class="meta"><b>Die Kombination als Hauptzeichen, Entwurf 4 als Icon.</b>
+Mit den Patronen im Magazin ist die F&uuml;nf nicht mehr Dekoration, sondern der
+Inhalt: f&uuml;nf Patronen, f&uuml;nf Sekunden. Das Logo erkl&auml;rt damit das
+Addon, ohne ein Wort zu brauchen &ndash; und es l&auml;sst sich im Spiel wirklich
+mitlaufen lassen, eine Patrone je verstrichener Sekunde.</p>
+<p class="meta">Was es nicht kann, ist klein werden. Unter 48&nbsp;Pixeln verschmelzen
+die Patronen zu einem blauen Streifen. F&uuml;rs Icon und das Favicon bleibt deshalb
+<b>Entwurf 4</b>, das Visier: rund, mittig, und bei 16&nbsp;Pixeln noch lesbar. Die
+beiden zusammen decken den breiten Kopf und das kleine Quadrat ab.</p>
 
 <div class="footer">
 MP5 &ndash; Logo-Entw&uuml;rfe &middot; Stand 21.11.2026 &middot; Entwurf zur Auswahl.

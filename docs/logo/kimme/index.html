@@ -27,7 +27,10 @@
            align-items:start}
   @media(max-width:820px){.variant{grid-template-columns:1fr}}
   .stage{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
-  .big{width:200px;height:200px;border:1px solid #241f14;border-radius:3px}
+  .big{width:230px;border:1px solid #241f14;border-radius:3px}
+  .states{display:flex;flex-direction:column;gap:6px;width:230px}
+  .states div{border:1px solid #241f14;border-radius:3px}
+  .states p{margin:0;font-size:11px;color:#5d5747;text-align:center}
   .sizes{display:flex;align-items:flex-end;gap:14px}
   .sizes figure{margin:0;text-align:center}
   .sizes figcaption{font-size:10px;color:#5d5747;margin-top:4px}
@@ -43,7 +46,7 @@
   th{background:#1b1812;color:var(--gold);font-weight:600}
   /* Die SVGs tragen nur ein viewBox, kein width/height - ohne diese Regel
      faellt der Browser auf 300x150 zurueck. */
-  svg{display:block;width:100%;height:100%}
+  svg{display:block;width:100%;height:auto}
 
   .pair{display:flex;gap:18px;flex-wrap:wrap;margin:18px 0}
   .pair div{border:1px solid var(--line);border-radius:3px;padding:18px}
@@ -53,7 +56,7 @@
 <h1>Das Zielbild</h1>
 <p class="lede">Korn und Kimme, und dazwischen hängt der Manatropfen — das Bild, das man sieht, wenn man über die Visierung zielt. Unter der Kimme laufen fünf Marken voll.</p>
 <div class="pair">
-  <div style="width:260px;height:260px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <div style="width:280px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#13110c"/>
   <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
   <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
@@ -67,7 +70,7 @@
   <polygon points="94.00,106.00 107.00,106.00 107.00,115.00 94.00,115.00" fill="#4a4433"/>
   <polygon points="61.00,2.00 67.00,2.00 69.00,14.00 59.00,14.00" fill="#b07f18"/>
 </svg></div>
-  <div class="light" style="width:260px;height:260px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <div class="light" style="width:280px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#efe7d4"/>
   <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
   <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
@@ -85,7 +88,7 @@
 <p class="meta">Links wie im Spiel, rechts auf hellem Grund. Die Aussparungen
 &ndash; Kerben, Stege, Punzen &ndash; nehmen den Hintergrund jeweils mit, sonst
 st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
-<div class="sizes"><figure><div style="width:64px;height:64px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+<div class="sizes"><figure><div style="width:64px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#13110c"/>
   <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
   <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
@@ -98,7 +101,7 @@ st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
   <polygon points="75.00,106.00 88.00,106.00 88.00,115.00 75.00,115.00" fill="#4a4433"/>
   <polygon points="94.00,106.00 107.00,106.00 107.00,115.00 94.00,115.00" fill="#4a4433"/>
   <polygon points="61.00,2.00 67.00,2.00 69.00,14.00 59.00,14.00" fill="#b07f18"/>
-</svg></div><figcaption>64 px</figcaption></figure><figure><div style="width:32px;height:32px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+</svg></div><figcaption>64 px</figcaption></figure><figure><div style="width:32px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#13110c"/>
   <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
   <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
@@ -111,7 +114,7 @@ st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
   <polygon points="75.00,106.00 88.00,106.00 88.00,115.00 75.00,115.00" fill="#4a4433"/>
   <polygon points="94.00,106.00 107.00,106.00 107.00,115.00 94.00,115.00" fill="#4a4433"/>
   <polygon points="61.00,2.00 67.00,2.00 69.00,14.00 59.00,14.00" fill="#b07f18"/>
-</svg></div><figcaption>32 px</figcaption></figure><figure><div style="width:16px;height:16px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+</svg></div><figcaption>32 px</figcaption></figure><figure><div style="width:16px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
   <rect width="128" height="128" fill="#13110c"/>
   <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
   <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>

@@ -90,25 +90,29 @@ function Model:SetMax(max)
     self.credit, self.exact = 0, false
 end
 
+-- Einen Betrag gutschreiben und die Uhr auf now stellen.
+function Model:Gain(now, amount)
+    self.last = now
+    if not amount or amount <= 0 then return end
+
+    self.mana = self.mana + amount
+    if self.mana > self.max then self.mana = self.max end
+
+    self.credit = self.credit + amount
+    if self.max > 0 and self.credit >= self.max * ANCHOR_MARGIN then
+        -- Selbst von 0 aus waere der Tank jetzt voll.
+        self.mana, self.exact = self.max, true
+    end
+end
+
 -- Regeneration fuer die Zeit seit dem letzten Aufruf dazurechnen.
 -- ratePerSec darf nil sein (unbekannt) - dann wird nichts dazugerechnet,
 -- was die Untergrenze nicht verletzt.
 function Model:Advance(now, ratePerSec)
     if not self.last then self.last = now return end
     local dt = now - self.last
-    self.last = now
-    if dt <= 0 then return end
-    if not ratePerSec or ratePerSec <= 0 then return end
-
-    local gain = ratePerSec * dt
-    self.mana = self.mana + gain
-    if self.mana > self.max then self.mana = self.max end
-
-    self.credit = self.credit + gain
-    if self.max > 0 and self.credit >= self.max * ANCHOR_MARGIN then
-        -- Selbst von 0 aus waere der Tank jetzt voll.
-        self.mana, self.exact = self.max, true
-    end
+    if dt <= 0 then self.last = now return end
+    self:Gain(now, (ratePerSec and ratePerSec > 0) and ratePerSec * dt or 0)
 end
 
 -- Einen gewirkten Zauber verbuchen. cost = nil heisst "Kosten unbekannt":
@@ -345,12 +349,101 @@ local function quietMeansFull(now)
     return since >= QUIET
 end
 
-local function refresh(now)
-    model:SetMax(maxMana())
+-- Im Takt des Spiels, nicht im Takt der Bildrate -------------------------
+--
+-- Mana kommt nicht gleichmaessig, sondern in Spruengen: alle 2 Sekunden ein
+-- Tick, der Segen der Weisheit alle 5 Sekunden, und waehrend der
+-- 5-Sekunden-Regel gar nicht. Rechnet man die Regeneration gleichmaessig
+-- hoch, stimmt vielleicht die Summe, aber der Wert laeuft dem echten Mana
+-- staendig voraus und hinterher - er ist phasenverschoben.
+--
+-- Wann die Spruenge kommen, verraet der Client aber: UNIT_POWER_UPDATE
+-- feuert genau dann, wenn sich das Mana aendert. Der Wert darin ist
+-- geschuetzt, der Zeitpunkt nicht. Also wird das Mana genau dann
+-- gutgeschrieben, wenn das Spiel es auch gutschreibt.
+--
+-- Gutgeschrieben wird die Zeit seit dem letzten Tick - aber nicht mit einer
+-- einzigen Rate. Lag die 5-Sekunden-Regel in dieser Spanne, gilt fuer ihren
+-- Teil die Rate des Zauberns (bei den meisten nur die Buffs) und fuer den
+-- Rest die volle. Sonst wuerde der erste Tick nach der Regel die ganze Regel
+-- zur vollen Rate bezahlen - und genau das laesst den Wert vorauslaufen.
+local SPEND_BLACKOUT = 0.35    -- Ereignis direkt nach einem Zauber: das waren wir
+local EVENT_TTL      = 10      -- so lange ohne Ereignis -> zurueck auf laufend
+
+local lastSpend = -1
+local mode      = "laufend"
+local ticks     = 0
+
+local function setMode(now, want)
+    if mode == want then return end
+    mode = want
+    -- Die Uhr neu stellen: die Zeit im alten Betrieb ist abgerechnet.
+    model.last = now
+    note("Zufuhr: " .. want, want == "ticks"
+        and "Mana wird im Takt der Mana-Ereignisse gutgeschrieben"
+        or "keine Mana-Ereignisse - Regeneration wird laufend gerechnet")
+end
+
+-- Wie viel Mana ist zwischen t0 und t1 nachgekommen? Die Spanne wird an der
+-- 5-Sekunden-Regel geteilt; unbekannte Raten gelten als 0.
+local function gainBetween(t0, t1)
+    local Core = ns.Core
+    if not Core or t1 <= t0 then return 0 end
+    local inRate  = (plain(Core:GetMP5(true))  or 0) / 5
+    local outRate = (plain(Core:GetMP5(false)) or 0) / 5
+
+    -- Die Regel laeuft vom letzten Zauber an fuenf Sekunden lang.
+    local a, b = lastSpend, lastSpend + FSR_DURATION
+    local inside = math.min(t1, b) - math.max(t0, a)
+    if inside < 0 then inside = 0 end
+    local outside = (t1 - t0) - inside
+
+    return inRate * inside + outRate * outside
+end
+
+-- Ein Tick Verzoegerung, damit der Wert nie vorauslaeuft
+-- ----------------------------------------------------
+-- Gutgeschrieben wird nicht der gerade angekommene Tick, sondern der davor.
+-- Der liegt mit Sicherheit in der Vergangenheit - was er gebracht hat, ist
+-- also sicher da. Der Preis ist ein Rueckstand von hoechstens einem Tick;
+-- dafuer verspricht die Anzeige nie mehr Mana, als man hat, und das ist die
+-- Richtung, in die ein Fehler fallen soll.
+local pending = 0
+
+-- Was danach noch an Unsicherheit bleibt: wann genau der Segen der Weisheit
+-- tickt, sieht man von aussen nicht. Sein Betrag wird deshalb gleichmaessig
+-- verteilt, und damit kann er kurz vor dem echten Tick schon angerechnet
+-- sein. Der Wert kann also um bis zu einen Buff-Tick (hoechstens ~33 Mana)
+-- vorauslaufen - mehr nicht, und ohne solche Buffs gar nicht.
+
+-- Ein Mana-Ereignis ist angekommen: jetzt gutschreiben.
+local function creditTick(now)
+    if now - lastSpend < SPEND_BLACKOUT then return end   -- unser eigener Zauber
     local wasExact = model.exact
-    model:Advance(now, regenPerSec())
+    model:SetMax(maxMana())
+    if not model.last then model.last = now return end
+
+    local gain = gainBetween(model.last, now)
+    model:Gain(now, pending)
+    pending = gain
+    ticks = ticks + 1
     if model.exact and not wasExact then
         note("Anker: Volltank", "mehr Regeneration aufgelaufen als ein Tank")
+    end
+end
+
+local function refresh(now)
+    model:SetMax(maxMana())
+    setMode(now, (sawEvents and (now - lastEvent) < EVENT_TTL)
+        and "ticks" or "laufend")
+
+    -- Im Taktbetrieb rechnet das Ereignis, nicht die Bildrate.
+    if mode == "laufend" then
+        local wasExact = model.exact
+        model:Advance(now, regenPerSec())
+        if model.exact and not wasExact then
+            note("Anker: Volltank", "mehr Regeneration aufgelaufen als ein Tank")
+        end
     end
     if quietMeansFull(now) and not model.exact then
         model:MarkFull()
@@ -404,6 +497,8 @@ function Est:Reset()
     model:Forget()
     ladder = nil
     lastEvent, quietFrom = GetTime(), GetTime()
+    lastSpend, ticks, pending = -1, 0, 0
+    mode = "laufend"
 end
 
 -- Fuer /mp5 why: der Zustand des Modells im Klartext.
@@ -424,6 +519,9 @@ function Est:Status()
         -- Der Stille-Anker
         events  = sawEvents,
         quiet   = GetTime() - (lastEvent > quietFrom and lastEvent or quietFrom),
+        -- Woher die Zufuhr kommt: aus den Ereignissen oder laufend gerechnet
+        mode    = mode,
+        ticks   = ticks,
     }
 end
 
@@ -454,14 +552,20 @@ f:SetScript("OnEvent", (ns.safe or function(fn) return fn end)(function(_, event
         if a2 and a2 ~= "MANA" then return end
         -- Nur das Signal wird benutzt, nicht der Wert: dass sich etwas
         -- geaendert hat, ist nicht geschuetzt.
-        lastEvent = GetTime()
+        local now = GetTime()
+        if mode == "ticks" then creditTick(now) end
+        lastEvent = now
         sawEvents = true
     elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
         if unit ~= "player" then return end
         local now = GetTime()
         quietFrom = now + FSR_DURATION
         model:SetMax(maxMana())
-        model:Advance(now, regenPerSec())
+        -- Im Taktbetrieb bringt der naechste Tick die Zeit bis hierher mit;
+        -- jetzt schon anzurechnen hiesse, Mana zu buchen, das noch nicht da
+        -- ist.
+        if mode ~= "ticks" then model:Advance(now, regenPerSec()) end
+        lastSpend = now
         -- Die Signatur ist je nach Client (unit, castGUID, spellID) oder
         -- (unit, spellName, rank); die ID ist das, was eine Zahl ist.
         local id = tonumber(a3) or tonumber(a2)

@@ -19,7 +19,7 @@ local LINES    = 8        -- Zeilen fuer die Mitschrift
 local INTERVAL = 0.25     -- Auffrischen, solange das Fenster offen ist
 
 local f = CreateFrame("Frame", "MP5DebugFrame", UIParent)
-f:SetSize(320, 262)
+f:SetSize(320, 274)
 f:SetPoint("CENTER", UIParent, "CENTER", 320, 0)
 f:SetMovable(true)
 f:EnableMouse(true)
@@ -53,13 +53,13 @@ state:SetWidth(296)
 state:SetJustifyH("LEFT")
 
 local logTitle = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-logTitle:SetPoint("TOPLEFT", 12, -144)
+logTitle:SetPoint("TOPLEFT", 12, -156)
 logTitle:SetText("Zuletzt passiert")
 
 local lines = {}
 for i = 1, LINES do
     local fs = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-    fs:SetPoint("TOPLEFT", 12, -162 - (i - 1) * 12)
+    fs:SetPoint("TOPLEFT", 12, -174 - (i - 1) * 12)
     fs:SetWidth(296)
     fs:SetJustifyH("LEFT")
     lines[i] = fs
@@ -113,6 +113,10 @@ local function stateText()
             .. dim(" von ") .. num(s.max and s.max * 1.25)
         out[#out + 1] = dim("Mana-Ereignis: ")
             .. (s.events and ("still seit " .. num(s.quiet, 1) .. "s") or red("nie gesehen"))
+        out[#out + 1] = dim("Zufuhr: ")
+            .. (s.mode == "ticks"
+                and (green("im Takt") .. dim("  " .. tostring(s.ticks) .. " Ticks"))
+                or gold("laufend gerechnet"))
         out[#out + 1] = dim("Schranken: ") .. "mind. " .. num(s.lower)
             .. ", unter " .. num(s.upper)
             .. dim("  (" .. tostring(s.ladder) .. " Zauber)")

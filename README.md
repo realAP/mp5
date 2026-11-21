@@ -68,6 +68,16 @@ geschützt. MP5 gibt dann nicht auf, sondern führt selbst Buch: Es kennt dein
 Maximum, es sieht jeden Zauber, den du wirkst, und es kennt die Kosten. Also
 zieht es ab, was du ausgibst, und addiert, was nachkommt.
 
+Wichtig ist dabei nicht nur *wie viel*, sondern *wann*: Mana kommt nicht
+gleichmäßig, sondern in Sprüngen – alle zwei Sekunden ein Tick, während der
+5-Sekunden-Regel keiner. Wer die Regeneration gleichmäßig hochrechnet,
+bekommt vielleicht die Summe hin, läuft dem echten Wert aber ständig voraus
+und hinterher. MP5 schreibt das Mana deshalb genau dann gut, wenn das Spiel
+es gutschreibt: *dass* sich das Mana geändert hat, ist nämlich kein
+geschützter Wert, nur der Betrag ist es. Und gutgeschrieben wird immer der
+Tick davor – der liegt sicher in der Vergangenheit. Im Debug-Fenster steht
+unter „Zufuhr", ob es im Takt läuft.
+
 Diese Rechnung ist absichtlich vorsichtig: sie zählt nur, was sie sicher
 weiß, und liegt deshalb nie zu hoch – eher zu niedrig. Genau das zeigt die
 **Tilde** an: `~847` heißt „mindestens so viel", `847` ohne Tilde heißt
@@ -230,6 +240,7 @@ Die Messlogik läuft gegen einen API-Stub, ohne das Spiel zu starten:
 ```
 lua5.1 tests/test_core.lua      # Messung der Mana-Ticks, 5-Sekunden-Regel
 lua5.1 tests/test_auras.lua     # Mana aus Segen der Weisheit und Manaquelle
+lua5.1 tests/test_ticks.lua     # Gutschrift im Takt des Spiels, gegen eine Simulation
 lua5.1 tests/test_spells.lua    # die Zauber-Rechnung, gegen eine Simulation
 lua5.1 tests/test_apiregen.lua  # GetManaRegen als Quelle
 lua5.1 tests/test_manabar.lua   # Mana aus dem Text der Standardleiste

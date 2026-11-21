@@ -369,6 +369,9 @@ SlashCmdList["MP5"] = function(input)
                     "|cffff5555noch keins gesehen|r")
                     .. ", seit " .. num(s.quiet) .. "s still"
                     .. " (Anker ab 3s)")
+                msg("    Zufuhr: " .. (s.mode == "ticks"
+                    and ("im Takt der Ereignisse, " .. num(s.ticks) .. " Ticks")
+                    or "laufend gerechnet (keine Ereignisse)"))
                 msg("    Schranken aus der Bezahlbarkeit: mindestens "
                     .. num(s.lower) .. ", weniger als " .. num(s.upper)
                     .. "  (" .. num(s.ladder) .. " Zauber in der Kostenleiter)")

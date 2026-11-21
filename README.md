@@ -18,6 +18,10 @@ enthalten. Steht dort 0, regeneriert gerade nichts.
 - **Zauber-Leiste**: bis zu fünf eigene Zauber mit Icon und der Zahl, wie oft
   das Mana für diesen Zauber noch reicht – Zauberzeit und die Regeneration
   während des Zaubers eingerechnet.
+- **Funktioniert auch auf Clients, die das aktuelle Mana nicht herausgeben** –
+  dann wird es mitgerechnet: Kosten der gewirkten Zauber abziehen,
+  Regeneration dazu. Die Zahlen sind dabei eine Untergrenze (`~5`) und werden
+  exakt, sobald der Manatank einmal voll war.
 - **Frei platzierbar und skalierbar**, Einstellungen pro Charakter.
 - Reine Anzeige über offizielle Blizzard-Schnittstellen, keine Automatisierung.
   Der `OnUpdate` läuft nur während der 5 Sekunden nach einem Zauber.
@@ -75,6 +79,7 @@ Alles geht auch per Chatbefehl:
 /mp5 spell list               belegte Plätze zeigen
 /mp5 icon <16-48>             Icon-Größe
 /mp5 count topright|center    wo die Zahl auf dem Icon sitzt
+/mp5 estimate on|off|reset    Mana mitrechnen, wenn der Client es schützt
 ```
 
 ### Diagnose
@@ -101,6 +106,7 @@ lua5.1 tests/test_core.lua      # Messung der Mana-Ticks, 5-Sekunden-Regel
 lua5.1 tests/test_spells.lua    # die Zauber-Rechnung, gegen eine Simulation
 lua5.1 tests/test_apiregen.lua  # GetManaRegen als Quelle
 lua5.1 tests/test_manabar.lua   # Mana aus dem Text der Standardleiste
+lua5.1 tests/test_estimate.lua  # das Mana-Modell, gegen eine Simulation
 ```
 
 ## Lizenz

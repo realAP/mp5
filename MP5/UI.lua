@@ -43,6 +43,58 @@ local logo = frame:CreateTexture(nil, "ARTWORK")
 logo:SetTexture("Interface\\AddOns\\MP5\\Textures\\icon.tga")
 logo:Hide()
 
+-- Der Knopf "Mana ist voll" ------------------------------------------------
+--
+-- Er sitzt in der Ecke der Anzeige und zeigt sich nur, wenn das Mana
+-- mitgerechnet wird - gibt der Client den Wert direkt her, gibt es nichts
+-- zu bestaetigen. Als eigener Knopf reagiert er auch dann auf die Maus,
+-- wenn die Anzeige fixiert ist.
+local fullBtn = CreateFrame("Button", nil, frame)
+fullBtn:SetSize(14, 14)
+
+local fullIcon = fullBtn:CreateTexture(nil, "ARTWORK")
+fullIcon:SetAllPoints()
+fullIcon:SetTexture("Interface\\AddOns\\MP5\\Textures\\icon.tga")
+
+local fullHi = fullBtn:CreateTexture(nil, "HIGHLIGHT")
+fullHi:SetAllPoints()
+fullHi:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+fullHi:SetBlendMode("ADD")
+
+fullBtn:Hide()
+
+fullBtn:SetScript("OnClick", function()
+    if ns.MarkManaFull then ns.MarkManaFull() end
+end)
+
+fullBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddLine("Mein Mana ist jetzt voll")
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("Dieser Client gibt das aktuelle Mana nicht heraus,", 0.8, 0.8, 0.8)
+    GameTooltip:AddLine("deshalb wird es mitgerechnet. Ein Klick setzt den", 0.8, 0.8, 0.8)
+    GameTooltip:AddLine("Wert auf den Anschlag - ab da stimmt er wieder.", 0.8, 0.8, 0.8)
+
+    local s = ns.Estimate and ns.Estimate:Status()
+    if s then
+        GameTooltip:AddLine(" ")
+        if s.exact then
+            GameTooltip:AddDoubleLine("Stand", "exakt", 1, 1, 1, 0.3, 0.9, 0.3)
+        else
+            GameTooltip:AddDoubleLine("Stand", "Untergrenze (~)", 1, 1, 1, 1, 0.82, 0.2)
+        end
+        if s.mana and s.max then
+            GameTooltip:AddDoubleLine("gerechnet",
+                math.floor(s.mana) .. " / " .. math.floor(s.max), 1, 1, 1, 1, 1, 1)
+        end
+    end
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("Geht auch mit /mp5 voll", 0.5, 0.7, 1)
+    GameTooltip:Show()
+end)
+
+fullBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
 local bar = CreateFrame("StatusBar", nil, frame)
 bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 bar:SetMinMaxValues(0, 5)
@@ -107,6 +159,7 @@ local function createSlot(i)
     b.count = b:CreateFontString(nil, "OVERLAY")
     b.count:SetShadowColor(0, 0, 0, 1)
     b.count:SetShadowOffset(1, -1)
+
 
     b:SetScript("OnEnter", function(self)
         if not ns.db.tooltip or not self.info then return end
@@ -223,8 +276,19 @@ local function updateSpells()
     local db = ns.db
     if not db then return end
     local plain = ns.plain or function(v) return v end
-    local mana, approx = Core:GetMana()       -- nil, wenn kein Weg funktioniert
+    local mana, approx, src = Core:GetMana()  -- nil, wenn kein Weg funktioniert
     mana = plain(mana)
+
+    -- Der Knopf "Mana ist voll" gehoert nur dorthin, wo der Wert gerechnet
+    -- und nicht gelesen wird. Steht er auf "Untergrenze", leuchtet er; ist
+    -- der Wert exakt, bleibt er blass - dann gibt es nichts zu korrigieren.
+    if db.showResetButton ~= false and src == "modell" then
+        local s = ns.Estimate and ns.Estimate:Status()
+        fullBtn:SetAlpha((s and s.exact) and 0.35 or 1.0)
+        fullBtn:Show()
+    else
+        fullBtn:Hide()
+    end
     local mp5  = plain(Core:GetMP5(true))     -- beim Durchcasten gilt die FSR-Stufe
     local mps, regenUnknown
     if mp5 then
@@ -471,6 +535,12 @@ function ns.ApplyLayout()
         logo:Hide()
     end
 
+    -- Der Knopf sitzt in der oberen rechten Ecke, innerhalb des Rands.
+    fullBtn:ClearAllPoints()
+    local btnSize = math.max(12, math.floor(rowH * 0.7))
+    fullBtn:SetSize(btnSize, btnSize)
+    fullBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(pad - 1), -(pad - 1))
+
     -- Werte mittig ueber dem Balken.
     value:ClearAllPoints()
     value:SetPoint("TOP", frame, "TOP", 0, -pad)
@@ -501,6 +571,7 @@ function ns.ApplyLayout()
         else
             b.count:SetPoint("TOPRIGHT", b, "TOPRIGHT", 1, 1)
         end
+
         if db.showSpells and resolved[i] then
             b:SetPoint("TOPLEFT", frame, "TOP", x + n * (iconSize + iconGap), y - 3)
             n = n + 1

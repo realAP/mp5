@@ -23,6 +23,7 @@ local defaults = {
     showCountdown = true,        -- Restzeit unter dem Balken
     tooltip       = true,
     showLogo      = false,       -- das Zeichen links in der Wertezeile
+    showResetButton = true,      -- Knopf "Mana ist voll" in der Ecke
     decimals      = 0,
     animate       = false,
 
@@ -124,6 +125,7 @@ local function usage()
     msg("  /mp5 icon <16-48>             - Groesse der Zauber-Icons")
     msg("  /mp5 count topright|center    - wo die Zahl auf dem Icon sitzt")
     msg("  /mp5 logo on|off              - das Zeichen in der Anzeige")
+    msg("  /mp5 button on|off            - Knopf \"Mana ist voll\" in der Ecke")
     msg("  /mp5 voll                     - \"mein Mana ist jetzt voll\":")
     msg("                                  setzt das Modell auf den Anschlag")
     msg("  /mp5 estimate on|off|reset    - Mana mitrechnen, wenn der Client")
@@ -141,6 +143,7 @@ end
 local toggles = {
     spells    = "showSpells",
     logo      = "showLogo",
+    button    = "showResetButton",
     label     = "showLabel",
     full      = "showFull",
     countdown = "showCountdown",

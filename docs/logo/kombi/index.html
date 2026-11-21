@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MP5 Logo &ndash; Die Kombination</title><style>
+  :root{
+    --bg:#0d0c0a; --panel:#15130f; --ink:#e8dfc8; --dim:#9c9177;
+    --gold:#ffd100; --line:#3a3326; --ok:#4ad04a; --bad:#d87a7a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.55;font-size:15px;
+       font-family:"Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:30px;margin:0 0 6px;color:var(--gold);letter-spacing:.5px}
+  h2{font-size:21px;margin:48px 0 4px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  h3{font-size:15px;margin:14px 0 4px;color:var(--gold)}
+  a{color:#8fc3ff}
+  p{margin:8px 0}
+  .lede{color:var(--dim);max-width:72ch}
+  code{background:#000;padding:1px 5px;border-radius:3px;font-size:13px;color:#d8c89a}
+  ul{margin:6px 0;padding-left:20px}
+  li{margin:3px 0}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.6px;text-transform:uppercase;
+       color:#0d0c0a;background:var(--gold);padding:1px 7px;border-radius:2px;
+       margin-right:6px;vertical-align:2px}
+  .variant{display:grid;grid-template-columns:300px 1fr;gap:28px;background:var(--panel);
+           border:1px solid var(--line);border-radius:4px;padding:22px;margin:18px 0;
+           align-items:start}
+  @media(max-width:820px){.variant{grid-template-columns:1fr}}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+  .big{width:230px;border:1px solid #241f14;border-radius:3px}
+  .states{display:flex;flex-direction:column;gap:6px;width:230px}
+  .states div{border:1px solid #241f14;border-radius:3px}
+  .states p{margin:0;font-size:11px;color:#5d5747;text-align:center}
+  .sizes{display:flex;align-items:flex-end;gap:14px}
+  .sizes figure{margin:0;text-align:center}
+  .sizes figcaption{font-size:10px;color:#5d5747;margin-top:4px}
+  .meta{font-size:13.5px;color:var(--dim)}
+  .pro{color:var(--ok)} .con{color:var(--bad)}
+  .pro span,.con span{color:var(--dim)}
+  .note{border-left:3px solid #e08a2a;background:#1a150c;padding:10px 14px;margin:16px 0;
+        color:#d8c9a8;font-size:14px}
+  .footer{margin-top:60px;border-top:1px solid var(--line);padding-top:14px;
+          color:var(--dim);font-size:13px}
+  .optwrap{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:22px;margin:18px 0}
+  .optwrap img{max-width:100%;height:auto;border:1px solid #241f14;border-radius:3px}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:#1b1812;color:var(--gold);font-weight:600}
+  /* Die SVGs tragen nur ein viewBox, kein width/height - ohne diese Regel
+     faellt der Browser auf 300x150 zurueck. */
+  svg{display:block;width:100%;height:auto}
+
+  .pair{display:flex;gap:18px;flex-wrap:wrap;margin:18px 0}
+  .pair div{border:1px solid var(--line);border-radius:3px;padding:18px}
+  .light{background:#efe7d4}
+</style></head><body><div class="wrap">
+<p class="meta"><a href="../index.html">&larr; alle Entw&uuml;rfe</a></p>
+<h1>Die Kombination</h1>
+<p class="lede">Entwurf 2 und Entwurf 6 in einem: die Silhouette, und im Magazin stecken fünf Manapatronen — eine je Sekunde der Regel. Sie liegen quer, Spitze nach vorn, und folgen der Krümmung des Magazins nach unten. Beim Zaubern erlöschen sie von oben nach unten. Das Zeitsymbol sitzt im Trommelvisier: das ist ohnehin ein Kreis, also wird es zum Zifferblatt mit fünf Marken und einem Zeiger — angeklebt werden musste dafür nichts.</p>
+<div class="pair">
+  <div style="width:280px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 204 118" role="img">
+  <rect width="204" height="118" fill="#13110c"/>
+  <polygon points="28.00,31.00 82.00,31.00 82.00,50.00 28.00,50.00" fill="#f2b839"/>
+  <polygon points="33.00,36.00 77.00,36.00 77.00,45.00 33.00,45.00" fill="#0a0906"/>
+  <polygon points="36.00,38.00 45.00,38.00 45.00,43.00 36.00,43.00" fill="#b07f18"/>
+  <polygon points="50.00,38.00 59.00,38.00 59.00,43.00 50.00,43.00" fill="#b07f18"/>
+  <polygon points="64.00,38.00 73.00,38.00 73.00,43.00 64.00,43.00" fill="#b07f18"/>
+  <polygon points="8.00,36.00 28.00,36.00 28.00,44.00 8.00,44.00" fill="#b07f18"/>
+  <polygon points="26.00,24.00 38.00,24.00 36.00,36.00 28.00,36.00" fill="#f2b839"/>
+  <circle cx="32.00" cy="20.00" r="8.00" fill="none" stroke="#f2b839" stroke-width="4.00"/>
+  <polygon points="38.00,22.00 88.00,22.00 88.00,31.00 38.00,31.00" fill="#b07f18"/>
+  <polygon points="61.71,24.45 50.71,8.45 43.29,13.55 54.29,29.55" fill="#f2b839"/>
+  <polygon points="78.00,28.00 150.00,28.00 150.00,50.00 78.00,50.00" fill="#f2b839"/>
+  <polygon points="96.00,33.00 116.00,33.00 116.00,40.00 96.00,40.00" fill="#13110c"/>
+  <polygon points="132.00,22.00 152.00,22.00 152.00,30.00 132.00,30.00" fill="#b07f18"/>
+  <polygon points="112.00,50.00 154.00,50.00 154.00,60.00 112.00,60.00" fill="#f2b839"/>
+  <polygon points="114.00,60.00 142.00,60.00 140.00,80.00 116.00,80.00" fill="#f2b839"/>
+  <polygon points="119.00,63.00 137.00,63.00 135.00,75.00 121.00,75.00" fill="#13110c"/>
+  <polygon points="124.00,60.00 130.00,60.00 128.00,72.00 123.00,71.00" fill="#b07f18"/>
+  <polygon points="138.00,60.00 156.00,60.00 152.00,96.00 136.00,93.00" fill="#f2b839"/>
+  <polygon points="150.00,32.00 188.00,36.00 188.00,46.00 150.00,48.00" fill="#b07f18"/>
+  <polygon points="186.00,28.00 196.00,28.00 196.00,58.00 186.00,56.00" fill="#f2b839"/>
+  <path d="M 144.26 -2.96 A 18.00 18.00 0 0 1 159.69 8.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 160.47 10.65 A 18.00 18.00 0 0 1 154.57 28.79" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 152.54 30.26 A 18.00 18.00 0 0 1 133.46 30.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 131.43 28.79 A 18.00 18.00 0 0 1 125.53 10.65" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 126.31 8.26 A 18.00 18.00 0 0 1 141.74 -2.96" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <circle cx="143.00" cy="15.00" r="14.00" fill="#f2b839"/>
+  <circle cx="143.00" cy="15.00" r="11.00" fill="#0a0906"/>
+  <polygon points="144.30,7.00 144.30,4.40 141.70,4.40 141.70,7.00" fill="#f2b839"/>
+  <polygon points="151.01,13.76 153.48,12.96 152.68,10.49 150.21,11.29" fill="#f2b839"/>
+  <polygon points="146.65,22.24 148.18,24.34 150.28,22.81 148.75,20.71" fill="#f2b839"/>
+  <polygon points="137.25,20.71 135.72,22.81 137.82,24.34 139.35,22.24" fill="#4a4433"/>
+  <polygon points="135.79,11.29 133.32,10.49 132.52,12.96 134.99,13.76" fill="#4a4433"/>
+  <polygon points="141.87,15.82 146.57,22.30 148.83,20.65 144.13,14.18" fill="#8fc3ff"/>
+  <circle cx="143.00" cy="15.00" r="2.20" fill="#8fc3ff"/>
+  <polygon points="80.00,48.00 80.00,48.00 79.21,51.10 78.40,54.17 77.56,57.22 76.69,60.25 75.80,63.25 74.89,66.22 73.95,69.17 72.99,72.10 72.00,75.00 70.99,77.88 69.95,80.73 68.89,83.56 67.80,86.36 66.69,89.14 65.56,91.89 64.40,94.62 63.21,97.32 62.00,100.00 86.00,104.00 108.00,48.00 107.30,51.11 106.54,54.22 105.72,57.33 104.84,60.44 103.90,63.56 102.89,66.67 101.82,69.78 100.69,72.89 99.50,76.00 98.25,79.11 96.93,82.22 95.56,85.33 94.12,88.44 92.62,91.56 91.06,94.67 89.43,97.78 87.75,100.89 86.00,104.00 108.00,48.00" fill="#f2b839"/>
+  <polygon points="85.00,53.00 85.00,53.00 84.22,55.55 83.42,58.07 82.61,60.58 81.79,63.07 80.96,65.55 80.11,68.00 79.25,70.44 78.38,72.85 77.50,75.25 76.60,77.63 75.70,79.99 74.78,82.33 73.85,84.66 72.90,86.96 71.94,89.25 70.98,91.52 69.99,93.77 69.00,96.00 85.00,99.00 103.00,53.00 102.31,55.56 101.59,58.11 100.83,60.67 100.04,63.22 99.20,65.78 98.33,68.33 97.43,70.89 96.48,73.44 95.50,76.00 94.48,78.56 93.43,81.11 92.33,83.67 91.20,86.22 90.04,88.78 88.83,91.33 87.59,93.89 86.31,96.44 85.00,99.00 103.00,53.00" fill="#0a0906"/>
+  <polygon points="90.00,56.50 102.00,56.50 102.00,62.50 90.00,62.50" fill="#8fc3ff"/>
+  <polygon points="90.00,56.50 90.00,62.50 84.00,59.50" fill="#3f6bb8"/>
+  <polygon points="86.60,64.70 98.60,64.70 98.60,70.70 86.60,70.70" fill="#8fc3ff"/>
+  <polygon points="86.60,64.70 86.60,70.70 80.60,67.70" fill="#3f6bb8"/>
+  <polygon points="83.20,72.90 95.20,72.90 95.20,78.90 83.20,78.90" fill="#8fc3ff"/>
+  <polygon points="83.20,72.90 83.20,78.90 77.20,75.90" fill="#3f6bb8"/>
+  <polygon points="79.80,81.10 91.80,81.10 91.80,87.10 79.80,87.10" fill="#4a4433"/>
+  <polygon points="79.80,81.10 79.80,87.10 73.80,84.10" fill="#3b3626"/>
+  <polygon points="76.40,89.30 88.40,89.30 88.40,95.30 76.40,95.30" fill="#4a4433"/>
+  <polygon points="76.40,89.30 76.40,95.30 70.40,92.30" fill="#3b3626"/>
+  <polygon points="60.00,100.00 88.00,104.00 86.00,110.00 58.00,106.00" fill="#b07f18"/>
+</svg></div>
+  <div class="light" style="width:280px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 204 118" role="img">
+  <rect width="204" height="118" fill="#efe7d4"/>
+  <polygon points="28.00,31.00 82.00,31.00 82.00,50.00 28.00,50.00" fill="#f2b839"/>
+  <polygon points="33.00,36.00 77.00,36.00 77.00,45.00 33.00,45.00" fill="#2b2721"/>
+  <polygon points="36.00,38.00 45.00,38.00 45.00,43.00 36.00,43.00" fill="#b07f18"/>
+  <polygon points="50.00,38.00 59.00,38.00 59.00,43.00 50.00,43.00" fill="#b07f18"/>
+  <polygon points="64.00,38.00 73.00,38.00 73.00,43.00 64.00,43.00" fill="#b07f18"/>
+  <polygon points="8.00,36.00 28.00,36.00 28.00,44.00 8.00,44.00" fill="#b07f18"/>
+  <polygon points="26.00,24.00 38.00,24.00 36.00,36.00 28.00,36.00" fill="#f2b839"/>
+  <circle cx="32.00" cy="20.00" r="8.00" fill="none" stroke="#f2b839" stroke-width="4.00"/>
+  <polygon points="38.00,22.00 88.00,22.00 88.00,31.00 38.00,31.00" fill="#b07f18"/>
+  <polygon points="61.71,24.45 50.71,8.45 43.29,13.55 54.29,29.55" fill="#f2b839"/>
+  <polygon points="78.00,28.00 150.00,28.00 150.00,50.00 78.00,50.00" fill="#f2b839"/>
+  <polygon points="96.00,33.00 116.00,33.00 116.00,40.00 96.00,40.00" fill="#efe7d4"/>
+  <polygon points="132.00,22.00 152.00,22.00 152.00,30.00 132.00,30.00" fill="#b07f18"/>
+  <polygon points="112.00,50.00 154.00,50.00 154.00,60.00 112.00,60.00" fill="#f2b839"/>
+  <polygon points="114.00,60.00 142.00,60.00 140.00,80.00 116.00,80.00" fill="#f2b839"/>
+  <polygon points="119.00,63.00 137.00,63.00 135.00,75.00 121.00,75.00" fill="#efe7d4"/>
+  <polygon points="124.00,60.00 130.00,60.00 128.00,72.00 123.00,71.00" fill="#b07f18"/>
+  <polygon points="138.00,60.00 156.00,60.00 152.00,96.00 136.00,93.00" fill="#f2b839"/>
+  <polygon points="150.00,32.00 188.00,36.00 188.00,46.00 150.00,48.00" fill="#b07f18"/>
+  <polygon points="186.00,28.00 196.00,28.00 196.00,58.00 186.00,56.00" fill="#f2b839"/>
+  <path d="M 144.26 -2.96 A 18.00 18.00 0 0 1 159.69 8.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 160.47 10.65 A 18.00 18.00 0 0 1 154.57 28.79" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 152.54 30.26 A 18.00 18.00 0 0 1 133.46 30.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 131.43 28.79 A 18.00 18.00 0 0 1 125.53 10.65" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 126.31 8.26 A 18.00 18.00 0 0 1 141.74 -2.96" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <circle cx="143.00" cy="15.00" r="14.00" fill="#f2b839"/>
+  <circle cx="143.00" cy="15.00" r="11.00" fill="#2b2721"/>
+  <polygon points="144.30,7.00 144.30,4.40 141.70,4.40 141.70,7.00" fill="#f2b839"/>
+  <polygon points="151.01,13.76 153.48,12.96 152.68,10.49 150.21,11.29" fill="#f2b839"/>
+  <polygon points="146.65,22.24 148.18,24.34 150.28,22.81 148.75,20.71" fill="#f2b839"/>
+  <polygon points="137.25,20.71 135.72,22.81 137.82,24.34 139.35,22.24" fill="#4a4433"/>
+  <polygon points="135.79,11.29 133.32,10.49 132.52,12.96 134.99,13.76" fill="#4a4433"/>
+  <polygon points="141.87,15.82 146.57,22.30 148.83,20.65 144.13,14.18" fill="#8fc3ff"/>
+  <circle cx="143.00" cy="15.00" r="2.20" fill="#8fc3ff"/>
+  <polygon points="80.00,48.00 80.00,48.00 79.21,51.10 78.40,54.17 77.56,57.22 76.69,60.25 75.80,63.25 74.89,66.22 73.95,69.17 72.99,72.10 72.00,75.00 70.99,77.88 69.95,80.73 68.89,83.56 67.80,86.36 66.69,89.14 65.56,91.89 64.40,94.62 63.21,97.32 62.00,100.00 86.00,104.00 108.00,48.00 107.30,51.11 106.54,54.22 105.72,57.33 104.84,60.44 103.90,63.56 102.89,66.67 101.82,69.78 100.69,72.89 99.50,76.00 98.25,79.11 96.93,82.22 95.56,85.33 94.12,88.44 92.62,91.56 91.06,94.67 89.43,97.78 87.75,100.89 86.00,104.00 108.00,48.00" fill="#f2b839"/>
+  <polygon points="85.00,53.00 85.00,53.00 84.22,55.55 83.42,58.07 82.61,60.58 81.79,63.07 80.96,65.55 80.11,68.00 79.25,70.44 78.38,72.85 77.50,75.25 76.60,77.63 75.70,79.99 74.78,82.33 73.85,84.66 72.90,86.96 71.94,89.25 70.98,91.52 69.99,93.77 69.00,96.00 85.00,99.00 103.00,53.00 102.31,55.56 101.59,58.11 100.83,60.67 100.04,63.22 99.20,65.78 98.33,68.33 97.43,70.89 96.48,73.44 95.50,76.00 94.48,78.56 93.43,81.11 92.33,83.67 91.20,86.22 90.04,88.78 88.83,91.33 87.59,93.89 86.31,96.44 85.00,99.00 103.00,53.00" fill="#2b2721"/>
+  <polygon points="90.00,56.50 102.00,56.50 102.00,62.50 90.00,62.50" fill="#8fc3ff"/>
+  <polygon points="90.00,56.50 90.00,62.50 84.00,59.50" fill="#3f6bb8"/>
+  <polygon points="86.60,64.70 98.60,64.70 98.60,70.70 86.60,70.70" fill="#8fc3ff"/>
+  <polygon points="86.60,64.70 86.60,70.70 80.60,67.70" fill="#3f6bb8"/>
+  <polygon points="83.20,72.90 95.20,72.90 95.20,78.90 83.20,78.90" fill="#8fc3ff"/>
+  <polygon points="83.20,72.90 83.20,78.90 77.20,75.90" fill="#3f6bb8"/>
+  <polygon points="79.80,81.10 91.80,81.10 91.80,87.10 79.80,87.10" fill="#4a4433"/>
+  <polygon points="79.80,81.10 79.80,87.10 73.80,84.10" fill="#3b3626"/>
+  <polygon points="76.40,89.30 88.40,89.30 88.40,95.30 76.40,95.30" fill="#4a4433"/>
+  <polygon points="76.40,89.30 76.40,95.30 70.40,92.30" fill="#3b3626"/>
+  <polygon points="60.00,100.00 88.00,104.00 86.00,110.00 58.00,106.00" fill="#b07f18"/>
+</svg></div>
+</div>
+<p class="meta">Links wie im Spiel, rechts auf hellem Grund. Die Aussparungen
+&ndash; Kerben, Stege, Punzen &ndash; nehmen den Hintergrund jeweils mit, sonst
+st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
+<div class="sizes"><figure><div style="width:64px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 204 118" role="img">
+  <rect width="204" height="118" fill="#13110c"/>
+  <polygon points="28.00,31.00 82.00,31.00 82.00,50.00 28.00,50.00" fill="#f2b839"/>
+  <polygon points="33.00,36.00 77.00,36.00 77.00,45.00 33.00,45.00" fill="#0a0906"/>
+  <polygon points="36.00,38.00 45.00,38.00 45.00,43.00 36.00,43.00" fill="#b07f18"/>
+  <polygon points="50.00,38.00 59.00,38.00 59.00,43.00 50.00,43.00" fill="#b07f18"/>
+  <polygon points="64.00,38.00 73.00,38.00 73.00,43.00 64.00,43.00" fill="#b07f18"/>
+  <polygon points="8.00,36.00 28.00,36.00 28.00,44.00 8.00,44.00" fill="#b07f18"/>
+  <polygon points="26.00,24.00 38.00,24.00 36.00,36.00 28.00,36.00" fill="#f2b839"/>
+  <circle cx="32.00" cy="20.00" r="8.00" fill="none" stroke="#f2b839" stroke-width="4.00"/>
+  <polygon points="38.00,22.00 88.00,22.00 88.00,31.00 38.00,31.00" fill="#b07f18"/>
+  <polygon points="61.71,24.45 50.71,8.45 43.29,13.55 54.29,29.55" fill="#f2b839"/>
+  <polygon points="78.00,28.00 150.00,28.00 150.00,50.00 78.00,50.00" fill="#f2b839"/>
+  <polygon points="96.00,33.00 116.00,33.00 116.00,40.00 96.00,40.00" fill="#13110c"/>
+  <polygon points="132.00,22.00 152.00,22.00 152.00,30.00 132.00,30.00" fill="#b07f18"/>
+  <polygon points="112.00,50.00 154.00,50.00 154.00,60.00 112.00,60.00" fill="#f2b839"/>
+  <polygon points="114.00,60.00 142.00,60.00 140.00,80.00 116.00,80.00" fill="#f2b839"/>
+  <polygon points="119.00,63.00 137.00,63.00 135.00,75.00 121.00,75.00" fill="#13110c"/>
+  <polygon points="124.00,60.00 130.00,60.00 128.00,72.00 123.00,71.00" fill="#b07f18"/>
+  <polygon points="138.00,60.00 156.00,60.00 152.00,96.00 136.00,93.00" fill="#f2b839"/>
+  <polygon points="150.00,32.00 188.00,36.00 188.00,46.00 150.00,48.00" fill="#b07f18"/>
+  <polygon points="186.00,28.00 196.00,28.00 196.00,58.00 186.00,56.00" fill="#f2b839"/>
+  <path d="M 144.26 -2.96 A 18.00 18.00 0 0 1 159.69 8.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 160.47 10.65 A 18.00 18.00 0 0 1 154.57 28.79" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 152.54 30.26 A 18.00 18.00 0 0 1 133.46 30.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 131.43 28.79 A 18.00 18.00 0 0 1 125.53 10.65" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 126.31 8.26 A 18.00 18.00 0 0 1 141.74 -2.96" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <circle cx="143.00" cy="15.00" r="14.00" fill="#f2b839"/>
+  <circle cx="143.00" cy="15.00" r="11.00" fill="#0a0906"/>
+  <polygon points="144.30,7.00 144.30,4.40 141.70,4.40 141.70,7.00" fill="#f2b839"/>
+  <polygon points="151.01,13.76 153.48,12.96 152.68,10.49 150.21,11.29" fill="#f2b839"/>
+  <polygon points="146.65,22.24 148.18,24.34 150.28,22.81 148.75,20.71" fill="#f2b839"/>
+  <polygon points="137.25,20.71 135.72,22.81 137.82,24.34 139.35,22.24" fill="#4a4433"/>
+  <polygon points="135.79,11.29 133.32,10.49 132.52,12.96 134.99,13.76" fill="#4a4433"/>
+  <polygon points="141.87,15.82 146.57,22.30 148.83,20.65 144.13,14.18" fill="#8fc3ff"/>
+  <circle cx="143.00" cy="15.00" r="2.20" fill="#8fc3ff"/>
+  <polygon points="80.00,48.00 80.00,48.00 79.21,51.10 78.40,54.17 77.56,57.22 76.69,60.25 75.80,63.25 74.89,66.22 73.95,69.17 72.99,72.10 72.00,75.00 70.99,77.88 69.95,80.73 68.89,83.56 67.80,86.36 66.69,89.14 65.56,91.89 64.40,94.62 63.21,97.32 62.00,100.00 86.00,104.00 108.00,48.00 107.30,51.11 106.54,54.22 105.72,57.33 104.84,60.44 103.90,63.56 102.89,66.67 101.82,69.78 100.69,72.89 99.50,76.00 98.25,79.11 96.93,82.22 95.56,85.33 94.12,88.44 92.62,91.56 91.06,94.67 89.43,97.78 87.75,100.89 86.00,104.00 108.00,48.00" fill="#f2b839"/>
+  <polygon points="85.00,53.00 85.00,53.00 84.22,55.55 83.42,58.07 82.61,60.58 81.79,63.07 80.96,65.55 80.11,68.00 79.25,70.44 78.38,72.85 77.50,75.25 76.60,77.63 75.70,79.99 74.78,82.33 73.85,84.66 72.90,86.96 71.94,89.25 70.98,91.52 69.99,93.77 69.00,96.00 85.00,99.00 103.00,53.00 102.31,55.56 101.59,58.11 100.83,60.67 100.04,63.22 99.20,65.78 98.33,68.33 97.43,70.89 96.48,73.44 95.50,76.00 94.48,78.56 93.43,81.11 92.33,83.67 91.20,86.22 90.04,88.78 88.83,91.33 87.59,93.89 86.31,96.44 85.00,99.00 103.00,53.00" fill="#0a0906"/>
+  <polygon points="90.00,56.50 102.00,56.50 102.00,62.50 90.00,62.50" fill="#8fc3ff"/>
+  <polygon points="90.00,56.50 90.00,62.50 84.00,59.50" fill="#3f6bb8"/>
+  <polygon points="86.60,64.70 98.60,64.70 98.60,70.70 86.60,70.70" fill="#8fc3ff"/>
+  <polygon points="86.60,64.70 86.60,70.70 80.60,67.70" fill="#3f6bb8"/>
+  <polygon points="83.20,72.90 95.20,72.90 95.20,78.90 83.20,78.90" fill="#8fc3ff"/>
+  <polygon points="83.20,72.90 83.20,78.90 77.20,75.90" fill="#3f6bb8"/>
+  <polygon points="79.80,81.10 91.80,81.10 91.80,87.10 79.80,87.10" fill="#4a4433"/>
+  <polygon points="79.80,81.10 79.80,87.10 73.80,84.10" fill="#3b3626"/>
+  <polygon points="76.40,89.30 88.40,89.30 88.40,95.30 76.40,95.30" fill="#4a4433"/>
+  <polygon points="76.40,89.30 76.40,95.30 70.40,92.30" fill="#3b3626"/>
+  <polygon points="60.00,100.00 88.00,104.00 86.00,110.00 58.00,106.00" fill="#b07f18"/>
+</svg></div><figcaption>64 px</figcaption></figure><figure><div style="width:32px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 204 118" role="img">
+  <rect width="204" height="118" fill="#13110c"/>
+  <polygon points="28.00,31.00 82.00,31.00 82.00,50.00 28.00,50.00" fill="#f2b839"/>
+  <polygon points="33.00,36.00 77.00,36.00 77.00,45.00 33.00,45.00" fill="#0a0906"/>
+  <polygon points="36.00,38.00 45.00,38.00 45.00,43.00 36.00,43.00" fill="#b07f18"/>
+  <polygon points="50.00,38.00 59.00,38.00 59.00,43.00 50.00,43.00" fill="#b07f18"/>
+  <polygon points="64.00,38.00 73.00,38.00 73.00,43.00 64.00,43.00" fill="#b07f18"/>
+  <polygon points="8.00,36.00 28.00,36.00 28.00,44.00 8.00,44.00" fill="#b07f18"/>
+  <polygon points="26.00,24.00 38.00,24.00 36.00,36.00 28.00,36.00" fill="#f2b839"/>
+  <circle cx="32.00" cy="20.00" r="8.00" fill="none" stroke="#f2b839" stroke-width="4.00"/>
+  <polygon points="38.00,22.00 88.00,22.00 88.00,31.00 38.00,31.00" fill="#b07f18"/>
+  <polygon points="61.71,24.45 50.71,8.45 43.29,13.55 54.29,29.55" fill="#f2b839"/>
+  <polygon points="78.00,28.00 150.00,28.00 150.00,50.00 78.00,50.00" fill="#f2b839"/>
+  <polygon points="96.00,33.00 116.00,33.00 116.00,40.00 96.00,40.00" fill="#13110c"/>
+  <polygon points="132.00,22.00 152.00,22.00 152.00,30.00 132.00,30.00" fill="#b07f18"/>
+  <polygon points="112.00,50.00 154.00,50.00 154.00,60.00 112.00,60.00" fill="#f2b839"/>
+  <polygon points="114.00,60.00 142.00,60.00 140.00,80.00 116.00,80.00" fill="#f2b839"/>
+  <polygon points="119.00,63.00 137.00,63.00 135.00,75.00 121.00,75.00" fill="#13110c"/>
+  <polygon points="124.00,60.00 130.00,60.00 128.00,72.00 123.00,71.00" fill="#b07f18"/>
+  <polygon points="138.00,60.00 156.00,60.00 152.00,96.00 136.00,93.00" fill="#f2b839"/>
+  <polygon points="150.00,32.00 188.00,36.00 188.00,46.00 150.00,48.00" fill="#b07f18"/>
+  <polygon points="186.00,28.00 196.00,28.00 196.00,58.00 186.00,56.00" fill="#f2b839"/>
+  <path d="M 144.26 -2.96 A 18.00 18.00 0 0 1 159.69 8.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 160.47 10.65 A 18.00 18.00 0 0 1 154.57 28.79" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 152.54 30.26 A 18.00 18.00 0 0 1 133.46 30.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 131.43 28.79 A 18.00 18.00 0 0 1 125.53 10.65" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 126.31 8.26 A 18.00 18.00 0 0 1 141.74 -2.96" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <circle cx="143.00" cy="15.00" r="14.00" fill="#f2b839"/>
+  <circle cx="143.00" cy="15.00" r="11.00" fill="#0a0906"/>
+  <polygon points="144.30,7.00 144.30,4.40 141.70,4.40 141.70,7.00" fill="#f2b839"/>
+  <polygon points="151.01,13.76 153.48,12.96 152.68,10.49 150.21,11.29" fill="#f2b839"/>
+  <polygon points="146.65,22.24 148.18,24.34 150.28,22.81 148.75,20.71" fill="#f2b839"/>
+  <polygon points="137.25,20.71 135.72,22.81 137.82,24.34 139.35,22.24" fill="#4a4433"/>
+  <polygon points="135.79,11.29 133.32,10.49 132.52,12.96 134.99,13.76" fill="#4a4433"/>
+  <polygon points="141.87,15.82 146.57,22.30 148.83,20.65 144.13,14.18" fill="#8fc3ff"/>
+  <circle cx="143.00" cy="15.00" r="2.20" fill="#8fc3ff"/>
+  <polygon points="80.00,48.00 80.00,48.00 79.21,51.10 78.40,54.17 77.56,57.22 76.69,60.25 75.80,63.25 74.89,66.22 73.95,69.17 72.99,72.10 72.00,75.00 70.99,77.88 69.95,80.73 68.89,83.56 67.80,86.36 66.69,89.14 65.56,91.89 64.40,94.62 63.21,97.32 62.00,100.00 86.00,104.00 108.00,48.00 107.30,51.11 106.54,54.22 105.72,57.33 104.84,60.44 103.90,63.56 102.89,66.67 101.82,69.78 100.69,72.89 99.50,76.00 98.25,79.11 96.93,82.22 95.56,85.33 94.12,88.44 92.62,91.56 91.06,94.67 89.43,97.78 87.75,100.89 86.00,104.00 108.00,48.00" fill="#f2b839"/>
+  <polygon points="85.00,53.00 85.00,53.00 84.22,55.55 83.42,58.07 82.61,60.58 81.79,63.07 80.96,65.55 80.11,68.00 79.25,70.44 78.38,72.85 77.50,75.25 76.60,77.63 75.70,79.99 74.78,82.33 73.85,84.66 72.90,86.96 71.94,89.25 70.98,91.52 69.99,93.77 69.00,96.00 85.00,99.00 103.00,53.00 102.31,55.56 101.59,58.11 100.83,60.67 100.04,63.22 99.20,65.78 98.33,68.33 97.43,70.89 96.48,73.44 95.50,76.00 94.48,78.56 93.43,81.11 92.33,83.67 91.20,86.22 90.04,88.78 88.83,91.33 87.59,93.89 86.31,96.44 85.00,99.00 103.00,53.00" fill="#0a0906"/>
+  <polygon points="90.00,56.50 102.00,56.50 102.00,62.50 90.00,62.50" fill="#8fc3ff"/>
+  <polygon points="90.00,56.50 90.00,62.50 84.00,59.50" fill="#3f6bb8"/>
+  <polygon points="86.60,64.70 98.60,64.70 98.60,70.70 86.60,70.70" fill="#8fc3ff"/>
+  <polygon points="86.60,64.70 86.60,70.70 80.60,67.70" fill="#3f6bb8"/>
+  <polygon points="83.20,72.90 95.20,72.90 95.20,78.90 83.20,78.90" fill="#8fc3ff"/>
+  <polygon points="83.20,72.90 83.20,78.90 77.20,75.90" fill="#3f6bb8"/>
+  <polygon points="79.80,81.10 91.80,81.10 91.80,87.10 79.80,87.10" fill="#4a4433"/>
+  <polygon points="79.80,81.10 79.80,87.10 73.80,84.10" fill="#3b3626"/>
+  <polygon points="76.40,89.30 88.40,89.30 88.40,95.30 76.40,95.30" fill="#4a4433"/>
+  <polygon points="76.40,89.30 76.40,95.30 70.40,92.30" fill="#3b3626"/>
+  <polygon points="60.00,100.00 88.00,104.00 86.00,110.00 58.00,106.00" fill="#b07f18"/>
+</svg></div><figcaption>32 px</figcaption></figure><figure><div style="width:16px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 204 118" role="img">
+  <rect width="204" height="118" fill="#13110c"/>
+  <polygon points="28.00,31.00 82.00,31.00 82.00,50.00 28.00,50.00" fill="#f2b839"/>
+  <polygon points="33.00,36.00 77.00,36.00 77.00,45.00 33.00,45.00" fill="#0a0906"/>
+  <polygon points="36.00,38.00 45.00,38.00 45.00,43.00 36.00,43.00" fill="#b07f18"/>
+  <polygon points="50.00,38.00 59.00,38.00 59.00,43.00 50.00,43.00" fill="#b07f18"/>
+  <polygon points="64.00,38.00 73.00,38.00 73.00,43.00 64.00,43.00" fill="#b07f18"/>
+  <polygon points="8.00,36.00 28.00,36.00 28.00,44.00 8.00,44.00" fill="#b07f18"/>
+  <polygon points="26.00,24.00 38.00,24.00 36.00,36.00 28.00,36.00" fill="#f2b839"/>
+  <circle cx="32.00" cy="20.00" r="8.00" fill="none" stroke="#f2b839" stroke-width="4.00"/>
+  <polygon points="38.00,22.00 88.00,22.00 88.00,31.00 38.00,31.00" fill="#b07f18"/>
+  <polygon points="61.71,24.45 50.71,8.45 43.29,13.55 54.29,29.55" fill="#f2b839"/>
+  <polygon points="78.00,28.00 150.00,28.00 150.00,50.00 78.00,50.00" fill="#f2b839"/>
+  <polygon points="96.00,33.00 116.00,33.00 116.00,40.00 96.00,40.00" fill="#13110c"/>
+  <polygon points="132.00,22.00 152.00,22.00 152.00,30.00 132.00,30.00" fill="#b07f18"/>
+  <polygon points="112.00,50.00 154.00,50.00 154.00,60.00 112.00,60.00" fill="#f2b839"/>
+  <polygon points="114.00,60.00 142.00,60.00 140.00,80.00 116.00,80.00" fill="#f2b839"/>
+  <polygon points="119.00,63.00 137.00,63.00 135.00,75.00 121.00,75.00" fill="#13110c"/>
+  <polygon points="124.00,60.00 130.00,60.00 128.00,72.00 123.00,71.00" fill="#b07f18"/>
+  <polygon points="138.00,60.00 156.00,60.00 152.00,96.00 136.00,93.00" fill="#f2b839"/>
+  <polygon points="150.00,32.00 188.00,36.00 188.00,46.00 150.00,48.00" fill="#b07f18"/>
+  <polygon points="186.00,28.00 196.00,28.00 196.00,58.00 186.00,56.00" fill="#f2b839"/>
+  <path d="M 144.26 -2.96 A 18.00 18.00 0 0 1 159.69 8.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 160.47 10.65 A 18.00 18.00 0 0 1 154.57 28.79" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 152.54 30.26 A 18.00 18.00 0 0 1 133.46 30.26" fill="none" stroke="#f2b839" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 131.43 28.79 A 18.00 18.00 0 0 1 125.53 10.65" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <path d="M 126.31 8.26 A 18.00 18.00 0 0 1 141.74 -2.96" fill="none" stroke="#4a4433" stroke-width="3.50" stroke-linecap="butt"/>
+  <circle cx="143.00" cy="15.00" r="14.00" fill="#f2b839"/>
+  <circle cx="143.00" cy="15.00" r="11.00" fill="#0a0906"/>
+  <polygon points="144.30,7.00 144.30,4.40 141.70,4.40 141.70,7.00" fill="#f2b839"/>
+  <polygon points="151.01,13.76 153.48,12.96 152.68,10.49 150.21,11.29" fill="#f2b839"/>
+  <polygon points="146.65,22.24 148.18,24.34 150.28,22.81 148.75,20.71" fill="#f2b839"/>
+  <polygon points="137.25,20.71 135.72,22.81 137.82,24.34 139.35,22.24" fill="#4a4433"/>
+  <polygon points="135.79,11.29 133.32,10.49 132.52,12.96 134.99,13.76" fill="#4a4433"/>
+  <polygon points="141.87,15.82 146.57,22.30 148.83,20.65 144.13,14.18" fill="#8fc3ff"/>
+  <circle cx="143.00" cy="15.00" r="2.20" fill="#8fc3ff"/>
+  <polygon points="80.00,48.00 80.00,48.00 79.21,51.10 78.40,54.17 77.56,57.22 76.69,60.25 75.80,63.25 74.89,66.22 73.95,69.17 72.99,72.10 72.00,75.00 70.99,77.88 69.95,80.73 68.89,83.56 67.80,86.36 66.69,89.14 65.56,91.89 64.40,94.62 63.21,97.32 62.00,100.00 86.00,104.00 108.00,48.00 107.30,51.11 106.54,54.22 105.72,57.33 104.84,60.44 103.90,63.56 102.89,66.67 101.82,69.78 100.69,72.89 99.50,76.00 98.25,79.11 96.93,82.22 95.56,85.33 94.12,88.44 92.62,91.56 91.06,94.67 89.43,97.78 87.75,100.89 86.00,104.00 108.00,48.00" fill="#f2b839"/>
+  <polygon points="85.00,53.00 85.00,53.00 84.22,55.55 83.42,58.07 82.61,60.58 81.79,63.07 80.96,65.55 80.11,68.00 79.25,70.44 78.38,72.85 77.50,75.25 76.60,77.63 75.70,79.99 74.78,82.33 73.85,84.66 72.90,86.96 71.94,89.25 70.98,91.52 69.99,93.77 69.00,96.00 85.00,99.00 103.00,53.00 102.31,55.56 101.59,58.11 100.83,60.67 100.04,63.22 99.20,65.78 98.33,68.33 97.43,70.89 96.48,73.44 95.50,76.00 94.48,78.56 93.43,81.11 92.33,83.67 91.20,86.22 90.04,88.78 88.83,91.33 87.59,93.89 86.31,96.44 85.00,99.00 103.00,53.00" fill="#0a0906"/>
+  <polygon points="90.00,56.50 102.00,56.50 102.00,62.50 90.00,62.50" fill="#8fc3ff"/>
+  <polygon points="90.00,56.50 90.00,62.50 84.00,59.50" fill="#3f6bb8"/>
+  <polygon points="86.60,64.70 98.60,64.70 98.60,70.70 86.60,70.70" fill="#8fc3ff"/>
+  <polygon points="86.60,64.70 86.60,70.70 80.60,67.70" fill="#3f6bb8"/>
+  <polygon points="83.20,72.90 95.20,72.90 95.20,78.90 83.20,78.90" fill="#8fc3ff"/>
+  <polygon points="83.20,72.90 83.20,78.90 77.20,75.90" fill="#3f6bb8"/>
+  <polygon points="79.80,81.10 91.80,81.10 91.80,87.10 79.80,87.10" fill="#4a4433"/>
+  <polygon points="79.80,81.10 79.80,87.10 73.80,84.10" fill="#3b3626"/>
+  <polygon points="76.40,89.30 88.40,89.30 88.40,95.30 76.40,95.30" fill="#4a4433"/>
+  <polygon points="76.40,89.30 76.40,95.30 70.40,92.30" fill="#3b3626"/>
+  <polygon points="60.00,100.00 88.00,104.00 86.00,110.00 58.00,106.00" fill="#b07f18"/>
+</svg></div><figcaption>16 px</figcaption></figure></div>
+<h3>Was tr&auml;gt</h3><ul class="meta"><li class='pro'>+ <span>Die Fünf ist nicht mehr dekoriert, sie <b>ist</b> der Inhalt: fünf Patronen, fünf Sekunden. Das Logo erklärt das Addon, ohne ein Wort zu brauchen.</span></li><li class='pro'>+ <span>Das Magazin trägt die Anzeige, der Handschutz bleibt frei — vorher kämpften zwei Anzeigeflächen um dieselbe Aufmerksamkeit.</span></li><li class='pro'>+ <span>Lässt sich im Addon wirklich mitlaufen lassen: eine Patrone je verstrichener Sekunde.</span></li></ul>
+<h3>Was nicht</h3><ul class="meta"><li class='con'>&ndash; <span>Breitformat. Als quadratisches Icon bleibt oben und unten Luft.</span></li><li class='con'>&ndash; <span>Unter 48&nbsp;px verschmelzen die Patronen zu einem blauen Streifen. Die Waffe bleibt erkennbar, die Fünf nicht.</span></li><li class='con'>&ndash; <span>Die deutlichste Waffe im ganzen Satz — wenn das Addon irgendwo öffentlich gelistet wird, ist das der Entwurf, der am ehesten aneckt.</span></li></ul>
+<h3>Wof&uuml;r</h3><p class="meta">Kopfgrafik, Titelbild, Addon-Seite. Fürs kleine Icon Entwurf 4.</p>
+<p class="meta">Dateien: <code>kombi.svg</code>, <code>kombi-hell.svg</code>,
+<code>kombi.png</code> (128&nbsp;px), <code>kombi-32.png</code></p>
+<div class="footer">MP5 &ndash; Logo-Entw&uuml;rfe &middot; Stand 21.11.2026</div>
+</div></body></html>

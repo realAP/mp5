@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MP5 Logo &ndash; Das Zielbild</title><style>
+  :root{
+    --bg:#0d0c0a; --panel:#15130f; --ink:#e8dfc8; --dim:#9c9177;
+    --gold:#ffd100; --line:#3a3326; --ok:#4ad04a; --bad:#d87a7a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.55;font-size:15px;
+       font-family:"Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:30px;margin:0 0 6px;color:var(--gold);letter-spacing:.5px}
+  h2{font-size:21px;margin:48px 0 4px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  h3{font-size:15px;margin:14px 0 4px;color:var(--gold)}
+  a{color:#8fc3ff}
+  p{margin:8px 0}
+  .lede{color:var(--dim);max-width:72ch}
+  code{background:#000;padding:1px 5px;border-radius:3px;font-size:13px;color:#d8c89a}
+  ul{margin:6px 0;padding-left:20px}
+  li{margin:3px 0}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.6px;text-transform:uppercase;
+       color:#0d0c0a;background:var(--gold);padding:1px 7px;border-radius:2px;
+       margin-right:6px;vertical-align:2px}
+  .variant{display:grid;grid-template-columns:300px 1fr;gap:28px;background:var(--panel);
+           border:1px solid var(--line);border-radius:4px;padding:22px;margin:18px 0;
+           align-items:start}
+  @media(max-width:820px){.variant{grid-template-columns:1fr}}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+  .big{width:230px;border:1px solid #241f14;border-radius:3px}
+  .states{display:flex;flex-direction:column;gap:6px;width:230px}
+  .states div{border:1px solid #241f14;border-radius:3px}
+  .states p{margin:0;font-size:11px;color:#5d5747;text-align:center}
+  .sizes{display:flex;align-items:flex-end;gap:14px}
+  .sizes figure{margin:0;text-align:center}
+  .sizes figcaption{font-size:10px;color:#5d5747;margin-top:4px}
+  .meta{font-size:13.5px;color:var(--dim)}
+  .pro{color:var(--ok)} .con{color:var(--bad)}
+  .pro span,.con span{color:var(--dim)}
+  .note{border-left:3px solid #e08a2a;background:#1a150c;padding:10px 14px;margin:16px 0;
+        color:#d8c9a8;font-size:14px}
+  .footer{margin-top:60px;border-top:1px solid var(--line);padding-top:14px;
+          color:var(--dim);font-size:13px}
+  .optwrap{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:22px;margin:18px 0}
+  .optwrap img{max-width:100%;height:auto;border:1px solid #241f14;border-radius:3px}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:#1b1812;color:var(--gold);font-weight:600}
+  /* Die SVGs tragen nur ein viewBox, kein width/height - ohne diese Regel
+     faellt der Browser auf 300x150 zurueck. */
+  svg{display:block;width:100%;height:auto}
+
+  .pair{display:flex;gap:18px;flex-wrap:wrap;margin:18px 0}
+  .pair div{border:1px solid var(--line);border-radius:3px;padding:18px}
+  .light{background:#efe7d4}
+</style></head><body><div class="wrap">
+<p class="meta"><a href="../index.html">&larr; alle Entw&uuml;rfe</a></p>
+<h1>Das Zielbild</h1>
+<p class="lede">Korn und Kimme, und dazwischen hängt der Manatropfen — das Bild, das man sieht, wenn man über die Visierung zielt. Unter der Kimme laufen fünf Marken voll.</p>
+<div class="pair">
+  <div style="width:280px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#13110c"/>
+  <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
+  <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
+  <polygon points="10.00,68.00 50.00,68.00 54.00,88.00 74.00,88.00 78.00,68.00 118.00,68.00 118.00,100.00 10.00,100.00" fill="#f2b839"/>
+  <polygon points="18.00,76.00 42.00,76.00 42.00,82.00 18.00,82.00" fill="#13110c"/>
+  <polygon points="86.00,76.00 110.00,76.00 110.00,82.00 86.00,82.00" fill="#13110c"/>
+  <polygon points="18.00,106.00 31.00,106.00 31.00,115.00 18.00,115.00" fill="#f2b839"/>
+  <polygon points="37.00,106.00 50.00,106.00 50.00,115.00 37.00,115.00" fill="#f2b839"/>
+  <polygon points="56.00,106.00 69.00,106.00 69.00,115.00 56.00,115.00" fill="#f2b839"/>
+  <polygon points="75.00,106.00 88.00,106.00 88.00,115.00 75.00,115.00" fill="#4a4433"/>
+  <polygon points="94.00,106.00 107.00,106.00 107.00,115.00 94.00,115.00" fill="#4a4433"/>
+  <polygon points="61.00,2.00 67.00,2.00 69.00,14.00 59.00,14.00" fill="#b07f18"/>
+</svg></div>
+  <div class="light" style="width:280px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#efe7d4"/>
+  <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
+  <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
+  <polygon points="10.00,68.00 50.00,68.00 54.00,88.00 74.00,88.00 78.00,68.00 118.00,68.00 118.00,100.00 10.00,100.00" fill="#f2b839"/>
+  <polygon points="18.00,76.00 42.00,76.00 42.00,82.00 18.00,82.00" fill="#efe7d4"/>
+  <polygon points="86.00,76.00 110.00,76.00 110.00,82.00 86.00,82.00" fill="#efe7d4"/>
+  <polygon points="18.00,106.00 31.00,106.00 31.00,115.00 18.00,115.00" fill="#f2b839"/>
+  <polygon points="37.00,106.00 50.00,106.00 50.00,115.00 37.00,115.00" fill="#f2b839"/>
+  <polygon points="56.00,106.00 69.00,106.00 69.00,115.00 56.00,115.00" fill="#f2b839"/>
+  <polygon points="75.00,106.00 88.00,106.00 88.00,115.00 75.00,115.00" fill="#4a4433"/>
+  <polygon points="94.00,106.00 107.00,106.00 107.00,115.00 94.00,115.00" fill="#4a4433"/>
+  <polygon points="61.00,2.00 67.00,2.00 69.00,14.00 59.00,14.00" fill="#b07f18"/>
+</svg></div>
+</div>
+<p class="meta">Links wie im Spiel, rechts auf hellem Grund. Die Aussparungen
+&ndash; Kerben, Stege, Punzen &ndash; nehmen den Hintergrund jeweils mit, sonst
+st&uuml;nde das Zeichen mit seinem eigenen dunklen Kasten auf dem Papier.</p>
+<div class="sizes"><figure><div style="width:64px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#13110c"/>
+  <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
+  <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
+  <polygon points="10.00,68.00 50.00,68.00 54.00,88.00 74.00,88.00 78.00,68.00 118.00,68.00 118.00,100.00 10.00,100.00" fill="#f2b839"/>
+  <polygon points="18.00,76.00 42.00,76.00 42.00,82.00 18.00,82.00" fill="#13110c"/>
+  <polygon points="86.00,76.00 110.00,76.00 110.00,82.00 86.00,82.00" fill="#13110c"/>
+  <polygon points="18.00,106.00 31.00,106.00 31.00,115.00 18.00,115.00" fill="#f2b839"/>
+  <polygon points="37.00,106.00 50.00,106.00 50.00,115.00 37.00,115.00" fill="#f2b839"/>
+  <polygon points="56.00,106.00 69.00,106.00 69.00,115.00 56.00,115.00" fill="#f2b839"/>
+  <polygon points="75.00,106.00 88.00,106.00 88.00,115.00 75.00,115.00" fill="#4a4433"/>
+  <polygon points="94.00,106.00 107.00,106.00 107.00,115.00 94.00,115.00" fill="#4a4433"/>
+  <polygon points="61.00,2.00 67.00,2.00 69.00,14.00 59.00,14.00" fill="#b07f18"/>
+</svg></div><figcaption>64 px</figcaption></figure><figure><div style="width:32px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#13110c"/>
+  <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
+  <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
+  <polygon points="10.00,68.00 50.00,68.00 54.00,88.00 74.00,88.00 78.00,68.00 118.00,68.00 118.00,100.00 10.00,100.00" fill="#f2b839"/>
+  <polygon points="18.00,76.00 42.00,76.00 42.00,82.00 18.00,82.00" fill="#13110c"/>
+  <polygon points="86.00,76.00 110.00,76.00 110.00,82.00 86.00,82.00" fill="#13110c"/>
+  <polygon points="18.00,106.00 31.00,106.00 31.00,115.00 18.00,115.00" fill="#f2b839"/>
+  <polygon points="37.00,106.00 50.00,106.00 50.00,115.00 37.00,115.00" fill="#f2b839"/>
+  <polygon points="56.00,106.00 69.00,106.00 69.00,115.00 56.00,115.00" fill="#f2b839"/>
+  <polygon points="75.00,106.00 88.00,106.00 88.00,115.00 75.00,115.00" fill="#4a4433"/>
+  <polygon points="94.00,106.00 107.00,106.00 107.00,115.00 94.00,115.00" fill="#4a4433"/>
+  <polygon points="61.00,2.00 67.00,2.00 69.00,14.00 59.00,14.00" fill="#b07f18"/>
+</svg></div><figcaption>32 px</figcaption></figure><figure><div style="width:16px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+  <rect width="128" height="128" fill="#13110c"/>
+  <polygon points="64.00,16.00 64.00,16.00 66.55,19.52 68.87,22.77 70.96,25.75 72.85,28.49 74.54,31.02 76.04,33.33 77.36,35.47 78.51,37.43 79.50,39.25 80.34,40.94 81.05,42.52 81.63,44.00 82.09,45.41 82.45,46.77 82.70,48.08 82.88,49.38 82.97,50.68 83.00,52.00 83.00,52.00 82.88,54.32 82.52,56.57 81.95,58.73 81.16,60.78 80.17,62.70 78.99,64.49 77.62,66.12 76.10,67.59 74.41,68.88 72.58,69.96 70.61,70.83 68.52,71.47 66.31,71.86 64.00,72.00 64.00,72.00 61.69,71.86 59.48,71.47 57.39,70.83 55.42,69.96 53.59,68.87 51.90,67.59 50.38,66.12 49.01,64.49 47.83,62.70 46.84,60.78 46.05,58.73 45.48,56.57 45.12,54.32 45.00,52.00 45.00,52.00 45.03,50.68 45.12,49.38 45.30,48.08 45.55,46.77 45.91,45.41 46.37,44.00 46.95,42.52 47.66,40.94 48.50,39.25 49.49,37.43 50.64,35.47 51.96,33.33 53.46,31.02 55.15,28.49 57.04,25.75 59.13,22.77 61.45,19.52 64.00,16.00" fill="#8fc3ff"/>
+  <circle cx="56.00" cy="47.00" r="5.50" fill="#bedcff"/>
+  <polygon points="10.00,68.00 50.00,68.00 54.00,88.00 74.00,88.00 78.00,68.00 118.00,68.00 118.00,100.00 10.00,100.00" fill="#f2b839"/>
+  <polygon points="18.00,76.00 42.00,76.00 42.00,82.00 18.00,82.00" fill="#13110c"/>
+  <polygon points="86.00,76.00 110.00,76.00 110.00,82.00 86.00,82.00" fill="#13110c"/>
+  <polygon points="18.00,106.00 31.00,106.00 31.00,115.00 18.00,115.00" fill="#f2b839"/>
+  <polygon points="37.00,106.00 50.00,106.00 50.00,115.00 37.00,115.00" fill="#f2b839"/>
+  <polygon points="56.00,106.00 69.00,106.00 69.00,115.00 56.00,115.00" fill="#f2b839"/>
+  <polygon points="75.00,106.00 88.00,106.00 88.00,115.00 75.00,115.00" fill="#4a4433"/>
+  <polygon points="94.00,106.00 107.00,106.00 107.00,115.00 94.00,115.00" fill="#4a4433"/>
+  <polygon points="61.00,2.00 67.00,2.00 69.00,14.00 59.00,14.00" fill="#b07f18"/>
+</svg></div><figcaption>16 px</figcaption></figure></div>
+<h3>Was tr&auml;gt</h3><ul class="meta"><li class='pro'>+ <span>Der Tropfen in der Kerbe ist eine klare, ruhige Form.</span></li><li class='pro'>+ <span>Die fünf Marken sitzen unten und stören den Kern nicht.</span></li><li class='pro'>+ <span>Breiter als hoch, aber kompakt genug fürs Icon.</span></li></ul>
+<h3>Was nicht</h3><ul class="meta"><li class='con'>&ndash; <span>Ehrlich: das Zielbild liest sich nicht von selbst als Visierung. Wer es nicht weiß, sieht einen Tropfen über einem Sockel. Die Idee braucht die Bildunterschrift.</span></li><li class='con'>&ndash; <span>Ich hatte vorher die Mündung von vorn gezeichnet, mit den Schlitzen des Handschutzes. Die las sich als Zahnrad — deshalb dieser Entwurf an ihrer Stelle.</span></li></ul>
+<h3>Wof&uuml;r</h3><p class="meta">Wenn Entwurf 3 zu neutral wirkt und Entwurf 2 zu wörtlich.</p>
+<p class="meta">Dateien: <code>kimme.svg</code>, <code>kimme-hell.svg</code>,
+<code>kimme.png</code> (128&nbsp;px), <code>kimme-32.png</code></p>
+<div class="footer">MP5 &ndash; Logo-Entw&uuml;rfe &middot; Stand 21.11.2026</div>
+</div></body></html>

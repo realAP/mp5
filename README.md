@@ -1,5 +1,9 @@
 # MP5
 
+<p align="center">
+  <img src="docs/logo/nachladen.gif" alt="MP5 – fünf Schuss, dann nachladen" width="285">
+</p>
+
 Zeigt die **tatsächliche** Mana-Regeneration pro 5 Sekunden in WoW Classic –
 inklusive 5-Sekunden-Regel, Segen der Weisheit, Nahrung, Items und
 Volksfähigkeiten. Steht dort 0, regeneriert gerade nichts.
@@ -158,10 +162,16 @@ Sechs Entwürfe in Anlehnung an die MP5, als Mana-Waffe mit Zeitmesser:
 `docs/logo/index.html` im Browser öffnen. Jeder Entwurf hat eine Einzelseite
 und liegt als SVG daneben, dunkel und hell.
 
-Noch ist keiner davon irgendwo eingebaut. Neu erzeugen:
+Das Hauptzeichen ist die Kombination aus Silhouette und Patronen: im Magazin
+stecken fünf Manapatronen, eine je Sekunde, und das Trommelvisier ist das
+Zifferblatt. Die Animation oben zeigt genau die 5-Sekunden-Regel – fünf Schuss,
+dann wird nachgeladen und man hat wieder fünf.
+
+Noch ist keines davon im Addon eingebaut. Neu erzeugen:
 
 ```
-python3 tools/logo/gen.py docs/logo
+python3 tools/logo/gen.py docs/logo     # Entwürfe, Handout, SVG und PNG
+python3 tools/logo/anim.py docs/logo    # die Animation
 ```
 
 ## Tests

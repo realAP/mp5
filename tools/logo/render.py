@@ -106,6 +106,26 @@ def _fill_radial(cov, w, h, c, r_in, r_out, a0, a1, alpha):
             cov[sy * w * SS + sx] = alpha
 
 
+def _bbox(sh, scale, w, h):
+    """Umgriff einer Form in Bildpunkten, auf das Bild beschnitten."""
+    t = sh["t"]
+    if t == "poly":
+        xs = [p[0] for p in sh["pts"]]
+        ys = [p[1] for p in sh["pts"]]
+    elif t in ("circle", "ring", "arc"):
+        r = sh["r"] + (sh.get("w", 0) / 2)
+        xs = [sh["c"][0] - r, sh["c"][0] + r]
+        ys = [sh["c"][1] - r, sh["c"][1] + r]
+    elif t == "line":
+        d = sh["w"]
+        xs = [sh["a"][0] - d, sh["a"][0] + d, sh["b"][0] - d, sh["b"][0] + d]
+        ys = [sh["a"][1] - d, sh["a"][1] + d, sh["b"][1] - d, sh["b"][1] + d]
+    else:
+        return 0, 0, w - 1, h - 1
+    return (max(0, int(min(xs) * scale) - 1), max(0, int(min(ys) * scale) - 1),
+            min(w - 1, int(max(xs) * scale) + 1), min(h - 1, int(max(ys) * scale) + 1))
+
+
 def rasterize(logo, scale=1.0):
     w = int(logo["size"][0] * scale)
     h = int(logo["size"][1] * scale)
@@ -136,9 +156,12 @@ def rasterize(logo, scale=1.0):
                        [(x * scale, y * scale)
                         for x, y in thick(sh["a"], sh["b"], sh["w"])], 1.0)
 
-        # Herunterrechnen und auf den Hintergrund legen
-        for y in range(h):
-            for x in range(w):
+        # Herunterrechnen und auf den Hintergrund legen - nur im
+        # Umgriff der Form. Ueber das ganze Bild zu laufen war der
+        # Flaschenhals und machte Animationen unbezahlbar.
+        bx0, by0, bx1, by1 = _bbox(sh, scale, w, h)
+        for y in range(by0, by1 + 1):
+            for x in range(bx0, bx1 + 1):
                 s = 0.0
                 for dy in range(SS):
                     base = (y * SS + dy) * w * SS + x * SS

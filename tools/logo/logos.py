@@ -54,7 +54,9 @@ def magazin(fill=0.58):
 
 # ----------------------------------- 2 Silhouette und 2+6 Kombination
 
-SW, SH = 200, 100   # Breitformat fuer die Silhouetten
+SW, SH = 204, 118   # Breitformat fuer die Silhouetten.
+# Hoehe 118, nicht 100: die Bodenplatte des Magazins reicht bis y=110
+# und war vorher abgeschnitten.
 
 
 def _kern(shapes, fill=GOLD, detail=GOLD_D):
@@ -73,10 +75,8 @@ def _kern(shapes, fill=GOLD, detail=GOLD_D):
     shapes.append({"t": "poly", "pts": [(78, 28), (150, 28), (150, 50), (78, 50)], "fill": fill})
     # Auswurffenster
     shapes.append({"t": "poly", "pts": [(96, 33), (116, 33), (116, 40), (96, 40)], "fill": BG})
-    # Trommelvisier hinten
+    # Trommelvisier hinten - traegt in der Kombination das Zifferblatt
     shapes.append({"t": "poly", "pts": [(132, 22), (152, 22), (152, 30), (132, 30)], "fill": detail})
-    shapes.append({"t": "circle", "c": (142, 17), "r": 10, "fill": fill})
-    shapes.append({"t": "circle", "c": (142, 17), "r": 4.5, "fill": BG})
     # Abzugsgruppe: Gehaeuse, dann der Buegel als Ring mit offener Mitte.
     # Vorher verschmolz er mit dem Griff zu einem Klumpen.
     shapes.append({"t": "poly", "pts": [(112, 50), (154, 50), (154, 60), (112, 60)], "fill": fill})
@@ -120,11 +120,70 @@ def treu(fill=0.55):
     xe = 34 + (76 - 34) * fill
     shapes.append({"t": "poly", "pts": [(34, 37), (xe, 37), (xe, 44), (34, 44)], "fill": MANA})
     _kern(shapes)
+    trommel_uhr(shapes, 5)
     _magazin(shapes)
     return {"name": "sil-treu", "size": (SW, SH), "bg": BG, "shapes": shapes}
 
 
 # ------------------------------------- 2+6 kombiniert: Patronen im Magazin
+
+def trommel_uhr(shapes, sek=5, cx=143, cy=15, r=14, ring=True):
+    """Das Trommelvisier als Zifferblatt - das Zeitsymbol sitzt damit an
+    einem Teil, das die Waffe ohnehin hat, statt danebengeklebt zu werden."""
+    if ring:
+        for i in range(5):
+            a0 = -90 + i * 72 + 4
+            a1 = -90 + (i + 1) * 72 - 4
+            shapes.append({"t": "arc", "c": (cx, cy), "r": r + 4, "w": 3.5,
+                           "fill": GOLD if i < sek else DIM, "a0": a0, "a1": a1})
+    shapes.append({"t": "circle", "c": (cx, cy), "r": r, "fill": GOLD})
+    shapes.append({"t": "circle", "c": (cx, cy), "r": r - 3, "fill": DARK})
+    for i in range(5):
+        a = math.radians(-90 + i * 72)
+        shapes.append({"t": "poly",
+                       "pts": thick((cx + (r - 6) * math.cos(a), cy + (r - 6) * math.sin(a)),
+                                    (cx + (r - 3.4) * math.cos(a), cy + (r - 3.4) * math.sin(a)),
+                                    2.6),
+                       "fill": GOLD if i < sek else DIM})
+    a = math.radians(-90 + (5 - sek) * 72)
+    shapes.append({"t": "poly",
+                   "pts": thick((cx, cy), (cx + (r - 6) * math.cos(a),
+                                           cy + (r - 6) * math.sin(a)), 2.8),
+                   "fill": MANA})
+    shapes.append({"t": "circle", "c": (cx, cy), "r": 2.2, "fill": MANA})
+
+
+def muendungsfeuer(shapes, staerke=1.0):
+    """Manablitz an der Muendung, fuer die Animation."""
+    if staerke <= 0:
+        return
+    for i, ang in enumerate((-32, 0, 32)):
+        a = math.radians(180 + ang)
+        ln = (14 + 10 * staerke) * (1.0 if ang == 0 else 0.7)
+        shapes.append({"t": "poly",
+                       "pts": thick((8, 40), (8 + ln * math.cos(a), 40 + ln * math.sin(a)),
+                                    7 * staerke if ang == 0 else 5 * staerke),
+                       "fill": MANA if i != 1 else "#d8eaff",
+                       "opacity": min(1.0, staerke)})
+    shapes.append({"t": "circle", "c": (8, 40), "r": 6 * staerke, "fill": "#d8eaff",
+                   "opacity": min(1.0, staerke)})
+
+
+def verschiebe(shapes, dx, dy):
+    """Formen versetzen - fuer das Magazin, das herausfaellt."""
+    out = []
+    for sh in shapes:
+        sh = dict(sh)
+        if sh["t"] == "poly":
+            sh["pts"] = [(x + dx, y + dy) for x, y in sh["pts"]]
+        elif sh["t"] in ("circle", "ring", "arc"):
+            sh["c"] = (sh["c"][0] + dx, sh["c"][1] + dy)
+        elif sh["t"] == "line":
+            sh["a"] = (sh["a"][0] + dx, sh["a"][1] + dy)
+            sh["b"] = (sh["b"][0] + dx, sh["b"][1] + dy)
+        out.append(sh)
+    return out
+
 
 def _magazin_patronen(shapes, voll=3, n=5):
     """Durchsichtiges Magazin mit n Manapatronen - eine je Sekunde.
@@ -166,10 +225,15 @@ def _magazin_patronen(shapes, voll=3, n=5):
                    "fill": GOLD_D})
 
 
-def kombi(voll=3):
+def kombi(voll=3, mag_dy=0.0, mag_alpha=1.0, flash=0.0, sek=None):
     """Entwurf 2 mit Entwurf 6: die Silhouette, und im Magazin stecken
-    fuenf Manapatronen - eine je Sekunde der Regel."""
+    fuenf Manapatronen - eine je Sekunde der Regel.
+
+    mag_dy/mag_alpha bewegen und blenden das Magazin fuer die Animation,
+    flash ist das Muendungsfeuer, sek die Stellung des Zifferblatts.
+    """
     shapes = []
+    muendungsfeuer(shapes, flash)
     # Handschutz schlicht, damit das Magazin die Anzeige traegt
     shapes.append({"t": "poly", "pts": [(28, 31), (82, 31), (82, 50), (28, 50)], "fill": GOLD})
     shapes.append({"t": "poly", "pts": [(33, 36), (77, 36), (77, 45), (33, 45)], "fill": DARK})
@@ -178,7 +242,16 @@ def kombi(voll=3):
         shapes.append({"t": "poly", "pts": [(x, 38), (x + 9, 38), (x + 9, 43), (x, 43)],
                        "fill": GOLD_D})
     _kern(shapes)
-    _magazin_patronen(shapes, voll)
+    trommel_uhr(shapes, voll if sek is None else sek)
+
+    mag = []
+    _magazin_patronen(mag, voll)
+    if mag_dy or mag_alpha < 1.0:
+        mag = verschiebe(mag, 0, mag_dy)
+        if mag_alpha < 1.0:
+            for sh in mag:
+                sh["opacity"] = sh.get("opacity", 1.0) * mag_alpha
+    shapes.extend(mag)
     return {"name": "sil-kombi", "size": (SW, SH), "bg": BG, "shapes": shapes}
 
 

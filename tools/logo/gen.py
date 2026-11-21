@@ -33,7 +33,10 @@ TEXT = {
         idea="Entwurf 2 und Entwurf 6 in einem: die Silhouette, und im Magazin "
              "stecken fünf Manapatronen — eine je Sekunde der Regel. Sie liegen "
              "quer, Spitze nach vorn, und folgen der Krümmung des Magazins nach "
-             "unten. Beim Zaubern erlöschen sie von oben nach unten.",
+             "unten. Beim Zaubern erlöschen sie von oben nach unten. "
+             "Das Zeitsymbol sitzt im Trommelvisier: das ist ohnehin ein Kreis, "
+             "also wird es zum Zifferblatt mit fünf Marken und einem Zeiger — "
+             "angeklebt werden musste dafür nichts.",
         works=["Die Fünf ist nicht mehr dekoriert, sie <b>ist</b> der Inhalt: "
                "fünf Patronen, fünf Sekunden. Das Logo erklärt das Addon, "
                "ohne ein Wort zu brauchen.",
@@ -172,6 +175,8 @@ CSS = """
         color:#d8c9a8;font-size:14px}
   .footer{margin-top:60px;border-top:1px solid var(--line);padding-top:14px;
           color:var(--dim);font-size:13px}
+  .optwrap{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:22px;margin:18px 0}
+  .optwrap img{max-width:100%;height:auto;border:1px solid #241f14;border-radius:3px}
   table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
   th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
   th{background:#1b1812;color:var(--gold);font-weight:600}
@@ -291,10 +296,25 @@ die neben der Seite liegen &ndash; keine Bilder, kein Nachbau. Skalieren verlust
 und die Farben lassen sich einzeln &auml;ndern.
 </div>
 %s
+<h2>Die Animation</h2>
+<p class="meta">F&uuml;r die README-Seite: eine Runde dauert sieben Sekunden und
+l&auml;uft dann von vorn. F&uuml;nf Schuss, je einer pro Sekunde, danach f&auml;llt
+das leere Magazin heraus und ein volles rastet ein. Das ist die 5-Sekunden-Regel
+als Bild &ndash; w&auml;hrend man zaubert, leert sich das Magazin; danach ist wieder
+aufgeladen.</p>
+<div class="optwrap" style="text-align:center">
+  <img src="nachladen.gif" alt="MP5-Logo: f&uuml;nf Schuss, dann nachladen"
+       width="285" height="165" style="image-rendering:auto">
+</div>
+<p class="meta">Ein GIF, weil das auf GitHub ohne Umwege abspielt &ndash; kein
+JavaScript, nichts zu erlauben. 285&times;165, 70&nbsp;Einzelbilder, 10&nbsp;Bilder
+je Sekunde, rund 250&nbsp;KiB. Neu erzeugen mit
+<code>python3 tools/logo/anim.py docs/logo</code>.</p>
+
 <h2>Gegen&uuml;berstellung</h2>
 <table>
   <tr><th>Entwurf</th><th>Format</th><th>Noch lesbar bei</th><th>Zeigt die f&uuml;nf Sekunden</th></tr>
-  <tr><td><b>1 &ndash; Kombination</b></td><td>breit</td><td>48&nbsp;px</td><td><b>ja, als f&uuml;nf Patronen</b></td></tr>
+  <tr><td><b>1 &ndash; Kombination</b></td><td>breit</td><td>48&nbsp;px</td><td><b>doppelt: f&uuml;nf Patronen und das Zifferblatt</b></td></tr>
   <tr><td>2 &ndash; Silhouette</td><td>breit</td><td>48&nbsp;px</td><td>nur als Balken</td></tr>
   <tr><td>3 &ndash; Magazin</td><td>hoch</td><td>32&nbsp;px</td><td>als Kerben</td></tr>
   <tr><td>4 &ndash; Visier</td><td>quadratisch</td><td>16&nbsp;px</td><td>ja, als Ringsegmente</td></tr>

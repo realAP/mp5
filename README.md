@@ -93,6 +93,11 @@ Alles geht auch per Chatbefehl:
 /mp5 errors    mitgeschriebene Fehler
 ```
 
+## Layout
+
+Fünf Entwürfe, wie die Anzeige unter dem Spielerfenster sitzen kann, mit
+maßstäblichen Vorschauen: `docs/layout/index.html` im Browser öffnen.
+
 ## Logo
 
 Das Hauptzeichen: im Magazin stecken fünf Manapatronen – eine je Sekunde der

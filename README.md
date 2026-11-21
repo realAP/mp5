@@ -129,6 +129,7 @@ lua5.1 tests/test_estimate.lua  # das Mana-Modell, gegen eine Simulation
 lua5.1 tests/test_tainted.lua   # geschützte Werte im Kampf
 lua5.1 tests/test_options.lua   # das Optionen-Panel
 lua5.1 tests/test_ui.lua        # Anzeige, Knopf und Debug-Fenster
+lua5.1 tests/test_slash.lua     # alle Chatbefehle
 ```
 
 ## Lizenz

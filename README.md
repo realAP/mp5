@@ -83,6 +83,7 @@ Alles geht auch per Chatbefehl:
 /mp5 count topright|center    wo die Zahl auf dem Icon sitzt
 /mp5 estimate on|off|reset    Mana mitrechnen, wenn der Client es schützt
 /mp5 logo on|off              das Zeichen links in der Anzeige
+/mp5 voll                     „mein Mana ist jetzt voll“ – setzt das Modell
 ```
 
 ### Diagnose
@@ -90,6 +91,7 @@ Alles geht auch per Chatbefehl:
 ```
 /mp5 probe     was der eigene Client an Mana-Daten hergibt
 /mp5 why       warum gerade welche Zahl angezeigt wird
+/mp5 voll      dem Modell sagen, dass das Mana gerade voll ist
 /mp5 errors    mitgeschriebene Fehler
 ```
 

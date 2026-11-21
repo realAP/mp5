@@ -352,6 +352,19 @@ function Est:SetEnabled(v)
     if enabled then model:Forget() end
 end
 
+-- Von Hand gesetzter Anker: "mein Mana ist jetzt voll".
+--
+-- Es gibt Faelle, in denen das Modell von selbst nicht daraufkommt - nach
+-- einem Trank, nach Innervieren, nach dem Einloggen mitten im Geschehen.
+-- Dann ist der kuerzeste Weg, es dem Addon einfach zu sagen.
+-- Rueckgabe: true, wenn der Anker gesetzt werden konnte.
+function Est:MarkFull()
+    model:SetMax(maxMana())
+    if (model.max or 0) <= 0 then return false end
+    model:MarkFull()
+    return true
+end
+
 function Est:Reset()
     model:Forget()
     ladder = nil

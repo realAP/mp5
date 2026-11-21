@@ -88,6 +88,24 @@ local function msg(text)
     DEFAULT_CHAT_FRAME:AddMessage("|cffffd100MP5|r " .. text)
 end
 
+-- "Mein Mana ist jetzt voll." Der Knopf in den Optionen und /mp5 voll
+-- landen beide hier, damit die Rueckmeldung dieselbe ist.
+function ns.MarkManaFull()
+    if not ns.Estimate then return false end
+    local ok, done = pcall(ns.Estimate.MarkFull, ns.Estimate)
+    if ok and done then
+        local max = Core.GetMaxMana and Core:GetMaxMana()
+        msg("|cff40ff40Verstanden:|r Mana steht jetzt auf "
+            .. (max and math.floor(max) or "voll")
+            .. ". Ab hier wird exakt weitergerechnet.")
+        if ns.Redraw then pcall(ns.Redraw) end
+        return true
+    end
+    msg("|cffff5555Geht gerade nicht:|r das Maximalmana ist nicht lesbar "
+        .. "(im Kampf schuetzt dieser Client es). Nach dem Kampf nochmal.")
+    return false
+end
+
 local function usage()
     msg("Befehle:")
     msg("  /mp5 lock | unlock            - Position fixieren")
@@ -106,6 +124,8 @@ local function usage()
     msg("  /mp5 icon <16-48>             - Groesse der Zauber-Icons")
     msg("  /mp5 count topright|center    - wo die Zahl auf dem Icon sitzt")
     msg("  /mp5 logo on|off              - das Zeichen in der Anzeige")
+    msg("  /mp5 voll                     - \"mein Mana ist jetzt voll\":")
+    msg("                                  setzt das Modell auf den Anschlag")
     msg("  /mp5 estimate on|off|reset    - Mana mitrechnen, wenn der Client")
     msg("                                  es nicht herausgibt")
     msg("  /mp5 options                  - Interface-Optionen oeffnen")
@@ -216,8 +236,15 @@ SlashCmdList["MP5"] = function(input)
         db[toggles[cmd]] = (arg == "on")
     elseif cmd == "icon" then
         db.iconSize = math.max(16, math.min(48, tonumber(arg) or db.iconSize))
+    elseif cmd == "voll" or cmd == "full!" then
+        -- Der kurze Weg: dem Modell sagen, dass der Tank voll ist.
+        ns.MarkManaFull()
+        return
     elseif cmd == "estimate" then
-        if arg == "reset" then
+        if arg == "full" or arg == "voll" then
+            ns.MarkManaFull()
+            return
+        elseif arg == "reset" then
             if ns.Estimate then ns.Estimate:Reset() end
             msg("Modell zurueckgesetzt - es baut sich aus der Regeneration "
                 .. "neu auf.")

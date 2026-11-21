@@ -89,6 +89,18 @@ q:Spend(250)
 check("ab dem Anker wird exakt weitergerechnet", (q:Get()), 750)
 check("und bleibt exakt", select(2, q:Get()), true)
 
+-- Von Hand: "mein Mana ist jetzt voll" ---------------------------------------
+
+local h = Est.NewModel(1000)
+h:Advance(0, 10)
+h:Advance(3, 10)
+check("vor dem Knopf nur ein Teil", (h:Get()), 30)
+h:MarkFull()
+check("Knopf setzt auf den Anschlag", (h:Get()), 1000)
+check("und der Wert gilt als exakt", select(2, h:Get()), true)
+h:Advance(13, 10)
+check("danach bleibt es am Anschlag", (h:Get()), 1000)
+
 -- Schranken aus der Bezahlbarkeit --------------------------------------------
 
 local b = Est.NewModel(1000)

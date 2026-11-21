@@ -88,6 +88,7 @@ end
 -- Die Umgebung, die Options.lua aus dem Addon erwartet ---------------------
 
 local applied, resolved = 0, 0
+local marked = 0
 
 local ns = {
   db = {
@@ -106,6 +107,7 @@ local ns = {
     end,
   },
   Estimate = { SetEnabled = function(self, v) self.on = v end },
+  MarkManaFull = function() marked = (marked or 0) + 1 end,
   ApplyLayout    = function() applied = applied + 1 end,
   ResolveSpells  = function() resolved = resolved + 1 end,
 }
@@ -211,6 +213,17 @@ check("Zeichen in der Anzeige wird gespeichert",
 check("Mitrechnen laesst sich abschalten",
       click("Mana mitrechnen (geschuetzter Wert)", false) or ns.db.estimate, false)
 check("und wird an das Modell weitergegeben", ns.Estimate.on, false)
+
+-- Der Knopf "Mein Mana ist jetzt voll"
+local fullBtn
+for i = 1, #frames do
+  if frames[i].kind == "Button" and frames[i].text == "Mein Mana ist jetzt voll" then
+    fullBtn = frames[i]
+  end
+end
+check("Knopf vorhanden", fullBtn ~= nil, true)
+if fullBtn then fullBtn.scripts["OnClick"](fullBtn) end
+check("Klick meldet volles Mana", marked, 1)
 
 -- Das Zeichen oben im Panel
 local logoTex

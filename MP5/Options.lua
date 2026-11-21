@@ -236,6 +236,16 @@ local estimateOn = checkbox(panel, "Mana mitrechnen (geschuetzter Wert)", COL2 -
         if ns.Estimate then ns.Estimate:SetEnabled(v) end
     end)
 
+-- Der Knopf fuer den Fall, dass das Modell danebenliegt: ein Klick sagt
+-- ihm, dass der Tank gerade voll ist - ab da rechnet es wieder exakt.
+local fullBtn = build("Button", panel, { "UIPanelButtonTemplate" })
+fullBtn:SetPoint("TOPLEFT", COL2 - 2, -544)
+fullBtn:SetSize(210, 22)
+fullBtn:SetText("Mein Mana ist jetzt voll")
+fullBtn:SetScript("OnClick", function()
+    if ns.MarkManaFull then ns.MarkManaFull() end
+end)
+
 note(panel, "|cff808080Mitrechnen: Kosten abziehen, Regeneration dazu - dann "
           .. "Untergrenze (~), exakt sobald der Tank voll war. Alles auch "
           .. "ueber /mp5, Herleitung mit /mp5 why|r", 20, -570, 560)

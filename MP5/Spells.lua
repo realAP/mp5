@@ -28,11 +28,21 @@ local Spells = ns.Spells
 
 local GCD = 1.5      -- kuerzer als der globale Cooldown geht kein Zauber
 
+-- Sperre gegen geschuetzte Werte. Im Kampf gibt dieser Client auch Kosten
+-- und Zauberzeit als "secret value" zurueck; damit zu rechnen bricht ab.
+-- Core legt die Funktion an, fuer die Tests genuegt der Typ-Test.
+local function plain(v)
+    if ns.plain then return ns.plain(v) end
+    return type(v) == "number" and v or nil
+end
+
 -- Reine Rechnung, ohne Spiel-API (deshalb einzeln testbar) ----------------
 
 -- Rueckgabe: Anzahl ganzer Zauber, oder math.huge wenn der Zauber sich
 -- selbst traegt. Nil, wenn eine Angabe fehlt.
 function Spells.CastsLeft(mana, cost, castTime, manaPerSec)
+    mana, cost = plain(mana), plain(cost)
+    castTime, manaPerSec = plain(castTime), plain(manaPerSec)
     if not (mana and cost and castTime and manaPerSec) then return nil end
     if cost <= 0 then return math.huge end
     if mana < cost then return 0 end
@@ -132,8 +142,9 @@ local function manaCost(spellID, name)
             for i = 1, #costs do
                 local c = costs[i]
                 -- 0 = Mana
-                if c and (c.type == 0 or c.name == "MANA") and c.cost then
-                    return c.cost, "api"
+                if c and (c.type == 0 or c.name == "MANA") then
+                    local v = plain(c.cost)
+                    if v then return v, "api" end
                 end
             end
         end
@@ -204,7 +215,7 @@ function Spells:Lookup(name)
         name      = info.name,
         rank      = (info.rank and info.rank ~= "" and info.rank) or nil,
         icon      = info.icon,
-        castTime  = (info.castTime or 0) / 1000,     -- ms -> Sekunden
+        castTime  = (plain(info.castTime) or 0) / 1000,   -- ms -> Sekunden
         cost      = cost,
         costFrom  = costFrom,
         spellID   = info.spellID,

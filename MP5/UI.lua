@@ -37,6 +37,74 @@ ns.frame = frame
 local label = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 local value = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 
+-- Das Zeichen links neben den Werten, abschaltbar. WoW laedt kein PNG,
+-- deshalb liegt es als unkomprimiertes 32-Bit-TGA im Addon-Ordner.
+local logo = frame:CreateTexture(nil, "ARTWORK")
+logo:SetTexture("Interface\\AddOns\\MP5\\Textures\\icon.tga")
+logo:Hide()
+
+-- Der Knopf "Mana ist voll" ------------------------------------------------
+--
+-- Er sitzt in der Ecke der Anzeige und zeigt sich nur, wenn das Mana
+-- mitgerechnet wird - gibt der Client den Wert direkt her, gibt es nichts
+-- zu bestaetigen. Als eigener Knopf reagiert er auch dann auf die Maus,
+-- wenn die Anzeige fixiert ist.
+local fullBtn = CreateFrame("Button", nil, frame)
+fullBtn:SetSize(14, 14)
+
+-- Dunkle Platte darunter, damit der Knopf auch ohne Rahmen als Knopf
+-- zu erkennen ist.
+local fullBG = fullBtn:CreateTexture(nil, "BACKGROUND")
+fullBG:SetAllPoints()
+solid(fullBG, 0, 0, 0, 0.55)
+
+-- Das Symbol sagt, was passiert: Pfeil nach oben an den Anschlag. Das
+-- Addon-Zeichen stand hier vorher - es sagt "MP5", aber nicht, was der
+-- Klick tut.
+local fullIcon = fullBtn:CreateTexture(nil, "ARTWORK")
+fullIcon:SetPoint("TOPLEFT", 2, -2)
+fullIcon:SetPoint("BOTTOMRIGHT", -2, 2)
+fullIcon:SetTexture("Interface\\AddOns\\MP5\\Textures\\refill.tga")
+
+local fullHi = fullBtn:CreateTexture(nil, "HIGHLIGHT")
+fullHi:SetAllPoints()
+fullHi:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+fullHi:SetBlendMode("ADD")
+
+fullBtn:Hide()
+
+fullBtn:SetScript("OnClick", function()
+    if ns.MarkManaFull then ns.MarkManaFull() end
+end)
+
+fullBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddLine("Mein Mana ist jetzt voll")
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("Dieser Client gibt das aktuelle Mana nicht heraus,", 0.8, 0.8, 0.8)
+    GameTooltip:AddLine("deshalb wird es mitgerechnet. Ein Klick setzt den", 0.8, 0.8, 0.8)
+    GameTooltip:AddLine("Wert auf den Anschlag - ab da stimmt er wieder.", 0.8, 0.8, 0.8)
+
+    local s = ns.Estimate and ns.Estimate:Status()
+    if s then
+        GameTooltip:AddLine(" ")
+        if s.exact then
+            GameTooltip:AddDoubleLine("Stand", "exakt", 1, 1, 1, 0.3, 0.9, 0.3)
+        else
+            GameTooltip:AddDoubleLine("Stand", "Untergrenze (~)", 1, 1, 1, 1, 0.82, 0.2)
+        end
+        if s.mana and s.max then
+            GameTooltip:AddDoubleLine("gerechnet",
+                math.floor(s.mana) .. " / " .. math.floor(s.max), 1, 1, 1, 1, 1, 1)
+        end
+    end
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("Geht auch mit /mp5 voll", 0.5, 0.7, 1)
+    GameTooltip:Show()
+end)
+
+fullBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
 local bar = CreateFrame("StatusBar", nil, frame)
 bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 bar:SetMinMaxValues(0, 5)
@@ -102,6 +170,18 @@ local function createSlot(i)
     b.count:SetShadowColor(0, 0, 0, 1)
     b.count:SetShadowOffset(1, -1)
 
+    -- Die Tilde steht in einer eigenen Fontstring.
+    --
+    -- Im Spielfont sitzt "~" oben in der Zeile, etwa auf Hoehe der
+    -- Versalien - vor einer Ziffer klebt sie dadurch im oberen Viertel.
+    -- Als eigene Fontstring laesst sie sich auf die Mitte der Ziffern
+    -- absenken. Der Faktor ist am Bild abgenommen, nicht gerechnet: er
+    -- bringt die Tilde auf etwa die halbe Ziffernhoehe.
+    b.tilde = b:CreateFontString(nil, "OVERLAY")
+    b.tilde:SetShadowColor(0, 0, 0, 1)
+    b.tilde:SetShadowOffset(1, -1)
+    b.tilde:Hide()
+
     b:SetScript("OnEnter", function(self)
         if not ns.db.tooltip or not self.info then return end
         local info, casts = self.info, self.casts
@@ -138,6 +218,19 @@ local function createSlot(i)
         elseif src == "text" then
             GameTooltip:AddLine("Mana aus dem Text der Standardleiste gelesen,", 0.6, 0.6, 0.6)
             GameTooltip:AddLine("weil der Client den Wert selbst schuetzt.", 0.6, 0.6, 0.6)
+        elseif src == "modell" then
+            local s = ns.Estimate and ns.Estimate:Status()
+            if s and s.exact then
+                GameTooltip:AddLine("Mana mitgerechnet: der Tank war voll, seitdem", 0.3, 0.9, 0.3)
+                GameTooltip:AddLine("sind nur bekannte Kosten abgegangen.", 0.3, 0.9, 0.3)
+            else
+                GameTooltip:AddLine("Mana mitgerechnet, weil der Client den Wert", 1, 0.82, 0.2)
+                GameTooltip:AddLine("schuetzt: Kosten der Zauber abziehen,", 1, 0.82, 0.2)
+                GameTooltip:AddLine("Regeneration dazu. Das ist eine Untergrenze (~) -", 1, 0.82, 0.2)
+                GameTooltip:AddLine("es geht also mindestens so oft.", 1, 0.82, 0.2)
+                GameTooltip:AddLine(" ")
+                GameTooltip:AddLine("Exakt, sobald der Tank einmal voll war.", 0.6, 0.6, 0.6)
+            end
         elseif not Core:ManaReadable() then
             if self.affordable ~= nil then
                 GameTooltip:AddLine(self.affordable
@@ -175,6 +268,10 @@ local function fmt(v)
     return tostring(math.floor(v + 0.5))
 end
 
+-- Wie weit die Tilde unter die Mitte der Zeile rutscht, als Anteil der
+-- Schriftgroesse. Am Bild abgenommen.
+local TILDE_DROP = 0.17
+
 local function fmtCasts(n)
     if not n then return "?" end
     if n == math.huge then return INFINITY end
@@ -203,8 +300,21 @@ end
 local function updateSpells()
     local db = ns.db
     if not db then return end
-    local mana, approx = Core:GetMana()       -- nil, wenn kein Weg funktioniert
-    local mp5  = Core:GetMP5(true)            -- beim Durchcasten gilt die FSR-Stufe
+    local plain = ns.plain or function(v) return v end
+    local mana, approx, src = Core:GetMana()  -- nil, wenn kein Weg funktioniert
+    mana = plain(mana)
+
+    -- Der Knopf "Mana ist voll" gehoert nur dorthin, wo der Wert gerechnet
+    -- und nicht gelesen wird. Steht er auf "Untergrenze", leuchtet er; ist
+    -- der Wert exakt, bleibt er blass - dann gibt es nichts zu korrigieren.
+    if db.showResetButton ~= false and src == "modell" then
+        local s = ns.Estimate and ns.Estimate:Status()
+        fullBtn:SetAlpha((s and s.exact) and 0.35 or 1.0)
+        fullBtn:Show()
+    else
+        fullBtn:Hide()
+    end
+    local mp5  = plain(Core:GetMP5(true))     -- beim Durchcasten gilt die FSR-Stufe
     local mps, regenUnknown
     if mp5 then
         mps = mp5 / 5
@@ -227,25 +337,27 @@ local function updateSpells()
             b.info = info
             b.icon:SetTexture(info.icon)
 
-            local casts = Spells.CastsLeft(mana, info.cost, info.castTime, mps)
+            -- Letzte Sicherung: kommt doch ein geschuetzter Wert durch,
+            -- darf das keinen Fehler werfen - dann steht eben "?" da.
+            local ok, casts = pcall(Spells.CastsLeft, mana, info.cost,
+                info.castTime, mps)
+            if not ok then casts = nil end
             b.casts = casts
 
             if casts then
                 -- Stammt das Mana aus einem Prozentwert, ist die Zahl
                 -- gerundet. Das zeigt die Tilde an, statt es zu verschweigen.
                 local unsure = (approx or regenUnknown) and casts ~= math.huge
-                local prefix = unsure and "~" or ""
-                b.count:SetText(prefix .. fmtCasts(casts))
+                b.count:SetText(fmtCasts(casts))
+                if unsure then b.tilde:Show() else b.tilde:Hide() end
                 pcall(b.icon.SetDesaturated, b.icon, false)
-                if casts == math.huge then
-                    color(b.count, C_MANY)
-                elseif casts <= 3 then
-                    color(b.count, C_FEW)
-                elseif casts <= 10 then
-                    color(b.count, C_SOME)
-                else
-                    color(b.count, C_MANY)
+                local c = C_MANY
+                if casts ~= math.huge then
+                    if casts <= 3 then c = C_FEW
+                    elseif casts <= 10 then c = C_SOME end
                 end
+                color(b.count, c)
+                color(b.tilde, c)
             else
                 -- Ohne lesbares Mana laesst sich keine Stueckzahl rechnen.
                 -- Das Spiel beantwortet aber, ob der Zauber bezahlbar ist:
@@ -253,6 +365,7 @@ local function updateSpells()
                 -- der Zahl, und es kommt ohne den Manawert aus.
                 local ok = Spells:Affordable(info)
                 b.affordable = ok
+                b.tilde:Hide()
                 if ok == nil then
                     b.count:SetText("?")
                     color(b.count, C_ZERO)
@@ -343,7 +456,12 @@ ns.Redraw = Redraw
 -- OnUpdate nur solange die 5-Sekunden-Regel laeuft -------------------------
 
 local elapsed = 0
-local function OnUpdate(_, e)
+local OnUpdate
+
+-- Beide Einstiege laufen durch ns.safe: ein Fehler im Zeichnen wird genau
+-- einmal gemeldet und mitgeschrieben, statt zehnmal pro Sekunde im Chat zu
+-- landen.
+OnUpdate = ns.safe(function(_, e)
     elapsed = elapsed + e
     if elapsed < UPDATE_THROTTLE then return end
     elapsed = 0
@@ -351,15 +469,15 @@ local function OnUpdate(_, e)
     if not Core:InFSR() and not animating then
         frame:SetScript("OnUpdate", nil)   -- Leerlauf: keine Berechnung mehr
     end
-end
+end)
 
-local function OnChanged()
+local OnChanged = ns.safe(function()
     Redraw()
     if (Core:InFSR() or animating) and not frame:GetScript("OnUpdate") then
         elapsed = 0
         frame:SetScript("OnUpdate", OnUpdate)
     end
-end
+end)
 
 Core:RegisterCallback(OnChanged)
 
@@ -386,12 +504,22 @@ function ns.ApplyLayout()
     local iconSize = db.iconSize
     local iconGap  = 3
 
+    -- Breite der Zauber-Reihe. Sie bestimmt die Mindestbreite des Rahmens:
+    -- sonst stehen groessere Icons ueber den Rand hinaus, statt dass der
+    -- Rahmen mitwaechst. Die eingestellte Breite bleibt die Untergrenze.
+    local totalW = used * iconSize + math.max(0, used - 1) * iconGap
+    local w = db.width
+    if used > 0 then
+        local needed = totalW + (pad + 2) * 2
+        if needed > w then w = needed end
+    end
+
     local h = pad * 2 + rowH
     if db.bar ~= "off"    then h = h + barH + 3 end
     if db.showCountdown   then h = h + fs * 0.68 + 2 end
     if used > 0           then h = h + iconSize + 5 end
 
-    frame:SetSize(db.width, h)
+    frame:SetSize(w, h)
     frame:SetScale(db.scale)
 
     if db.backdrop ~= "off" and frame.SetBackdrop then
@@ -421,6 +549,22 @@ function ns.ApplyLayout()
     label:SetPoint("TOPLEFT", frame, "TOPLEFT", pad + 2, -pad)
     label:SetText(db.showLabel and "MANA / 5" or "")
 
+    -- Das Zeichen sitzt links in der Wertezeile und ist so hoch wie sie.
+    logo:ClearAllPoints()
+    if db.showLogo then
+        logo:SetSize(rowH, rowH)
+        logo:SetPoint("TOPLEFT", frame, "TOPLEFT", pad + 2, -pad)
+        logo:Show()
+    else
+        logo:Hide()
+    end
+
+    -- Der Knopf sitzt in der oberen rechten Ecke, innerhalb des Rands.
+    fullBtn:ClearAllPoints()
+    local btnSize = math.max(16, math.floor(rowH * 0.85))
+    fullBtn:SetSize(btnSize, btnSize)
+    fullBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(pad - 1), -(pad - 1))
+
     -- Werte mittig ueber dem Balken.
     value:ClearAllPoints()
     value:SetPoint("TOP", frame, "TOP", 0, -pad)
@@ -438,20 +582,27 @@ function ns.ApplyLayout()
     if db.showCountdown then y = y - fs * 0.68 - 2 end
 
     -- Zauber-Felder mittig in einer Reihe.
-    local totalW = used * iconSize + math.max(0, used - 1) * iconGap
     local x = -totalW / 2
     local n = 0
     for i = 1, MAX_SPELLS do
         local b = slots[i]
         b:ClearAllPoints()
         b:SetSize(iconSize, iconSize)
-        b.count:SetFont(font, math.max(10, iconSize * 0.46), "OUTLINE")
+        local countSize = math.max(10, iconSize * 0.46)
+        b.count:SetFont(font, countSize, "OUTLINE")
         b.count:ClearAllPoints()
         if db.countAnchor == "center" then
             b.count:SetPoint("CENTER", b, "CENTER", 0, 0)
         else
             b.count:SetPoint("TOPRIGHT", b, "TOPRIGHT", 1, 1)
         end
+
+        -- Tilde etwas kleiner und um TILDE_DROP abgesenkt, damit sie
+        -- mittig vor der Zahl steht statt in deren oberem Viertel.
+        b.tilde:SetFont(font, countSize * 0.9, "OUTLINE")
+        b.tilde:SetText("~")
+        b.tilde:ClearAllPoints()
+        b.tilde:SetPoint("RIGHT", b.count, "LEFT", 1, -countSize * TILDE_DROP)
         if db.showSpells and resolved[i] then
             b:SetPoint("TOPLEFT", frame, "TOP", x + n * (iconSize + iconGap), y - 3)
             n = n + 1

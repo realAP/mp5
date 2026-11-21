@@ -18,6 +18,10 @@ enthalten. Steht dort 0, regeneriert gerade nichts.
 - **Zauber-Leiste**: bis zu fünf eigene Zauber mit Icon und der Zahl, wie oft
   das Mana für diesen Zauber noch reicht – Zauberzeit und die Regeneration
   während des Zaubers eingerechnet.
+- **Funktioniert auch auf Clients, die das aktuelle Mana nicht herausgeben** –
+  dann wird es mitgerechnet: Kosten der gewirkten Zauber abziehen,
+  Regeneration dazu. Die Zahlen sind dabei eine Untergrenze (`~5`) und werden
+  exakt, sobald der Manatank einmal voll war.
 - **Frei platzierbar und skalierbar**, Einstellungen pro Charakter.
 - Reine Anzeige über offizielle Blizzard-Schnittstellen, keine Automatisierung.
   Der `OnUpdate` läuft nur während der 5 Sekunden nach einem Zauber.
@@ -41,8 +45,10 @@ verschieben, dann `/mp5 lock`.
 
 ## Configuration
 
-Grafisch unter *Interface ▸ AddOns ▸ MP5* oder mit `/mp5 options` – dort zeigt
-jedes Zauberfeld direkt die erkannten Kosten und die Zauberzeit an.
+Grafisch unter *Interface ▸ AddOns ▸ MP5* oder mit `/mp5 options`: die fünf
+Zauberplätze (jedes Feld zeigt direkt die erkannten Kosten und die Zauberzeit),
+Schieber für Breite, Icon-Größe, Gesamtgröße und Schrift sowie die Haken für
+Balken, Restzeit, beide Stufen, Position und das Mitrechnen.
 
 Alles geht auch per Chatbefehl:
 
@@ -51,7 +57,7 @@ Alles geht auch per Chatbefehl:
 | `/mp5 lock` · `unlock` | Position fixieren / verschiebbar machen |
 | `/mp5 scale <0.5-2>` | Gesamtgröße |
 | `/mp5 font <8-32>` | Schriftgröße, unabhängig von der Gesamtgröße |
-| `/mp5 width <80-400>` | Breite |
+| `/mp5 width <80-400>` | Breite – Mindestbreite, die Zauber-Reihe darf breiter werden |
 | `/mp5 bar off\|thin\|full` | kein Balken, dünner 5s-Strich oder Statusbar |
 | `/mp5 bardir fill\|drain` | Balken füllt sich auf oder läuft leer |
 | `/mp5 backdrop blizzard\|thin\|off` | Rahmen |
@@ -75,6 +81,11 @@ Alles geht auch per Chatbefehl:
 /mp5 spell list               belegte Plätze zeigen
 /mp5 icon <16-48>             Icon-Größe
 /mp5 count topright|center    wo die Zahl auf dem Icon sitzt
+/mp5 estimate on|off|reset    Mana mitrechnen, wenn der Client es schützt
+/mp5 logo on|off              das Zeichen links in der Anzeige
+/mp5 voll                     „mein Mana ist jetzt voll“ – setzt das Modell
+/mp5 button on|off            Knopf „Mana ist voll“ in der Ecke der Anzeige
+/mp5 debug                    Fenster: was denkt das Addon gerade?
 ```
 
 ### Diagnose
@@ -82,8 +93,15 @@ Alles geht auch per Chatbefehl:
 ```
 /mp5 probe     was der eigene Client an Mana-Daten hergibt
 /mp5 why       warum gerade welche Zahl angezeigt wird
+/mp5 voll      dem Modell sagen, dass das Mana gerade voll ist
+/mp5 debug     Fenster mit dem gerechneten Mana und den letzten Ereignissen
 /mp5 errors    mitgeschriebene Fehler
 ```
+
+## Layout
+
+Fünf Entwürfe, wie die Anzeige unter dem Spielerfenster sitzen kann, mit
+maßstäblichen Vorschauen: `docs/layout/index.html` im Browser öffnen.
 
 ## Logo
 
@@ -91,6 +109,12 @@ Das Hauptzeichen: im Magazin stecken fünf Manapatronen – eine je Sekunde der
 Regel – und das Trommelvisier ist das Zifferblatt. Die Entwürfe liegen als
 Handout in `docs/logo/index.html`, jedes Zeichen als SVG (dunkel und hell)
 und als PNG daneben.
+
+Im Spiel steckt es in `MP5/Textures/` als TGA – das einzige Bildformat neben
+BLP, das WoW lädt. `logo.tga` (128×64) steht über den Interface-Optionen,
+`icon.tga` (64×64, das Trommelvisier) ist das Symbol in der AddOn-Liste und
+lässt sich mit `/mp5 logo on` links in die Anzeige holen. `refill.tga` ist der
+Pfeil auf dem Knopf „Mana ist voll“.
 
 ## Tests
 
@@ -101,6 +125,11 @@ lua5.1 tests/test_core.lua      # Messung der Mana-Ticks, 5-Sekunden-Regel
 lua5.1 tests/test_spells.lua    # die Zauber-Rechnung, gegen eine Simulation
 lua5.1 tests/test_apiregen.lua  # GetManaRegen als Quelle
 lua5.1 tests/test_manabar.lua   # Mana aus dem Text der Standardleiste
+lua5.1 tests/test_estimate.lua  # das Mana-Modell, gegen eine Simulation
+lua5.1 tests/test_tainted.lua   # geschützte Werte im Kampf
+lua5.1 tests/test_options.lua   # das Optionen-Panel
+lua5.1 tests/test_ui.lua        # Anzeige, Knopf und Debug-Fenster
+lua5.1 tests/test_slash.lua     # alle Chatbefehle
 ```
 
 ## Lizenz

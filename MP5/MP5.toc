@@ -3,12 +3,15 @@
 ## Notes: Zeigt die tatsaechliche Mana-Regeneration pro 5 Sekunden, inkl. 5-Sekunden-Regel.
 ## Author: Axel
 ## Version: 0.1.0
+## IconTexture: Interface\AddOns\MP5\Textures\icon.tga
 ## SavedVariables: MP5DB, MP5Errors, MP5Probe
 ## SavedVariablesPerCharacter: MP5CharDB
 
 Core.lua
 Spells.lua
+Estimate.lua
 Probe.lua
 UI.lua
+Debug.lua
 Config.lua
 Options.lua

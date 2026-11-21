@@ -6,25 +6,86 @@
 
 ## Overview
 
-MP5 zeigt die **tatsächliche** Mana-Regeneration pro 5 Sekunden – nicht aus
-einer nachgebauten Formel, sondern aus den echten Mana-Ticks des Charakters.
-Segen der Weisheit, Nahrung, Items und Volksfähigkeiten sind damit automatisch
-enthalten. Steht dort 0, regeneriert gerade nichts.
+Als Heiler verbringt man den Kampf mit einer einzigen Frage: **reicht das
+Mana noch?** Die Manaleiste des Spiels beantwortet nur die Hälfte davon. Sie
+sagt, wie viel noch da ist – aber nicht, wie schnell es zurückkommt, und
+schon gar nicht, wie viele Zauber das noch ergibt. Ob der Segen der Weisheit
+noch läuft, ob das Essen noch wirkt, ob der Geist-Buff eben abgelaufen ist:
+all das verändert die Regeneration erheblich, und man merkt es erst, wenn das
+Mana plötzlich schneller weg ist als gedacht.
 
-- **Beide Stufen auf einen Blick** – `12 / 47`: innerhalb der 5-Sekunden-Regel
-  und außerhalb. Die gerade gültige Zahl steht hell.
-- **5-Sekunden-Regel als Balken** mit Restzeit darunter, sichtbar ab dem
-  Moment des Zaubers.
-- **Zauber-Leiste**: bis zu fünf eigene Zauber mit Icon und der Zahl, wie oft
-  das Mana für diesen Zauber noch reicht – Zauberzeit und die Regeneration
-  während des Zaubers eingerechnet.
-- **Funktioniert auch auf Clients, die das aktuelle Mana nicht herausgeben** –
-  dann wird es mitgerechnet: Kosten der gewirkten Zauber abziehen,
-  Regeneration dazu. Die Zahlen sind dabei eine Untergrenze (`~5`) und werden
-  exakt, sobald der Manatank einmal voll war.
-- **Frei platzierbar und skalierbar**, Einstellungen pro Charakter.
-- Reine Anzeige über offizielle Blizzard-Schnittstellen, keine Automatisierung.
-  Der `OnUpdate` läuft nur während der 5 Sekunden nach einem Zauber.
+MP5 beantwortet die andere Hälfte. Es misst mit, wie viel Mana pro fünf
+Sekunden wirklich zurückkommt, und rechnet daraus aus, wie oft deine Zauber
+davon noch bezahlt werden können.
+
+### Was auf der Anzeige steht
+
+```
+        MP5
+     12 / 47          ← Regeneration: im Kampf / in Ruhe
+   ~ 847 / 1435       ← aktuelles Mana (abschaltbar)
+  ▬▬▬▬▬▬▬▬▬▬▬         ← die 5-Sekunden-Regel
+       2.4s           ← bis die Regeneration wieder anspringt
+   [ 8 ] [ 5 ] [ 3 ]  ← so oft reichen diese Zauber noch
+```
+
+**Die zwei Zahlen oben** sind die beiden Stufen der Regeneration. Links, was
+du gerade bekommst, solange du zauberst; rechts, was du bekämst, wenn du fünf
+Sekunden die Hände still hältst. Die gerade gültige Zahl steht hell, die
+andere gedämpft. Steht links eine `0`, kommt im Moment nichts nach – dann ist
+der Unterschied zwischen „weiterheilen" und „einmal durchatmen" genau diese
+zweite Zahl.
+
+**Der Balken** ist die Fünf-Sekunden-Regel: nach jedem Zauber steht die
+Regeneration kurz, und erst wenn der Balken durchgelaufen ist, geht es wieder
+los. Die Zahl darunter sagt, wie lange noch. Wer ein Mana-Tick mitnehmen
+will, bevor er den nächsten Zauber anfängt, schaut hierauf.
+
+**Die Icons** sind bis zu fünf Zauber deiner Wahl, und die Zahl darauf ist
+die Antwort auf die Frage von oben: so oft kannst du diesen Zauber mit dem
+Mana, das du jetzt hast, noch wirken. Dabei ist mitgerechnet, dass während
+des Zauberns ja auch Mana nachkommt – ein Zauber, der langsamer ist als deine
+Regeneration teuer, steht deshalb auf `∞`.
+
+### Gemessen, nicht geschätzt
+
+Die meisten Mana-Anzeigen bauen die Blizzard-Formel nach: Geist, Stufe,
+Klasse, dazu ein paar bekannte Buffs. Das geht gut, solange man alle
+Sonderfälle kennt – und daneben, sobald einer dabei ist, den die Formel nicht
+kennt.
+
+MP5 rechnet nichts nach. Es schaut zu, wie sich dein Mana zwischen zwei
+Ticks tatsächlich ändert, und zeigt das an. Segen der Weisheit, Nahrung,
+Manasteine, Items mit „Mana pro 5 Sek.", Volksfähigkeiten, der Trank, den du
+gerade getrunken hast: alles automatisch enthalten, weil es im gemessenen
+Wert ohnehin schon drin steckt. Steht dort eine `0`, dann regeneriert
+wirklich nichts.
+
+### Wenn der Client das Mana nicht verrät
+
+Manche Clients geben Addons den aktuellen Manawert nicht heraus – er ist
+geschützt. MP5 gibt dann nicht auf, sondern führt selbst Buch: Es kennt dein
+Maximum, es sieht jeden Zauber, den du wirkst, und es kennt die Kosten. Also
+zieht es ab, was du ausgibst, und addiert, was nachkommt.
+
+Diese Rechnung ist absichtlich vorsichtig: sie zählt nur, was sie sicher
+weiß, und liegt deshalb nie zu hoch – eher zu niedrig. Genau das zeigt die
+**Tilde** an: `~847` heißt „mindestens so viel", `847` ohne Tilde heißt
+„genau so viel". Sobald das Addon einen festen Punkt hat – weil du lange
+genug nichts getan hast und der Tank voll sein muss, oder weil du es ihm mit
+dem Knopf in der Ecke gesagt hast – verschwindet die Tilde und die Zahlen
+sind exakt.
+
+Du kannst dem Addon also jederzeit mit einem Klick sagen: *mein Mana ist
+jetzt voll.* Und wenn dich interessiert, wie es zu seiner Zahl kommt, zeigt
+`/mp5 debug` ein Fenster mit dem ganzen Gedankengang.
+
+### Noch dazu
+
+- **Frei platzierbar und skalierbar**, alle Einstellungen pro Charakter.
+- **Reine Anzeige** über die offiziellen Blizzard-Schnittstellen, keine
+  Automatisierung. Die laufende Aktualisierung läuft nur in den fünf Sekunden
+  nach einem Zauber, sonst schläft das Addon.
 
 Getestet auf WoW Classic (Interface 16001).
 
@@ -40,17 +101,33 @@ Der Pfad sieht je nach Installation so aus:
 World of Warcraft/_classic_era_/Interface/AddOns/MP5/
 ```
 
-Beim ersten Start erscheint die Anzeige in der Bildschirmmitte. Mit der Maus
-verschieben, dann `/mp5 lock`.
+## Die ersten fünf Minuten
+
+Beim ersten Start erscheint die Anzeige in der Bildschirmmitte – noch leer,
+denn sie weiß nichts über dich. Drei Dinge lohnen sich gleich:
+
+1. **Hinschieben, wo du im Kampf sowieso hinschaust.** Mit der Maus
+   verschieben, dann `/mp5 lock`, damit sie dort bleibt. Bewährt hat sich
+   direkt unter dem Spielerfenster, bei der Manaleiste.
+2. **Deine Zauber eintragen.** `/mp5 options` öffnen und in die fünf Felder
+   die Zauber schreiben, die dein Mana verbrauchen – bei einem Priester etwa
+   Blitzheilung, Große Heilung, Erneuern. Jedes Feld zeigt sofort, welche
+   Kosten und Zauberzeit es erkannt hat; steht dort nichts, ist der Name
+   falsch geschrieben.
+3. **Einmal volltanken.** Setz dich hin, trink, und wenn die Manaleiste voll
+   ist, klick den Knopf in der Ecke der Anzeige. Ab da weiß das Addon, wo es
+   steht – falls dein Client das Mana nicht herausgibt.
+
+Dann einmal in einen Kampf. Nach dem ersten Zauber füllen sich die Zahlen.
 
 ## Configuration
 
-Grafisch unter *Interface ▸ AddOns ▸ MP5* oder mit `/mp5 options`: die fünf
-Zauberplätze (jedes Feld zeigt direkt die erkannten Kosten und die Zauberzeit),
-Schieber für Breite, Icon-Größe, Gesamtgröße und Schrift sowie die Haken für
-Balken, Restzeit, beide Stufen, Position und das Mitrechnen.
+Alles lässt sich im Spiel einstellen, unter *Interface ▸ AddOns ▸ MP5* oder
+mit `/mp5 options`: die fünf Zauberplätze, Schieber für Breite, Icon-Größe,
+Gesamtgröße und Schrift, und Haken für alles, was man ein- und ausschalten
+kann – Balken, Restzeit, beide Stufen, Manazeile, Logo und das Mitrechnen.
 
-Alles geht auch per Chatbefehl:
+Wer lieber tippt, kommt mit Chatbefehlen an dieselben Schalter:
 
 | Befehl | Wirkung |
 |---|---|
@@ -73,6 +150,10 @@ Alles geht auch per Chatbefehl:
 
 ### Zauber-Leiste
 
+Die Leiste mit den Icons und den Stückzahlen. Reihenfolge und Ränge bestimmst
+du: `Blitzheilung` nimmt immer den höchsten gelernten Rang mit, `Erneuern(Rang
+4)` genau diesen – praktisch, wenn du einen günstigeren Rang bewusst spielst.
+
 ```
 /mp5 spells on                Leiste einschalten
 /mp5 spell 1 Blitzheilung     höchster gelernter Rang
@@ -90,6 +171,10 @@ Alles geht auch per Chatbefehl:
 ```
 
 ### Diagnose
+
+Wenn eine Zahl nicht plausibel aussieht, musst du nicht raten. Diese Befehle
+fragen das Addon, wie es darauf gekommen ist – und sie zeigen auch, was dein
+Client überhaupt hergibt, denn das ist von Client zu Client verschieden.
 
 ```
 /mp5 probe     was der eigene Client an Mana-Daten hergibt

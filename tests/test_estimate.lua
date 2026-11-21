@@ -22,6 +22,7 @@ end
 
 local ns = {}
 local src = os.getenv("MP5_SRC") or "MP5"
+assert(loadfile(src .. "/Auras.lua"))("MP5", ns)
 assert(loadfile(src .. "/Core.lua"))("MP5", ns)
 assert(loadfile(src .. "/Estimate.lua"))("MP5", ns)
 local Est = ns.Estimate

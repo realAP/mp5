@@ -23,6 +23,7 @@ local defaults = {
     showCountdown = true,        -- Restzeit unter dem Balken
     tooltip       = true,
     showLogo      = false,       -- das Zeichen links in der Wertezeile
+    auraRegen     = true,        -- Mana aus Segen der Weisheit / Manaquelle
     showResetButton = true,      -- Knopf "Mana ist voll" in der Ecke
     debug         = false,       -- Fenster "was das Addon denkt"
     manaDisplay   = "off",       -- off | value | full | percent
@@ -127,6 +128,8 @@ local function usage()
     msg("  /mp5 icon <16-48>             - Groesse der Zauber-Icons")
     msg("  /mp5 count topright|center    - wo die Zahl auf dem Icon sitzt")
     msg("  /mp5 logo on|off              - das Zeichen in der Anzeige")
+    msg("  /mp5 buffs on|off             - Mana aus Segen der Weisheit "
+        .. "und Manaquelle mitrechnen")
     msg("  /mp5 button on|off            - Knopf \"Mana ist voll\" in der Ecke")
     msg("  /mp5 mana off|value|full|percent")
     msg("                                  - aktuelles Mana in der Anzeige")
@@ -154,6 +157,7 @@ local toggles = {
     countdown = "showCountdown",
     tooltip   = "tooltip",
     animate   = "animate",
+    buffs     = "auraRegen",
 }
 
 -- Zaubernamen duerfen Leerzeichen und Grossbuchstaben haben, deshalb wird
@@ -339,6 +343,15 @@ SlashCmdList["MP5"] = function(input)
         end
         msg("  Regen beim Casten: " .. str(mp5) .. " MP5"
             .. (mp5 and "" or "  -> wird mit 0 gerechnet"))
+
+        -- Segen der Weisheit und Manaquelle stehen in GetManaRegen() nicht
+        -- drin. In der Gruppe ist das der groesste Posten ueberhaupt.
+        if ns.Auras then
+            local what, total = ns.Auras:Describe()
+            msg("  davon aus Buffs:   " .. (what
+                and (tostring(total) .. " MP5  (" .. what .. ")")
+                or "0  (kein Segen der Weisheit / keine Manaquelle erkannt)"))
+        end
 
         -- Das Modell: woraus der Wert gerade besteht.
         if ns.Estimate then

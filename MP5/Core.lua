@@ -461,6 +461,19 @@ local function apiMP5(inFSR)
     return nil
 end
 
+-- Mana aus periodischen Buffs (Segen der Weisheit, Manaquelle). Diese
+-- Betraege stehen in GetManaRegen() NICHT drin, in einem gemessenen Tick
+-- dagegen schon - sonst wuerde hier doppelt gezaehlt.
+local function auraMP5()
+    local A = ns.Auras
+    if not A then return 0 end
+    -- Abschaltbar: sollte ein Client diese Buffs doch in GetManaRegen()
+    -- fuehren, wuerde hier doppelt gezaehlt. Dann /mp5 buffs off.
+    if ns.db and ns.db.auraRegen == false then return 0 end
+    local ok, extra = pcall(A.ExtraMP5, A)
+    return (ok and type(extra) == "number") and extra or 0
+end
+
 -- Wert fuer einen Zustand. inFSR = true  -> nur MP5-Effekte
 --                          inFSR = false -> inkl. Geist
 -- Rueckgabe: Wert, Quelle ("gemessen" | "api" | nil)
@@ -474,18 +487,29 @@ function Core:GetMP5(inFSR)
     local v = plain(apiMP5(inFSR))
     if v then
         lastApi[inFSR] = v
-        return v, "api"
+        return v + auraMP5(), "api"
     end
 
     -- Geschuetzt (im Kampf): der zuletzt gelesene Wert ist die beste
     -- Auskunft, die es gibt - besser als ein "?" fuer die Dauer des Kampfes.
     -- Nur bei echter Taint, nicht wenn die Stufe nie bekannt war.
     if tainted and lastApi[inFSR] then
-        return lastApi[inFSR], "zuletzt"
+        return lastApi[inFSR] + auraMP5(), "zuletzt"
     end
 
     if m then return plain(m.mp5), "gemessen" end
+
+    -- Gar keine Auskunft vom Client, aber ein Buff, der sicher tickt: dann
+    -- ist dieser Betrag die ganze Wahrheit, die wir haben - und besser als
+    -- "nichts kommt nach", denn damit laeuft das Modell leer.
+    local extra = auraMP5()
+    if extra > 0 then return extra, "buffs" end
     return nil, nil
+end
+
+-- Nur der Anteil aus Buffs, fuer die Auskunft.
+function Core:GetAuraMP5()
+    return auraMP5()
 end
 
 -- Der gerade wirksame Wert.

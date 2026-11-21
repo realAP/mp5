@@ -121,6 +121,7 @@ ns.UpdateVisibility = function() end
 
 local src = os.getenv("MP5_SRC") or "MP5"
 local ok, err = pcall(function()
+  assert(loadfile(src .. "/Auras.lua"))("MP5", ns)
   assert(loadfile(src .. "/Core.lua"))("MP5", ns)
   assert(loadfile(src .. "/Spells.lua"))("MP5", ns)
   assert(loadfile(src .. "/Estimate.lua"))("MP5", ns)

@@ -19,6 +19,7 @@ end
 PlayerFrameManaBarText = { GetText = function() return barText end }
 
 local ns = {}
+assert(loadfile((os.getenv("MP5_SRC") or "MP5") .. "/Auras.lua"))("MP5", ns)
 assert(loadfile((os.getenv("MP5_SRC") or "MP5") .. "/Core.lua"))("MP5", ns)
 local Core = ns.Core
 

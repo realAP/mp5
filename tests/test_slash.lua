@@ -86,7 +86,7 @@ DEFAULT_CHAT_FRAME = { AddMessage = function(_, t) said[#said + 1] = t end }
 local ns = {}
 local src = os.getenv("MP5_SRC") or "MP5"
 local ok, err = pcall(function()
-  for _, file in ipairs({ "Core", "Spells", "Estimate", "Probe", "UI", "Debug",
+  for _, file in ipairs({ "Auras", "Core", "Spells", "Estimate", "Probe", "UI", "Debug",
                           "Config", "Options" }) do
     assert(loadfile(src .. "/" .. file .. ".lua"))("MP5", ns)
   end
@@ -138,6 +138,8 @@ check("/mp5 icon setzt die Icon-Groesse", run("icon 40") or ns.db.iconSize, 40)
 
 check("/mp5 logo on", run("logo on") or ns.db.showLogo, true)
 check("/mp5 logo off", run("logo off") or ns.db.showLogo, false)
+check("/mp5 buffs off", run("buffs off") or ns.db.auraRegen, false)
+check("/mp5 buffs on", run("buffs on") or ns.db.auraRegen, true)
 check("/mp5 button off", run("button off") or ns.db.showResetButton, false)
 check("/mp5 button on", run("button on") or ns.db.showResetButton, true)
 

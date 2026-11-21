@@ -76,6 +76,26 @@ genug nichts getan hast und der Tank voll sein muss, oder weil du es ihm mit
 dem Knopf in der Ecke gesagt hast – verschwindet die Tilde und die Zahlen
 sind exakt.
 
+### Mana, das in keiner Formel steht
+
+Eine Falle, die vor allem in der Gruppeninstanz zuschnappt: **Segen der
+Weisheit** und die **Manaquelle** des Schamanen tauchen in der
+Regenerationsauskunft des Spiels überhaupt nicht auf. Sie sind keine
+Regeneration im Sinne des Spiels, sondern periodische Effekte, die alle paar
+Sekunden einen festen Betrag gutschreiben – und sie ticken auch *während*
+der 5-Sekunden-Regel weiter.
+
+Das fällt solo nicht auf, weil man diese Buffs dort nicht hat. In der Gruppe
+wäre es der größte Posten überhaupt: wer durchheilt, bekommt vom Spiel die
+Auskunft „es kommt nichts nach“, während in Wirklichkeit ständig Mana
+eintrifft. MP5 liest deshalb die Buffs mit – welche Buffs auf einem liegen,
+ist nicht geschützt – und rechnet ihren Betrag dazu. `/mp5 why` zeigt, was
+davon erkannt wurde; `/mp5 buffs off` schaltet es ab, falls dein Client sie
+doch mitzählt.
+
+Unregelmäßiges bleibt draußen: Richturteil der Weisheit, Tränke, Manasteine,
+Innervieren. Dafür gibt es den Knopf.
+
 Du kannst dem Addon also jederzeit mit einem Klick sagen: *mein Mana ist
 jetzt voll.* Und wenn dich interessiert, wie es zu seiner Zahl kommt, zeigt
 `/mp5 debug` ein Fenster mit dem ganzen Gedankengang.
@@ -164,6 +184,7 @@ du: `Blitzheilung` nimmt immer den höchsten gelernten Rang mit, `Erneuern(Rang
 /mp5 count topright|center    wo die Zahl auf dem Icon sitzt
 /mp5 estimate on|off|reset    Mana mitrechnen, wenn der Client es schützt
 /mp5 logo on|off              das Zeichen links in der Anzeige
+/mp5 buffs on|off             Segen der Weisheit / Manaquelle mitrechnen
 /mp5 voll                     „mein Mana ist jetzt voll“ – setzt das Modell
 /mp5 button on|off            Knopf „Mana ist voll“ in der Ecke der Anzeige
 /mp5 mana off|value|full|percent  aktuelles Mana als Zeile in der Anzeige
@@ -208,6 +229,7 @@ Die Messlogik läuft gegen einen API-Stub, ohne das Spiel zu starten:
 
 ```
 lua5.1 tests/test_core.lua      # Messung der Mana-Ticks, 5-Sekunden-Regel
+lua5.1 tests/test_auras.lua     # Mana aus Segen der Weisheit und Manaquelle
 lua5.1 tests/test_spells.lua    # die Zauber-Rechnung, gegen eine Simulation
 lua5.1 tests/test_apiregen.lua  # GetManaRegen als Quelle
 lua5.1 tests/test_manabar.lua   # Mana aus dem Text der Standardleiste

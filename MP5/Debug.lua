@@ -19,7 +19,7 @@ local LINES    = 8        -- Zeilen fuer die Mitschrift
 local INTERVAL = 0.25     -- Auffrischen, solange das Fenster offen ist
 
 local f = CreateFrame("Frame", "MP5DebugFrame", UIParent)
-f:SetSize(320, 250)
+f:SetSize(320, 262)
 f:SetPoint("CENTER", UIParent, "CENTER", 320, 0)
 f:SetMovable(true)
 f:EnableMouse(true)
@@ -53,13 +53,13 @@ state:SetWidth(296)
 state:SetJustifyH("LEFT")
 
 local logTitle = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-logTitle:SetPoint("TOPLEFT", 12, -132)
+logTitle:SetPoint("TOPLEFT", 12, -144)
 logTitle:SetText("Zuletzt passiert")
 
 local lines = {}
 for i = 1, LINES do
     local fs = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-    fs:SetPoint("TOPLEFT", 12, -150 - (i - 1) * 12)
+    fs:SetPoint("TOPLEFT", 12, -162 - (i - 1) * 12)
     fs:SetWidth(296)
     fs:SetJustifyH("LEFT")
     lines[i] = fs
@@ -104,6 +104,10 @@ local function stateText()
         out[#out + 1] = "Modell: " .. (s.enabled and "an" or red("aus"))
             .. "  Wert " .. num(s.mana)
             .. (s.exact and green("  exakt") or gold("  Untergrenze"))
+        local buffs, buffTotal = ns.Auras and ns.Auras:Describe()
+        out[#out + 1] = dim("Aus Buffs: ")
+            .. (buffs and (gold(num(buffTotal) .. "/5s") .. dim("  " .. buffs))
+                or dim("keine erkannt"))
         out[#out + 1] = dim("Regeneration: ") .. num(s.rate, 1) .. "/s"
             .. dim("   aufgelaufen: ") .. num(s.credit)
             .. dim(" von ") .. num(s.max and s.max * 1.25)

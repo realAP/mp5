@@ -84,6 +84,8 @@ Alles geht auch per Chatbefehl:
 /mp5 estimate on|off|reset    Mana mitrechnen, wenn der Client es schützt
 /mp5 logo on|off              das Zeichen links in der Anzeige
 /mp5 voll                     „mein Mana ist jetzt voll“ – setzt das Modell
+/mp5 button on|off            Knopf „Mana ist voll“ in der Ecke der Anzeige
+/mp5 debug                    Fenster: was denkt das Addon gerade?
 ```
 
 ### Diagnose
@@ -92,6 +94,7 @@ Alles geht auch per Chatbefehl:
 /mp5 probe     was der eigene Client an Mana-Daten hergibt
 /mp5 why       warum gerade welche Zahl angezeigt wird
 /mp5 voll      dem Modell sagen, dass das Mana gerade voll ist
+/mp5 debug     Fenster mit dem gerechneten Mana und den letzten Ereignissen
 /mp5 errors    mitgeschriebene Fehler
 ```
 
@@ -124,6 +127,7 @@ lua5.1 tests/test_manabar.lua   # Mana aus dem Text der Standardleiste
 lua5.1 tests/test_estimate.lua  # das Mana-Modell, gegen eine Simulation
 lua5.1 tests/test_tainted.lua   # geschützte Werte im Kampf
 lua5.1 tests/test_options.lua   # das Optionen-Panel
+lua5.1 tests/test_ui.lua        # Anzeige, Knopf und Debug-Fenster
 ```
 
 ## Lizenz

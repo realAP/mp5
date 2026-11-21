@@ -161,6 +161,27 @@ end
 local model = Est.NewModel(0)
 local enabled = true
 
+-- Mitschrift: was hat das Modell wann getan? Nur die Ereignisse, die den
+-- Wert aendern - daran laesst sich im Nachhinein sehen, wo es danebenlag.
+local LOG_MAX = 40
+local log = {}
+
+local function note(what, detail)
+    local e = { t = GetTime(), what = what, detail = detail,
+                mana = model.mana, exact = model.exact }
+    log[#log + 1] = e
+    if #log > LOG_MAX then table.remove(log, 1) end
+end
+
+-- Neueste zuerst.
+function Est:Log(n)
+    local out = {}
+    for i = #log, math.max(1, #log - (n or LOG_MAX) + 1), -1 do
+        out[#out + 1] = log[i]
+    end
+    return out
+end
+
 -- Kosten eines Zaubers anhand seiner ID, gepuffert. Downgeranktes Wirken
 -- hat eine eigene ID, der Wert stimmt also pro Rang.
 local costCache = {}
@@ -326,12 +347,25 @@ end
 
 local function refresh(now)
     model:SetMax(maxMana())
+    local wasExact = model.exact
     model:Advance(now, regenPerSec())
-    if quietMeansFull(now) then model:MarkFull() end
+    if model.exact and not wasExact then
+        note("Anker: Volltank", "mehr Regeneration aufgelaufen als ein Tank")
+    end
+    if quietMeansFull(now) and not model.exact then
+        model:MarkFull()
+        note("Anker: Stille", "kein Mana-Ereignis trotz Regeneration")
+    end
     if now - lastBounds >= BOUNDS_INTERVAL then
         lastBounds = now
         local lo, hi = bounds()
+        local before = model.mana
         model:Clamp(lo, hi)
+        if math.abs(model.mana - before) > 0.5 then
+            note("Schranke", string.format("%d -> %d (mind. %s, unter %s)",
+                math.floor(before), math.floor(model.mana),
+                lo and math.floor(lo) or "-", hi and math.floor(hi) or "-"))
+        end
     end
 end
 
@@ -362,6 +396,7 @@ function Est:MarkFull()
     model:SetMax(maxMana())
     if (model.max or 0) <= 0 then return false end
     model:MarkFull()
+    note("Anker: von Hand", "\"mein Mana ist voll\"")
     return true
 end
 
@@ -430,7 +465,12 @@ f:SetScript("OnEvent", (ns.safe or function(fn) return fn end)(function(_, event
         -- Die Signatur ist je nach Client (unit, castGUID, spellID) oder
         -- (unit, spellName, rank); die ID ist das, was eine Zahl ist.
         local id = tonumber(a3) or tonumber(a2)
-        model:Spend(costOf(id))
+        local cost = costOf(id)
+        local before = model.mana
+        model:Spend(cost)
+        note("Zauber", string.format("ID %s kostet %s, %d -> %d",
+            tostring(id), cost and math.floor(cost) or "unbekannt",
+            math.floor(before), math.floor(model.mana)))
     elseif event == "UNIT_MAXPOWER" then
         if unit ~= "player" then return end
         model:SetMax(maxMana())
@@ -441,6 +481,7 @@ f:SetScript("OnEvent", (ns.safe or function(fn) return fn end)(function(_, event
         -- Tod, Auferstehung, Zonenwechsel: das Spiel setzt das Mana selbst.
         model:Forget()
         model:SetMax(maxMana())
+        note("Zurueckgesetzt", tostring(event))
         -- Die Stille erst ab jetzt zaehlen, sonst wuerde der Ladebildschirm
         -- als "voll" durchgehen.
         lastEvent, quietFrom = GetTime(), GetTime()

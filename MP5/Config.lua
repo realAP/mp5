@@ -24,6 +24,7 @@ local defaults = {
     tooltip       = true,
     showLogo      = false,       -- das Zeichen links in der Wertezeile
     showResetButton = true,      -- Knopf "Mana ist voll" in der Ecke
+    debug         = false,       -- Fenster "was das Addon denkt"
     decimals      = 0,
     animate       = false,
 
@@ -126,6 +127,7 @@ local function usage()
     msg("  /mp5 count topright|center    - wo die Zahl auf dem Icon sitzt")
     msg("  /mp5 logo on|off              - das Zeichen in der Anzeige")
     msg("  /mp5 button on|off            - Knopf \"Mana ist voll\" in der Ecke")
+    msg("  /mp5 debug                    - Fenster: was denkt das Addon")
     msg("  /mp5 voll                     - \"mein Mana ist jetzt voll\":")
     msg("                                  setzt das Modell auf den Anschlag")
     msg("  /mp5 estimate on|off|reset    - Mana mitrechnen, wenn der Client")
@@ -239,6 +241,11 @@ SlashCmdList["MP5"] = function(input)
         db[toggles[cmd]] = (arg == "on")
     elseif cmd == "icon" then
         db.iconSize = math.max(16, math.min(48, tonumber(arg) or db.iconSize))
+    elseif cmd == "debug" then
+        local on = ns.ShowDebug(arg == "" and nil or (arg == "on"))
+        msg(on and "Fenster offen - vergleiche die Zahl mit deiner Manaleiste."
+                or "Fenster zu.")
+        return
     elseif cmd == "voll" or cmd == "full!" then
         -- Der kurze Weg: dem Modell sagen, dass der Tank voll ist.
         ns.MarkManaFull()
@@ -438,6 +445,7 @@ f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
         ns.db = MP5CharDB
     elseif event == "PLAYER_LOGIN" then
         if ns.Estimate then ns.Estimate:SetEnabled(ns.db.estimate) end
+        if ns.db.debug and ns.ShowDebug then ns.ShowDebug(true) end
         pcall(ns.Probe)            -- einmal aufschreiben, was der Client kann
         ns.ResolveSpells()
         ns.UpdateVisibility()

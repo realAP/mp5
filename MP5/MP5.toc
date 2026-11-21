@@ -12,5 +12,6 @@ Spells.lua
 Estimate.lua
 Probe.lua
 UI.lua
+Debug.lua
 Config.lua
 Options.lua

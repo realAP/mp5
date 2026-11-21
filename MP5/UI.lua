@@ -37,6 +37,12 @@ ns.frame = frame
 local label = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 local value = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 
+-- Das Zeichen links neben den Werten, abschaltbar. WoW laedt kein PNG,
+-- deshalb liegt es als unkomprimiertes 32-Bit-TGA im Addon-Ordner.
+local logo = frame:CreateTexture(nil, "ARTWORK")
+logo:SetTexture("Interface\\AddOns\\MP5\\Textures\\icon.tga")
+logo:Hide()
+
 local bar = CreateFrame("StatusBar", nil, frame)
 bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 bar:SetMinMaxValues(0, 5)
@@ -454,6 +460,16 @@ function ns.ApplyLayout()
     label:ClearAllPoints()
     label:SetPoint("TOPLEFT", frame, "TOPLEFT", pad + 2, -pad)
     label:SetText(db.showLabel and "MANA / 5" or "")
+
+    -- Das Zeichen sitzt links in der Wertezeile und ist so hoch wie sie.
+    logo:ClearAllPoints()
+    if db.showLogo then
+        logo:SetSize(rowH, rowH)
+        logo:SetPoint("TOPLEFT", frame, "TOPLEFT", pad + 2, -pad)
+        logo:Show()
+    else
+        logo:Hide()
+    end
 
     -- Werte mittig ueber dem Balken.
     value:ClearAllPoints()

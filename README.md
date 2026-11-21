@@ -82,6 +82,7 @@ Alles geht auch per Chatbefehl:
 /mp5 icon <16-48>             Icon-Größe
 /mp5 count topright|center    wo die Zahl auf dem Icon sitzt
 /mp5 estimate on|off|reset    Mana mitrechnen, wenn der Client es schützt
+/mp5 logo on|off              das Zeichen links in der Anzeige
 ```
 
 ### Diagnose
@@ -98,6 +99,11 @@ Das Hauptzeichen: im Magazin stecken fünf Manapatronen – eine je Sekunde der
 Regel – und das Trommelvisier ist das Zifferblatt. Die Entwürfe liegen als
 Handout in `docs/logo/index.html`, jedes Zeichen als SVG (dunkel und hell)
 und als PNG daneben.
+
+Im Spiel steckt es in `MP5/Textures/` als TGA – das einzige Bildformat neben
+BLP, das WoW lädt. `logo.tga` (128×64) steht über den Interface-Optionen,
+`icon.tga` (64×64, das Trommelvisier) ist das Symbol in der AddOn-Liste und
+lässt sich mit `/mp5 logo on` links in die Anzeige holen.
 
 ## Tests
 

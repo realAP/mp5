@@ -98,9 +98,16 @@ end
 
 -- Aufbau -------------------------------------------------------------------
 
-title(panel, "MP5", "big", 16, -16)
+-- Das Zeichen oben links. WoW laedt kein PNG, deshalb liegt es als
+-- unkomprimiertes 32-Bit-TGA neben dem Addon.
+local logo = panel:CreateTexture(nil, "ARTWORK")
+logo:SetTexture("Interface\\AddOns\\MP5\\Textures\\logo.tga")
+logo:SetPoint("TOPLEFT", 16, -14)
+logo:SetSize(96, 48)
+
+title(panel, "MP5", "big", 122, -22)
 note(panel, "Zeigt die gemessene Mana-Regeneration pro 5 Sekunden und, darunter, "
-          .. "wie oft das Mana fuer einen Zauber noch reicht.", 16, -40)
+          .. "wie oft das Mana fuer einen Zauber noch reicht.", 122, -44, 454)
 
 title(panel, "Zauber-Leiste", nil, 16, -80)
 note(panel, "Bis zu fuenf Zauber. Genau so schreiben wie im Makro; ein Rang ist "
@@ -218,6 +225,10 @@ local lockedOn = checkbox(panel, "Position fixieren", 14, -522,
     function() return ns.db.locked end,
     function(v) ns.db.locked = v end)
 
+local logoOn = checkbox(panel, "Zeichen in der Anzeige", 14, -546,
+    function() return ns.db.showLogo end,
+    function(v) ns.db.showLogo = v end)
+
 local estimateOn = checkbox(panel, "Mana mitrechnen (geschuetzter Wert)", COL2 - 6, -522,
     function() return ns.db.estimate end,
     function(v)
@@ -225,10 +236,9 @@ local estimateOn = checkbox(panel, "Mana mitrechnen (geschuetzter Wert)", COL2 -
         if ns.Estimate then ns.Estimate:SetEnabled(v) end
     end)
 
-note(panel, "Mitrechnen: Kosten der Zauber abziehen, Regeneration dazu - fuer "
-          .. "Clients, die das Mana nicht herausgeben. Dann Untergrenze (~), "
-          .. "exakt sobald der Tank voll war.  |cff808080Alles auch ueber "
-          .. "/mp5, Herleitung mit /mp5 why|r", 20, -546, 560)
+note(panel, "|cff808080Mitrechnen: Kosten abziehen, Regeneration dazu - dann "
+          .. "Untergrenze (~), exakt sobald der Tank voll war. Alles auch "
+          .. "ueber /mp5, Herleitung mit /mp5 why|r", 20, -570, 560)
 
 -- Oeffnen und Auffrischen --------------------------------------------------
 
@@ -244,6 +254,7 @@ local function refresh()
     countdownOn.refresh()
     fullOn.refresh()
     lockedOn.refresh()
+    logoOn.refresh()
     estimateOn.refresh()
     iconSlider.refresh()
     widthSlider.refresh()

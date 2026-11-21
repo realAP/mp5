@@ -22,6 +22,7 @@ local defaults = {
     showFull      = true,        -- beide Stufen "12 / 47"
     showCountdown = true,        -- Restzeit unter dem Balken
     tooltip       = true,
+    showLogo      = false,       -- das Zeichen links in der Wertezeile
     decimals      = 0,
     animate       = false,
 
@@ -104,6 +105,7 @@ local function usage()
     msg("  /mp5 spell list               - belegte Plaetze zeigen")
     msg("  /mp5 icon <16-48>             - Groesse der Zauber-Icons")
     msg("  /mp5 count topright|center    - wo die Zahl auf dem Icon sitzt")
+    msg("  /mp5 logo on|off              - das Zeichen in der Anzeige")
     msg("  /mp5 estimate on|off|reset    - Mana mitrechnen, wenn der Client")
     msg("                                  es nicht herausgibt")
     msg("  /mp5 options                  - Interface-Optionen oeffnen")
@@ -118,6 +120,7 @@ end
 
 local toggles = {
     spells    = "showSpells",
+    logo      = "showLogo",
     label     = "showLabel",
     full      = "showFull",
     countdown = "showCountdown",

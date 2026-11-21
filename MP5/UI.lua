@@ -138,6 +138,19 @@ local function createSlot(i)
         elseif src == "text" then
             GameTooltip:AddLine("Mana aus dem Text der Standardleiste gelesen,", 0.6, 0.6, 0.6)
             GameTooltip:AddLine("weil der Client den Wert selbst schuetzt.", 0.6, 0.6, 0.6)
+        elseif src == "modell" then
+            local s = ns.Estimate and ns.Estimate:Status()
+            if s and s.exact then
+                GameTooltip:AddLine("Mana mitgerechnet: der Tank war voll, seitdem", 0.3, 0.9, 0.3)
+                GameTooltip:AddLine("sind nur bekannte Kosten abgegangen.", 0.3, 0.9, 0.3)
+            else
+                GameTooltip:AddLine("Mana mitgerechnet, weil der Client den Wert", 1, 0.82, 0.2)
+                GameTooltip:AddLine("schuetzt: Kosten der Zauber abziehen,", 1, 0.82, 0.2)
+                GameTooltip:AddLine("Regeneration dazu. Das ist eine Untergrenze (~) -", 1, 0.82, 0.2)
+                GameTooltip:AddLine("es geht also mindestens so oft.", 1, 0.82, 0.2)
+                GameTooltip:AddLine(" ")
+                GameTooltip:AddLine("Exakt, sobald der Tank einmal voll war.", 0.6, 0.6, 0.6)
+            end
         elseif not Core:ManaReadable() then
             if self.affordable ~= nil then
                 GameTooltip:AddLine(self.affordable

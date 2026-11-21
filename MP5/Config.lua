@@ -242,7 +242,18 @@ SlashCmdList["MP5"] = function(input)
     elseif cmd == "icon" then
         db.iconSize = math.max(16, math.min(48, tonumber(arg) or db.iconSize))
     elseif cmd == "debug" then
-        local on = ns.ShowDebug(arg == "" and nil or (arg == "on"))
+        -- Ohne Argument umschalten. Bewusst mit if statt mit "and/or":
+        -- "x and nil or y" kann niemals nil ergeben, der nil-Zweig faellt
+        -- immer auf y durch - dadurch wurde das Fenster nie geoeffnet.
+        local want
+        if arg == "on" then want = true
+        elseif arg == "off" then want = false end
+
+        if not ns.ShowDebug then
+            msg("|cffff5555Debug-Fenster nicht geladen.|r")
+            return
+        end
+        local on = ns.ShowDebug(want)
         msg(on and "Fenster offen - vergleiche die Zahl mit deiner Manaleiste."
                 or "Fenster zu.")
         return

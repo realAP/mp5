@@ -43,8 +43,11 @@ local function checkbox(parent, text, x, y, get, set)
     local cb = build("CheckButton", parent,
         { "InterfaceOptionsCheckButtonTemplate", "UICheckButtonTemplate" })
     cb:SetPoint("TOPLEFT", x, y)
+    -- Je nach Vorlage haengt die Beschriftung am Knopf oder unter einem
+    -- globalen Namen. Auf den Typ pruefen, nicht nur auf Vorhandensein:
+    -- fehlt die Vorlage ganz, steht hier sonst irgendetwas anderes.
     local label = cb.Text or _G[(cb:GetName() or "") .. "Text"]
-    if label then label:SetText(text) end
+    if type(label) == "table" and label.SetText then label:SetText(text) end
     cb.refresh = function() cb:SetChecked(get()) end
     cb:SetScript("OnClick", function(self)
         set(self:GetChecked() and true or false)

@@ -30,6 +30,8 @@ local defaults = {
     spells      = {},            -- bis zu 5 Namen, z.B. "Blitzheilung"
     iconSize    = 24,
     countAnchor = "topright",    -- topright | center
+    -- Mana selbst mitrechnen, wenn der Client den Wert nicht herausgibt.
+    estimate    = true,
 
     visibility = "always",       -- always | combat | notfull
 }
@@ -98,6 +100,8 @@ local function usage()
     msg("  /mp5 spell list               - belegte Plaetze zeigen")
     msg("  /mp5 icon <16-48>             - Groesse der Zauber-Icons")
     msg("  /mp5 count topright|center    - wo die Zahl auf dem Icon sitzt")
+    msg("  /mp5 estimate on|off|reset    - Mana mitrechnen, wenn der Client")
+    msg("                                  es nicht herausgibt")
     msg("  /mp5 options                  - Interface-Optionen oeffnen")
     msg("  /mp5 decimals 0|1")
     msg("  /mp5 show always|combat|notfull")
@@ -205,6 +209,19 @@ SlashCmdList["MP5"] = function(input)
         db[toggles[cmd]] = (arg == "on")
     elseif cmd == "icon" then
         db.iconSize = math.max(16, math.min(48, tonumber(arg) or db.iconSize))
+    elseif cmd == "estimate" then
+        if arg == "reset" then
+            if ns.Estimate then ns.Estimate:Reset() end
+            msg("Modell zurueckgesetzt - es baut sich aus der Regeneration "
+                .. "neu auf.")
+            return
+        elseif arg == "on" or arg == "off" then
+            db.estimate = (arg == "on")
+            if ns.Estimate then ns.Estimate:SetEnabled(db.estimate) end
+            msg(db.estimate
+                and "Mana wird mitgerechnet, wenn der Client es schuetzt."
+                or  "Mana wird nicht mitgerechnet.")
+        else msg("estimate on|off|reset"); return end
     elseif cmd == "count" then
         if arg == "topright" or arg == "center" then db.countAnchor = arg
         else msg("count topright|center"); return end
@@ -252,6 +269,28 @@ SlashCmdList["MP5"] = function(input)
         end
         msg("  Regen beim Casten: " .. str(mp5) .. " MP5"
             .. (mp5 and "" or "  -> wird mit 0 gerechnet"))
+
+        -- Das Modell: woraus der Wert gerade besteht.
+        if ns.Estimate then
+            local ok, s = pcall(ns.Estimate.Status, ns.Estimate)
+            if ok and type(s) == "table" then
+                local function num(v) return v and tostring(math.floor(v)) or "-" end
+                msg("  Modell: " .. (s.enabled and "an" or "aus")
+                    .. ", Wert " .. num(s.mana) .. " von " .. num(s.max)
+                    .. (s.exact and "  |cff40ff40(exakt: Tank ist voll)|r"
+                                 or "  (Untergrenze)"))
+                msg("    aufgelaufene Regeneration seit dem letzten Zauber: "
+                    .. num(s.credit)
+                    .. " (Anker bei " .. num(s.max and s.max * 1.25) .. ")")
+                msg("    Mana-Ereignis: " .. (s.events and "kommt an" or
+                    "|cffff5555noch keins gesehen|r")
+                    .. ", seit " .. num(s.quiet) .. "s still"
+                    .. " (Anker ab 3s)")
+                msg("    Schranken aus der Bezahlbarkeit: mindestens "
+                    .. num(s.lower) .. ", weniger als " .. num(s.upper)
+                    .. "  (" .. num(s.ladder) .. " Zauber in der Kostenleiter)")
+            end
+        end
 
         local any = false
         for i = 1, MAX_SPELLS do
@@ -361,6 +400,7 @@ f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
         MP5CharDB = applyDefaults(MP5CharDB or {})
         ns.db = MP5CharDB
     elseif event == "PLAYER_LOGIN" then
+        if ns.Estimate then ns.Estimate:SetEnabled(ns.db.estimate) end
         pcall(ns.Probe)            -- einmal aufschreiben, was der Client kann
         ns.ResolveSpells()
         ns.UpdateVisibility()
@@ -376,11 +416,17 @@ f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
             elseif src == "text" then
                 msg("|cff40ff40Umweg gefunden:|r Mana wird aus dem Text der "
                     .. "Standardleiste gelesen. Die Zauber-Zahlen stimmen.")
+            elseif src == "modell" then
+                msg("|cff40ff40Umweg gefunden:|r Mana wird mitgerechnet - "
+                    .. "Kosten der gewirkten Zauber abziehen, Regeneration "
+                    .. "dazu. Die Zahlen sind eine Untergrenze (~) und "
+                    .. "werden exakt, sobald der Tank einmal voll war.")
+                msg("Stand und Herleitung: |cff88ccff/mp5 why|r, "
+                    .. "abschalten mit |cff88ccff/mp5 estimate off|r.")
             end
-            msg("Gemessen wird deshalb nicht; die Zahlen kommen von "
-                .. "GetManaRegen(). Die 5-Sekunden-Regel laeuft ueber die "
-                .. "Zauber selbst. Nur die Zauber-Leiste entfaellt - die "
-                .. "braucht das aktuelle Mana.")
+            msg("Gemessen wird deshalb nicht; die Regenerationszahlen kommen "
+                .. "von GetManaRegen(). Die 5-Sekunden-Regel laeuft ueber die "
+                .. "Zauber selbst.")
         end
     elseif event == "LEARNED_SPELL_IN_TAB" or event == "SPELLS_CHANGED" then
         -- Neuer Rang gelernt: Kosten und Icon koennen sich geaendert haben.

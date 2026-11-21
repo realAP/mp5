@@ -171,7 +171,20 @@ local fullOn = checkbox(panel, "Beide Stufen zeigen (waehrend des Zauberns / dan
     function() return ns.db.showFull end,
     function(v) ns.db.showFull = v end)
 
-note(panel, "Mehr Einstellungen ueber /mp5", 16, -506)
+local estimateOn = checkbox(panel, "Mana mitrechnen, wenn der Client es nicht herausgibt", 14, -502,
+    function() return ns.db.estimate end,
+    function(v)
+        ns.db.estimate = v
+        if ns.Estimate then ns.Estimate:SetEnabled(v) end
+    end)
+
+note(panel, "Manche Clients geben das aktuelle Mana nicht heraus. Dann wird es "
+          .. "mitgerechnet: Kosten der gewirkten Zauber abziehen, Regeneration "
+          .. "dazu. Die Stueckzahlen sind damit eine Untergrenze (~) und werden "
+          .. "exakt, sobald der Manatank einmal voll war. Herleitung: /mp5 why",
+     32, -524, 540)
+
+note(panel, "Mehr Einstellungen ueber /mp5", 16, -586)
 
 -- Oeffnen und Auffrischen --------------------------------------------------
 
@@ -186,6 +199,7 @@ local function refresh()
     countCenter.refresh()
     countdownOn.refresh()
     fullOn.refresh()
+    estimateOn.refresh()
     iconSlider.refresh()
 end
 

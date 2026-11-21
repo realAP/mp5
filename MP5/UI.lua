@@ -160,6 +160,17 @@ local function createSlot(i)
     b.count:SetShadowColor(0, 0, 0, 1)
     b.count:SetShadowOffset(1, -1)
 
+    -- Die Tilde steht in einer eigenen Fontstring.
+    --
+    -- Im Spielfont sitzt "~" oben in der Zeile, etwa auf Hoehe der
+    -- Versalien - vor einer Ziffer klebt sie dadurch im oberen Viertel.
+    -- Als eigene Fontstring laesst sie sich auf die Mitte der Ziffern
+    -- absenken. Der Faktor ist am Bild abgenommen, nicht gerechnet: er
+    -- bringt die Tilde auf etwa die halbe Ziffernhoehe.
+    b.tilde = b:CreateFontString(nil, "OVERLAY")
+    b.tilde:SetShadowColor(0, 0, 0, 1)
+    b.tilde:SetShadowOffset(1, -1)
+    b.tilde:Hide()
 
     b:SetScript("OnEnter", function(self)
         if not ns.db.tooltip or not self.info then return end
@@ -247,6 +258,10 @@ local function fmt(v)
     return tostring(math.floor(v + 0.5))
 end
 
+-- Wie weit die Tilde unter die Mitte der Zeile rutscht, als Anteil der
+-- Schriftgroesse. Am Bild abgenommen.
+local TILDE_DROP = 0.17
+
 local function fmtCasts(n)
     if not n then return "?" end
     if n == math.huge then return INFINITY end
@@ -323,18 +338,16 @@ local function updateSpells()
                 -- Stammt das Mana aus einem Prozentwert, ist die Zahl
                 -- gerundet. Das zeigt die Tilde an, statt es zu verschweigen.
                 local unsure = (approx or regenUnknown) and casts ~= math.huge
-                local prefix = unsure and "~" or ""
-                b.count:SetText(prefix .. fmtCasts(casts))
+                b.count:SetText(fmtCasts(casts))
+                if unsure then b.tilde:Show() else b.tilde:Hide() end
                 pcall(b.icon.SetDesaturated, b.icon, false)
-                if casts == math.huge then
-                    color(b.count, C_MANY)
-                elseif casts <= 3 then
-                    color(b.count, C_FEW)
-                elseif casts <= 10 then
-                    color(b.count, C_SOME)
-                else
-                    color(b.count, C_MANY)
+                local c = C_MANY
+                if casts ~= math.huge then
+                    if casts <= 3 then c = C_FEW
+                    elseif casts <= 10 then c = C_SOME end
                 end
+                color(b.count, c)
+                color(b.tilde, c)
             else
                 -- Ohne lesbares Mana laesst sich keine Stueckzahl rechnen.
                 -- Das Spiel beantwortet aber, ob der Zauber bezahlbar ist:
@@ -342,6 +355,7 @@ local function updateSpells()
                 -- der Zahl, und es kommt ohne den Manawert aus.
                 local ok = Spells:Affordable(info)
                 b.affordable = ok
+                b.tilde:Hide()
                 if ok == nil then
                     b.count:SetText("?")
                     color(b.count, C_ZERO)
@@ -564,7 +578,8 @@ function ns.ApplyLayout()
         local b = slots[i]
         b:ClearAllPoints()
         b:SetSize(iconSize, iconSize)
-        b.count:SetFont(font, math.max(10, iconSize * 0.46), "OUTLINE")
+        local countSize = math.max(10, iconSize * 0.46)
+        b.count:SetFont(font, countSize, "OUTLINE")
         b.count:ClearAllPoints()
         if db.countAnchor == "center" then
             b.count:SetPoint("CENTER", b, "CENTER", 0, 0)
@@ -572,6 +587,12 @@ function ns.ApplyLayout()
             b.count:SetPoint("TOPRIGHT", b, "TOPRIGHT", 1, 1)
         end
 
+        -- Tilde etwas kleiner und um TILDE_DROP abgesenkt, damit sie
+        -- mittig vor der Zahl steht statt in deren oberem Viertel.
+        b.tilde:SetFont(font, countSize * 0.9, "OUTLINE")
+        b.tilde:SetText("~")
+        b.tilde:ClearAllPoints()
+        b.tilde:SetPoint("RIGHT", b.count, "LEFT", 1, -countSize * TILDE_DROP)
         if db.showSpells and resolved[i] then
             b:SetPoint("TOPLEFT", frame, "TOP", x + n * (iconSize + iconGap), y - 3)
             n = n + 1

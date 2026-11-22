@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>MP5 – Layout-Entwürfe im klassischen WoW-Design</title>
+<style>
+  :root{
+    --bg:#0d0c0a;
+    --panel:#15130f;
+    --ink:#e8dfc8;
+    --ink-dim:#9c9177;
+    --gold:#ffd100;
+    --mana:#4a78d8;
+    --mana-dim:#2a4480;
+    --line:#3a3326;
+    --ok:#4ad04a;
+    --warn:#e08a2a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    line-height:1.55;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 28px 100px}
+  h1{font-size:30px;margin:0 0 6px;color:var(--gold);letter-spacing:.5px}
+  h2{font-size:21px;margin:56px 0 6px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  h3{font-size:16px;margin:0 0 2px;color:var(--gold)}
+  p{margin:10px 0}
+  .lede{color:var(--ink-dim);max-width:74ch}
+  code{background:#000;padding:1px 5px;border-radius:3px;font-size:13px;color:#d8c89a}
+  .note{border-left:3px solid var(--warn);background:#1a150c;padding:10px 14px;
+        margin:18px 0;color:#d8c9a8;font-size:14px}
+  .grid{display:grid;grid-template-columns:420px 1fr;gap:28px;align-items:start;
+        margin:22px 0 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:4px;
+        padding:22px 22px 26px;margin:26px 0}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+       padding:2px 8px;border-radius:2px;margin-left:8px;vertical-align:3px}
+  .tag.go{background:#15300f;color:var(--ok);border:1px solid #2c5a1e}
+  .tag.todo{background:#2a1d08;color:var(--warn);border:1px solid #543a12}
+  .why{color:var(--ink-dim);font-size:14px}
+  table{border-collapse:collapse;font-size:13.5px;margin:14px 0 0}
+  td{padding:3px 14px 3px 0;vertical-align:top}
+  td:first-child{color:var(--ink-dim);white-space:nowrap}
+
+  /* ---------- Die Spielszene ---------- */
+  .scene{
+    background:#1b2a16 url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'>\
+<rect width='40' height='40' fill='%231b2a16'/>\
+<circle cx='9' cy='11' r='7' fill='%23203016'/>\
+<circle cx='28' cy='30' r='9' fill='%23182612'/></svg>");
+    border:1px solid #000;border-radius:3px;padding:14px;position:relative;
+  }
+  .scene.small{padding:10px}
+
+  /* Spielerfenster, grob nachgebaut */
+  .player{position:relative;width:232px;height:74px}
+  .player .plate{
+    position:absolute;inset:0;background:linear-gradient(#2c2416,#17120a);
+    border:2px solid #6b5a30;border-radius:6px 30px 30px 6px;
+  }
+  .player .portrait{
+    position:absolute;left:4px;top:4px;width:62px;height:62px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%,#5a4a2e,#241d10);
+    border:2px solid #8a7340;
+  }
+  .player .name{position:absolute;left:76px;top:6px;font-size:11px;color:#f0e4c0}
+  .player .hp,.player .mp{position:absolute;left:76px;height:11px;width:142px;
+    border:1px solid #000;border-radius:2px;overflow:hidden}
+  .player .hp{top:24px;background:#2a1414}
+  .player .mp{top:39px;background:#101a2e}
+  .player .hp i{display:block;height:100%;width:86%;background:linear-gradient(#3fbf3f,#2a8a2a)}
+  .player .mp i{display:block;height:100%;width:62%;background:linear-gradient(#5a86e0,#2f4f9e)}
+  .player .lvl{position:absolute;left:76px;top:55px;font-size:10px;color:#b9a97e}
+
+  /* ---------- MP5 in seinen Varianten ---------- */
+  .mp5{font-family:"Trebuchet MS","Segoe UI",sans-serif;color:var(--ink);user-select:none}
+  .bd{background:rgba(0,0,0,.82);border:1px solid #000;
+      box-shadow:0 0 0 1px #4b4030 inset;border-radius:3px}
+  .num{font-weight:700}
+  .g{color:var(--gold)} .m{color:#8fb8ff} .dim{color:#6f6752}
+  .bar{height:4px;background:#000;border:1px solid #241f16;border-radius:1px;overflow:hidden}
+  .bar i{display:block;height:100%;background:linear-gradient(#ffd34d,#c9920f)}
+  .icons{display:flex;gap:3px}
+  .ic{width:26px;height:26px;border:1px solid #000;border-radius:2px;position:relative;
+      background:linear-gradient(145deg,#4a3c22,#262012)}
+  .ic.b{background:linear-gradient(145deg,#243a5c,#13203a)}
+  .ic.r{background:linear-gradient(145deg,#4a2420,#2a1210)}
+  .ic b{position:absolute;right:1px;top:0;font-size:11px;line-height:12px;
+        text-shadow:1px 1px 0 #000,-1px 0 0 #000,0 -1px 0 #000}
+  .ic.ctr b{right:auto;left:0;right:0;top:7px;text-align:center}
+
+  /* Variante: Patronengürtel */
+  .rounds{display:flex;gap:3px}
+  .rd{width:13px;height:7px;border-radius:1px 3px 3px 1px;background:#2a2418;
+      border:1px solid #171208}
+  .rd.on{background:linear-gradient(#9fd0ff,#3f6bb8)}
+
+  .foot{margin-top:70px;border-top:1px solid var(--line);padding-top:18px;
+        color:var(--ink-dim);font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Layout-Entwürfe</h1>
+<p class="lede">
+  Fünf Wege, MP5 unter das Spielerfenster zu bekommen, ohne dass es wie ein
+  Fremdkörper aussieht. Die Entwürfe sind maßstäblich: das Spielerfenster
+  daneben ist so breit, wie es im Spiel ist (232 Punkte), die Zahlen und
+  Icons haben ihre echte Größe.
+</p>
+
+<div class="note">
+  <strong>Das Problem heute:</strong> die Anzeige ist ein <em>Block</em> –
+  Werte, Balken, Restzeit und Icons stapeln sich untereinander. Unter dem
+  Spielerfenster hängt damit ein Turm, und damit die Icons noch sichtbar
+  sind, muss alles weit nach unten. Alle Entwürfe hier lösen dasselbe:
+  <strong>flacher bauen, breiter nutzen.</strong>
+</div>
+
+<h2>Die Fragen vor dem ersten Strich</h2>
+<p class="lede">
+  Diese acht Fragen ändern das Ergebnis. Alles andere ist Geschmack und lässt
+  sich später drehen. Wer sie überspringt, baut ein hübsches Panel, das im
+  Kampf niemand liest.
+</p>
+
+<table>
+  <tr><td><strong>1. Welche Entscheidung<br>soll es auslösen?</strong></td>
+      <td>Nicht „welche Zahl zeige ich“, sondern: was tut man nach dem Hinsehen
+          <em>anders</em>? Bei MP5: noch einen Zauber wirken, oder absetzen und
+          regenerieren lassen.<br>
+          <span class="why">→ bestimmt, welche einzige Zahl groß sein darf.
+          Alles, was keine Entscheidung ändert, gehört in den Tooltip.</span></td></tr>
+
+  <tr><td><strong>2. Wie lange darf<br>das Hinsehen dauern?</strong></td>
+      <td>Im Kampf hat man etwa eine Fünftelsekunde. Das reicht für
+          <em>eine</em> Farbe oder <em>eine</em> Länge – nicht für zwei Zahlen,
+          die man vergleichen muss.<br>
+          <span class="why">→ entscheidet zwischen Zahl, Balken und Ampel.
+          Ein Balken wird erfasst, eine Zahl wird gelesen.</span></td></tr>
+
+  <tr><td><strong>3. Wo schaut man<br>ohnehin schon hin?</strong></td>
+      <td>Der Blick klebt im Kampf an drei Stellen: eigene Leisten, Zauberbalken,
+          Gegner. Eine Anzeige am Bildschirmrand wird nicht gelesen, egal wie
+          schön sie ist.<br>
+          <span class="why">→ bestimmt den Platz. Und damit, ob es überhaupt
+          einen Rahmen braucht – angebaut schlägt danebengesetzt.</span></td></tr>
+
+  <tr><td><strong>4. Was zeigt das<br>Spiel schon selbst?</strong></td>
+      <td>Aktuelles Mana steht in der Manaleiste. Es ein zweites Mal zu zeigen,
+          kostet Platz und bringt nichts.<br>
+          <span class="why">→ streicht die Hälfte der Ideen. Zeige, was fehlt:
+          hier die Rate und die Reichweite, nicht den Vorrat.</span></td></tr>
+
+  <tr><td><strong>5. Wie sieht<br>„alles in Ordnung“ aus?</strong></td>
+      <td>Der Normalzustand ist der, den man 95 % der Zeit sieht. Darf die
+          Anzeige dann still sein, blass werden, ganz verschwinden?<br>
+          <span class="why">→ entscheidet über Ruhe. Eine Anzeige, die immer
+          leuchtet, hat keine Möglichkeit mehr, Alarm zu schlagen.</span></td></tr>
+
+  <tr><td><strong>6. Was ist der<br>Grenzwert?</strong></td>
+      <td>Ab wann wird es knapp – und ist das eine feste Zahl oder hängt sie vom
+          Zauber ab?<br>
+          <span class="why">→ erst der Grenzwert rechtfertigt Farbe. Farbe ohne
+          Schwelle ist Dekoration und stumpft ab.</span></td></tr>
+
+  <tr><td><strong>7. Was passiert,<br>wenn Daten fehlen?</strong></td>
+      <td>Genau der Fall, der uns hier beschäftigt: der Client gibt das Mana
+          nicht heraus. Zeigt die Anzeige dann nichts, rät sie, oder sagt sie
+          ehrlich „ungefähr“?<br>
+          <span class="why">→ gehört ins Design, nicht in die Fehlerbehandlung.
+          Die Tilde vor der Zahl ist eine Design-Entscheidung.</span></td></tr>
+
+  <tr><td><strong>8. Wie viel Platz<br>darf es kosten?</strong></td>
+      <td>Vorher festlegen, in Punkten. „So klein wie möglich“ ist keine
+          Antwort, „höchstens 30 Punkte hoch“ schon.<br>
+          <span class="why">→ erzwingt die Entscheidung zwischen Turm und
+          Streifen, bevor man drei Entwürfe gezeichnet hat.</span></td></tr>
+</table>
+
+<div class="note">
+  <strong>Die Probe aufs Ganze:</strong> ein Satz, der die Anzeige beschreibt,
+  ohne „und“ darin. Für MP5: <em>„Reicht mein Mana noch für den nächsten
+  Zauber?“</em> Braucht man ein „und“, zeigt die Anzeige zwei Dinge – dann
+  gehört eines davon in den Tooltip oder in eine zweite Anzeige.
+</div>
+
+<h2>Woran sich „klassisch“ festmacht</h2>
+<table>
+  <tr><td>Rahmen</td><td>Die dünne Tooltip-Umrandung (1 Punkt, schwarz, innen hellbrauner Strich) – nicht der dicke Dialograhmen. Der wirkt bei kleinen Flächen massiv.</td></tr>
+  <tr><td>Hintergrund</td><td>Schwarz mit ~80 % Deckung. Kein Pergament: das gibt es im Spiel nur bei Briefen und Questtexten.</td></tr>
+  <tr><td>Gold</td><td><code>#ffd100</code> für aktive Werte, ein gedämpftes Braungrau für inaktive. Manablau <code>#8fb8ff</code> für alles, was Mana <em>ist</em>.</td></tr>
+  <tr><td>Schrift</td><td>Friz Quadrata für Überschriften, Arial Narrow für Zahlen – also die Spielschriften, keine eigene.</td></tr>
+  <tr><td>Breite</td><td>232 Punkte ist das Maß des Spielerfensters. Wer sich daran hält, sieht angebaut aus statt danebengesetzt.</td></tr>
+</table>
+
+<!-- ------------------------------------------------------------------ -->
+<div class="card">
+  <h3>1 – Der Streifen <span class="tag go">geht heute schon</span></h3>
+  <p class="why">
+    Alles in einer Zeile: Werte links, Restzeit rechts, der 5-Sekunden-Balken
+    als durchgehender Strich darunter. Höhe 26 statt 70 Punkte. Die Zauber-Icons
+    stehen rechts daneben statt darunter – in der Breite ist Platz, nach unten
+    nicht.
+  </p>
+  <div class="grid">
+    <div class="scene">
+      <div class="player">
+        <div class="plate"></div><div class="portrait"></div>
+        <div class="name">Zauberin</div>
+        <div class="hp"><i></i></div><div class="mp"><i></i></div>
+        <div class="lvl">60</div>
+      </div>
+      <div class="mp5 bd" style="width:232px;margin-top:3px;padding:3px 6px 4px">
+        <div style="display:flex;align-items:baseline;gap:6px;font-size:14px">
+          <span class="num g">12</span><span class="dim">/</span>
+          <span class="num m">47</span>
+          <span style="flex:1"></span>
+          <span class="dim" style="font-size:11px">3,2 s</span>
+        </div>
+        <div class="bar" style="margin-top:3px"><i style="width:64%"></i></div>
+      </div>
+      <div class="icons" style="margin-top:3px">
+        <div class="ic b"><b class="g">7</b></div>
+        <div class="ic"><b style="color:#4ad04a">14</b></div>
+        <div class="ic r"><b style="color:#ff5a5a">2</b></div>
+      </div>
+    </div>
+    <div>
+      <p>So stellt man es heute ein:</p>
+      <p><code>/mp5 width 232</code><br>
+         <code>/mp5 bar thin</code><br>
+         <code>/mp5 backdrop thin</code><br>
+         <code>/mp5 countdown on</code><br>
+         <code>/mp5 icon 26</code></p>
+      <p class="why">
+        Die Icons sitzen dabei noch mittig unter dem Streifen, nicht daneben –
+        für „daneben“ fehlt eine Einstellung (<code>/mp5 icons right</code>).
+        Das wäre wenig Arbeit.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div class="card">
+  <h3>2 – Die angebaute Leiste <span class="tag todo">braucht Code</span></h3>
+  <p class="why">
+    Kein eigener Rahmen. Die Anzeige sitzt direkt an der Unterkante des
+    Spielerfensters und übernimmt dessen Form – wie eine dritte Leiste unter
+    Leben und Mana. Die Zahlen stehen <em>in</em> der Leiste, so wie der
+    Statustext im Spiel. Das ist die unauffälligste Variante: man liest sie,
+    ohne den Blick zu wechseln.
+  </p>
+  <div class="grid">
+    <div class="scene">
+      <div class="player">
+        <div class="plate"></div><div class="portrait"></div>
+        <div class="name">Zauberin</div>
+        <div class="hp"><i></i></div><div class="mp"><i></i></div>
+        <div class="lvl">60</div>
+      </div>
+      <div style="width:216px;margin-left:76px;margin-top:-16px">
+        <div class="mp5" style="position:relative;height:13px;border:1px solid #000;
+             border-radius:2px;background:#0b0f18;overflow:hidden">
+          <i style="position:absolute;inset:0;width:64%;
+                    background:linear-gradient(#ffd34d,#b8860b);opacity:.85"></i>
+          <span class="num" style="position:absolute;left:4px;top:-1px;font-size:11px;
+                color:#fff;text-shadow:1px 1px 0 #000">12 / 47</span>
+          <span style="position:absolute;right:4px;top:-1px;font-size:11px;
+                color:#f3e8c8;text-shadow:1px 1px 0 #000">3,2 s</span>
+        </div>
+        <div class="icons" style="margin-top:4px;justify-content:flex-start">
+          <div class="ic b"><b class="g">7</b></div>
+          <div class="ic"><b style="color:#4ad04a">14</b></div>
+          <div class="ic r"><b style="color:#ff5a5a">2</b></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p>Was dafür neu wäre:</p>
+      <table>
+        <tr><td>Anker</td><td><code>/mp5 anchor player</code> – an <code>PlayerFrame</code> hängen statt an den Bildschirm. Dann sitzt es bei jeder Auflösung richtig.</td></tr>
+        <tr><td>Zahlen im Balken</td><td>zwei Fontstrings links/rechts <em>im</em> Balken statt darüber</td></tr>
+        <tr><td>Rahmen</td><td>eine Variante <code>backdrop frame</code>, die die Kante des Spielerfensters aufnimmt</td></tr>
+      </table>
+      <p class="why">
+        Vorsicht: Addons, die das Spielerfenster ersetzen, verschieben den
+        Anker mit. Das ist gut – aber wenn deine „moderne Ansicht“ ein anderes
+        Addon ist, muss der Anker dessen Rahmen finden. Dafür wäre
+        <code>/mp5 anchor &lt;Rahmenname&gt;</code> der ehrliche Weg.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div class="card">
+  <h3>3 – Der Patronengürtel <span class="tag todo">braucht Code</span></h3>
+  <p class="why">
+    Statt eines durchgehenden Balkens fünf Patronen – eine je Sekunde der
+    Regel. Sie erlöschen einzeln, und wenn die letzte dunkel wird, regeneriert
+    man wieder voll. Das ist dasselbe Bild wie im Logo, und es liest sich aus
+    dem Augenwinkel schneller als ein Balken: man zählt, statt zu schätzen.
+  </p>
+  <div class="grid">
+    <div class="scene">
+      <div class="player">
+        <div class="plate"></div><div class="portrait"></div>
+        <div class="name">Zauberin</div>
+        <div class="hp"><i></i></div><div class="mp"><i></i></div>
+        <div class="lvl">60</div>
+      </div>
+      <div class="mp5 bd" style="width:232px;margin-top:3px;padding:4px 6px 5px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="num g" style="font-size:15px">12</span>
+          <span class="dim">/</span>
+          <span class="num m" style="font-size:15px">47</span>
+          <span style="flex:1"></span>
+          <div class="rounds">
+            <div class="rd on"></div><div class="rd on"></div>
+            <div class="rd on"></div><div class="rd"></div><div class="rd"></div>
+          </div>
+        </div>
+        <div class="icons" style="margin-top:5px;justify-content:center">
+          <div class="ic b"><b class="g">7</b></div>
+          <div class="ic"><b style="color:#4ad04a">14</b></div>
+          <div class="ic r"><b style="color:#ff5a5a">2</b></div>
+          <div class="ic"><b style="color:#4ad04a">9</b></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p>Was dafür neu wäre:</p>
+      <table>
+        <tr><td>Anzeige</td><td><code>/mp5 bar rounds</code> – fünf Texturen statt einer Statusbar</td></tr>
+        <tr><td>Takt</td><td>jede Patrone steht für eine Sekunde; die laufende blendet aus statt zu springen</td></tr>
+      </table>
+      <p class="why">
+        Einziger Haken: Patronen sind grob. Für „noch 3,2 Sekunden“ taugt der
+        Balken besser. Deshalb wäre das eine Alternative, kein Ersatz.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div class="card">
+  <h3>4 – Nur die Icons <span class="tag go">fast schon möglich</span></h3>
+  <p class="why">
+    Die radikale Variante: kein Panel, kein Rahmen, keine Zahl für die
+    Regeneration. Nur die Zauber-Icons mit ihrer Stückzahl, und als einzige
+    Zugabe ein dünner Strich darunter, der die fünf Sekunden abläuft. Die
+    Regenerationszahlen holt man sich im Tooltip, wenn man sie wirklich
+    braucht.
+  </p>
+  <div class="grid">
+    <div class="scene">
+      <div class="player">
+        <div class="plate"></div><div class="portrait"></div>
+        <div class="name">Zauberin</div>
+        <div class="hp"><i></i></div><div class="mp"><i></i></div>
+        <div class="lvl">60</div>
+      </div>
+      <div style="margin-top:6px;width:150px">
+        <div class="icons" style="gap:4px">
+          <div class="ic ctr b" style="width:32px;height:32px"><b class="g" style="font-size:13px">7</b></div>
+          <div class="ic ctr" style="width:32px;height:32px"><b style="color:#4ad04a;font-size:13px">14</b></div>
+          <div class="ic ctr r" style="width:32px;height:32px"><b style="color:#ff5a5a;font-size:13px">2</b></div>
+        </div>
+        <div class="bar" style="margin-top:3px;width:108px"><i style="width:64%"></i></div>
+      </div>
+    </div>
+    <div>
+      <p>So stellt man es heute ein:</p>
+      <p><code>/mp5 backdrop off</code><br>
+         <code>/mp5 full off</code><br>
+         <code>/mp5 countdown off</code><br>
+         <code>/mp5 icon 32</code><br>
+         <code>/mp5 count center</code></p>
+      <p class="why">
+        Es bleibt eine kleine Zahl über den Icons stehen – die ließe sich mit
+        einem <code>/mp5 values off</code> ganz abschalten. Das ist eine Zeile
+        Code und der letzte Schritt zu diesem Entwurf.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div class="card">
+  <h3>5 – Der Anker <span class="tag todo">braucht Code</span></h3>
+  <p class="why">
+    Kein Layout, sondern das, was dein eigentliches Problem löst: die Anzeige
+    klebt am Spielerfenster, statt an einer Bildschirmkoordinate zu hängen.
+    Du sagst einmal „unter das Spielerfenster, 4 Punkte Abstand“ – und dann
+    stimmt es, egal ob du die Auflösung, die Interface-Größe oder das
+    Unit-Frame-Addon wechselst.
+  </p>
+  <div class="grid">
+    <div class="scene small">
+      <div class="player" style="transform:scale(.85);transform-origin:top left">
+        <div class="plate"></div><div class="portrait"></div>
+        <div class="name">Zauberin</div>
+        <div class="hp"><i></i></div><div class="mp"><i></i></div>
+        <div class="lvl">60</div>
+      </div>
+      <div style="margin-top:-4px">
+        <div class="mp5 bd" style="width:197px;padding:3px 6px 4px">
+          <div style="display:flex;align-items:baseline;gap:6px;font-size:13px">
+            <span class="num g">12</span><span class="dim">/</span>
+            <span class="num m">47</span>
+            <span style="flex:1"></span>
+            <span class="dim" style="font-size:10px">3,2 s</span>
+          </div>
+          <div class="bar" style="margin-top:3px"><i style="width:64%"></i></div>
+        </div>
+      </div>
+      <p style="color:#cfc4a2;font-size:12px;margin:10px 0 0">
+        ↑ verschiebt sich mit, wenn das Spielerfenster umzieht
+      </p>
+    </div>
+    <div>
+      <p>Die Befehle dazu:</p>
+      <p><code>/mp5 anchor player</code> – unter das Spielerfenster<br>
+         <code>/mp5 anchor target</code> – unter das Zielfenster<br>
+         <code>/mp5 anchor free</code> – wie bisher, frei verschiebbar<br>
+         <code>/mp5 anchor &lt;Rahmen&gt;</code> – an einen beliebigen Rahmen<br>
+         <code>/mp5 offset &lt;x&gt; &lt;y&gt;</code> – Feinabstimmung</p>
+      <p class="why">
+        Technisch unkritisch: <code>SetPoint("TOP", PlayerFrame, "BOTTOM", x, y)</code>
+        statt <code>UIParent</code>. Der Aufwand steckt im Rückfall, wenn der
+        Zielrahmen nicht existiert – dann muss die Anzeige zurück auf frei,
+        statt zu verschwinden.
+      </p>
+    </div>
+  </div>
+</div>
+
+<h2>Was ich vorschlagen würde</h2>
+<p>
+  <strong>Entwurf 1 + 5 zusammen.</strong> Der Streifen macht die Anzeige flach
+  genug, dass sie unter das Spielerfenster passt, ohne die Icons nach unten zu
+  drücken – und der Anker sorgt dafür, dass sie dort auch bleibt. Beides ist
+  überschaubar: die Icons rechts statt darunter ist eine Layout-Verzweigung,
+  der Anker ein Ersetzen von <code>UIParent</code> durch einen Rahmen plus ein
+  Rückfall.
+</p>
+<p>
+  Entwurf 3 ist der schönste, aber er kostet die genaue Restzeit. Entwurf 2 ist
+  der eleganteste, hängt aber davon ab, wie deine „moderne Ansicht“ gebaut ist –
+  das müsste ich wissen, bevor ich es verspreche.
+</p>
+
+<div class="foot">
+  Maßstab: 1 Punkt im Bild = 1 Punkt im Spiel bei Interface-Größe 1,0.
+  Das Spielerfenster ist 232 × 74 Punkte groß, ein Zauber-Icon im Standard
+  24 Punkte.
+</div>
+
+</div>
+</body>
+</html>

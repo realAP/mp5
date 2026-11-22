@@ -43,8 +43,11 @@ local function checkbox(parent, text, x, y, get, set)
     local cb = build("CheckButton", parent,
         { "InterfaceOptionsCheckButtonTemplate", "UICheckButtonTemplate" })
     cb:SetPoint("TOPLEFT", x, y)
+    -- Je nach Vorlage haengt die Beschriftung am Knopf oder unter einem
+    -- globalen Namen. Auf den Typ pruefen, nicht nur auf Vorhandensein:
+    -- fehlt die Vorlage ganz, steht hier sonst irgendetwas anderes.
     local label = cb.Text or _G[(cb:GetName() or "") .. "Text"]
-    if label then label:SetText(text) end
+    if type(label) == "table" and label.SetText then label:SetText(text) end
     cb.refresh = function() cb:SetChecked(get()) end
     cb:SetScript("OnClick", function(self)
         set(self:GetChecked() and true or false)
@@ -53,22 +56,43 @@ local function checkbox(parent, text, x, y, get, set)
     return cb
 end
 
-local function slider(parent, text, x, y, min, max, step, get, set)
-    local s = CreateFrame("Slider", "MP5Slider" .. y, parent, "OptionsSliderTemplate")
+-- Ein Schieber. "show" formatiert den Wert ueber dem Schieber; ohne Angabe
+-- wird ganzzahlig gerundet. Der Name muss eindeutig sein, weil die Vorlage
+-- ihre Beschriftungen ueber globale Namen findet - deshalb gehen x und y
+-- hinein und nicht nur y (zwei Schieber in einer Zeile haben dasselbe y).
+local function slider(parent, text, x, y, min, max, step, get, set, show)
+    local id = "MP5Slider" .. math.abs(x) .. "_" .. math.abs(y)
+    local s = CreateFrame("Slider", id, parent, "OptionsSliderTemplate")
     s:SetPoint("TOPLEFT", x, y)
-    s:SetWidth(200)
+    s:SetWidth(190)
     s:SetMinMaxValues(min, max)
     s:SetValueStep(step)
     if s.SetObeyStepOnDrag then pcall(s.SetObeyStepOnDrag, s, true) end
+
+    local fmt = show or function(v) return tostring(math.floor(v + 0.5)) end
     local name = s:GetName()
-    if _G[name .. "Low"]  then _G[name .. "Low"]:SetText(min) end
-    if _G[name .. "High"] then _G[name .. "High"]:SetText(max) end
+    if _G[name .. "Low"]  then _G[name .. "Low"]:SetText(fmt(min)) end
+    if _G[name .. "High"] then _G[name .. "High"]:SetText(fmt(max)) end
     local lbl = _G[name .. "Text"]
-    local function show(v) if lbl then lbl:SetText(text .. ": " .. math.floor(v)) end end
-    s.refresh = function() local v = get(); s:SetValue(v); show(v) end
-    s:SetScript("OnValueChanged", function(self, v)
-        v = math.floor(v + 0.5)
-        show(v)
+
+    local function label(v) if lbl then lbl:SetText(text .. ": " .. fmt(v)) end end
+
+    -- Beim Auffrischen darf das Setzen des Wertes nicht wieder speichern,
+    -- sonst schreibt das Oeffnen des Menues den gerundeten Wert zurueck.
+    local quiet = false
+    s.refresh = function()
+        quiet = true
+        local v = get()
+        s:SetValue(v)
+        label(v)
+        quiet = false
+    end
+    s:SetScript("OnValueChanged", function(_, v)
+        -- Auf ein Vielfaches der Schrittweite legen, damit der Wert nicht
+        -- mit Nachkommastellen aus dem Ziehen stehen bleibt.
+        v = math.floor(v / step + 0.5) * step
+        label(v)
+        if quiet then return end
         set(v)
         ns.ApplyLayout()
     end)
@@ -77,9 +101,16 @@ end
 
 -- Aufbau -------------------------------------------------------------------
 
-title(panel, "MP5", "big", 16, -16)
+-- Das Zeichen oben links. WoW laedt kein PNG, deshalb liegt es als
+-- unkomprimiertes 32-Bit-TGA neben dem Addon.
+local logo = panel:CreateTexture(nil, "ARTWORK")
+logo:SetTexture("Interface\\AddOns\\MP5\\Textures\\logo.tga")
+logo:SetPoint("TOPLEFT", 16, -14)
+logo:SetSize(96, 48)
+
+title(panel, "MP5", "big", 122, -22)
 note(panel, "Zeigt die gemessene Mana-Regeneration pro 5 Sekunden und, darunter, "
-          .. "wie oft das Mana fuer einen Zauber noch reicht.", 16, -40)
+          .. "wie oft das Mana fuer einen Zauber noch reicht.", 122, -44, 454)
 
 title(panel, "Zauber-Leiste", nil, 16, -80)
 note(panel, "Bis zu fuenf Zauber. Genau so schreiben wie im Makro; ein Rang ist "
@@ -149,29 +180,81 @@ for i = 1, MAX_SPELLS do
     rows[i] = { box = box, describe = describe }
 end
 
-title(panel, "Darstellung", nil, 16, -326)
+title(panel, "Groesse", nil, 16, -326)
 
-local iconSlider = slider(panel, "Icon-Groesse", 20, -360, 16, 48, 2,
+local COL1, COL2 = 20, 290
+
+local widthSlider = slider(panel, "Breite", COL1, -358, 80, 400, 10,
+    function() return ns.db.width end,
+    function(v) ns.db.width = v end)
+
+local iconSlider = slider(panel, "Icon-Groesse", COL2, -358, 16, 48, 2,
     function() return ns.db.iconSize end,
     function(v) ns.db.iconSize = v end)
 
-local barFill = checkbox(panel, "Balken fuellt sich bis zur vollen Regeneration", 14, -398,
+local scaleSlider = slider(panel, "Gesamtgroesse", COL1, -402, 0.5, 2, 0.05,
+    function() return ns.db.scale end,
+    function(v) ns.db.scale = v end,
+    function(v) return string.format("%.2f", v) end)
+
+local fontSlider = slider(panel, "Schriftgroesse", COL2, -402, 8, 32, 1,
+    function() return ns.db.fontSize end,
+    function(v) ns.db.fontSize = v end)
+
+note(panel, "Die Breite ist eine Mindestbreite - braucht die Zauber-Reihe mehr "
+          .. "Platz, waechst der Rahmen mit.", 20, -434, 540)
+
+-- Ab hier zweispaltig: das Optionen-Fenster schneidet alles ab, was tiefer
+-- als etwa 580 Punkte liegt.
+title(panel, "Darstellung", nil, 16, -450)
+
+local barFill = checkbox(panel, "Balken fuellt sich auf (sonst leer)", 14, -474,
     function() return ns.db.barDir ~= "drain" end,
     function(v) ns.db.barDir = v and "fill" or "drain" end)
 
-local countdownOn = checkbox(panel, "Restzeit der 5-Sekunden-Regel unter dem Balken", 14, -424,
-    function() return ns.db.showCountdown end,
-    function(v) ns.db.showCountdown = v end)
-
-local countCenter = checkbox(panel, "Zahl mittig auf dem Icon (sonst oben rechts)", 14, -450,
+local countCenter = checkbox(panel, "Zahl mittig auf dem Icon", COL2 - 6, -474,
     function() return ns.db.countAnchor == "center" end,
     function(v) ns.db.countAnchor = v and "center" or "topright" end)
 
-local fullOn = checkbox(panel, "Beide Stufen zeigen (waehrend des Zauberns / danach)", 14, -476,
+local countdownOn = checkbox(panel, "Restzeit unter dem Balken", 14, -498,
+    function() return ns.db.showCountdown end,
+    function(v) ns.db.showCountdown = v end)
+
+local fullOn = checkbox(panel, "Beide Stufen zeigen", COL2 - 6, -498,
     function() return ns.db.showFull end,
     function(v) ns.db.showFull = v end)
 
-note(panel, "Mehr Einstellungen ueber /mp5", 16, -506)
+local manaOn = checkbox(panel, "Aktuelles Mana anzeigen |cffff9020(Beta)|r", COL2 - 6, -546,
+    function() return ns.db.manaDisplay and ns.db.manaDisplay ~= "off" end,
+    function(v) ns.db.manaDisplay = v and "full" or "off" end)
+
+local lockedOn = checkbox(panel, "Position fixieren", 14, -522,
+    function() return ns.db.locked end,
+    function(v) ns.db.locked = v end)
+
+local logoOn = checkbox(panel, "Zeichen in der Anzeige", 14, -546,
+    function() return ns.db.showLogo end,
+    function(v) ns.db.showLogo = v end)
+
+local estimateOn = checkbox(panel, "Mana mitrechnen |cffff9020(Beta)|r", COL2 - 6, -522,
+    function() return ns.db.estimate end,
+    function(v)
+        ns.db.estimate = v
+        if ns.Estimate then ns.Estimate:SetEnabled(v) end
+    end)
+
+-- Der Knopf fuer den Fall, dass das Modell danebenliegt: ein Klick sagt
+-- ihm, dass der Tank gerade voll ist - ab da rechnet es wieder exakt.
+local fullBtn = build("Button", panel, { "UIPanelButtonTemplate" })
+fullBtn:SetPoint("TOPLEFT", 14, -568)
+fullBtn:SetSize(210, 22)
+fullBtn:SetText("Mein Mana ist jetzt voll")
+fullBtn:SetScript("OnClick", function()
+    if ns.MarkManaFull then ns.MarkManaFull() end
+end)
+
+note(panel, "|cff808080Untergrenze (~), exakt sobald der Tank voll war. "
+          .. "Alles auch ueber /mp5|r", 236, -574, 340)
 
 -- Oeffnen und Auffrischen --------------------------------------------------
 
@@ -186,7 +269,14 @@ local function refresh()
     countCenter.refresh()
     countdownOn.refresh()
     fullOn.refresh()
+    lockedOn.refresh()
+    logoOn.refresh()
+    manaOn.refresh()
+    estimateOn.refresh()
     iconSlider.refresh()
+    widthSlider.refresh()
+    scaleSlider.refresh()
+    fontSlider.refresh()
 end
 
 panel.refresh = refresh          -- neue Settings-API

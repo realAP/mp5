@@ -22,6 +22,11 @@ local defaults = {
     showFull      = true,        -- beide Stufen "12 / 47"
     showCountdown = true,        -- Restzeit unter dem Balken
     tooltip       = true,
+    showLogo      = false,       -- das Zeichen links in der Wertezeile
+    auraRegen     = true,        -- Mana aus Segen der Weisheit / Manaquelle
+    showResetButton = true,      -- Knopf "Mana ist voll" in der Ecke
+    debug         = false,       -- Fenster "was das Addon denkt"
+    manaDisplay   = "off",       -- off | value | full | percent
     decimals      = 0,
     animate       = false,
 
@@ -30,6 +35,8 @@ local defaults = {
     spells      = {},            -- bis zu 5 Namen, z.B. "Blitzheilung"
     iconSize    = 24,
     countAnchor = "topright",    -- topright | center
+    -- Mana selbst mitrechnen, wenn der Client den Wert nicht herausgibt.
+    estimate    = true,
 
     visibility = "always",       -- always | combat | notfull
 }
@@ -70,8 +77,11 @@ function ns.UpdateVisibility()
     if db.visibility == "combat" then
         show = InCombatLockdown() or UnitAffectingCombat("player")
     elseif db.visibility == "notfull" then
-        local cur = Core:GetMana()
-        show = cur == nil or cur < UnitPowerMax("player", MANA)
+        -- Beide Werte koennen geschuetzt sein (im Kampf auch das Maximum);
+        -- dann wird angezeigt, statt zu vergleichen und abzubrechen.
+        local cur = ns.plain and ns.plain(Core:GetMana()) or Core:GetMana()
+        local max = Core.GetMaxMana and Core:GetMaxMana() or nil
+        show = (cur == nil) or (max == nil) or (cur < max)
     end
     if show then ns.frame:Show() else ns.frame:Hide() end
 end
@@ -82,12 +92,31 @@ local function msg(text)
     DEFAULT_CHAT_FRAME:AddMessage("|cffffd100MP5|r " .. text)
 end
 
+-- "Mein Mana ist jetzt voll." Der Knopf in den Optionen und /mp5 voll
+-- landen beide hier, damit die Rueckmeldung dieselbe ist.
+function ns.MarkManaFull()
+    if not ns.Estimate then return false end
+    local ok, done = pcall(ns.Estimate.MarkFull, ns.Estimate)
+    if ok and done then
+        local max = Core.GetMaxMana and Core:GetMaxMana()
+        msg("|cff40ff40Verstanden:|r Mana steht jetzt auf "
+            .. (max and math.floor(max) or "voll")
+            .. ". Ab hier wird exakt weitergerechnet.")
+        if ns.Redraw then pcall(ns.Redraw) end
+        return true
+    end
+    msg("|cffff5555Geht gerade nicht:|r das Maximalmana ist nicht lesbar "
+        .. "(im Kampf schuetzt dieser Client es). Nach dem Kampf nochmal.")
+    return false
+end
+
 local function usage()
     msg("Befehle:")
     msg("  /mp5 lock | unlock            - Position fixieren")
     msg("  /mp5 scale <0.5-2>            - Groesse")
     msg("  /mp5 font <8-32>              - Schriftgroesse")
-    msg("  /mp5 width <80-400>           - Breite")
+    msg("  /mp5 width <80-400>           - Breite (Mindestbreite: die")
+    msg("                                  Zauber-Reihe kann breiter sein)")
     msg("  /mp5 bar off|thin|full        - Balken")
     msg("  /mp5 bardir fill|drain        - Balken fuellt sich / laeuft leer")
     msg("  /mp5 backdrop blizzard|thin|off")
@@ -98,6 +127,17 @@ local function usage()
     msg("  /mp5 spell list               - belegte Plaetze zeigen")
     msg("  /mp5 icon <16-48>             - Groesse der Zauber-Icons")
     msg("  /mp5 count topright|center    - wo die Zahl auf dem Icon sitzt")
+    msg("  /mp5 logo on|off              - das Zeichen in der Anzeige")
+    msg("  /mp5 buffs on|off             - Mana aus Segen der Weisheit "
+        .. "und Manaquelle mitrechnen")
+    msg("  /mp5 button on|off            - Knopf \"Mana ist voll\" in der Ecke")
+    msg("  /mp5 mana off|value|full|percent")
+    msg("                                  - aktuelles Mana in der Anzeige")
+    msg("  /mp5 debug                    - Fenster: was denkt das Addon")
+    msg("  /mp5 voll                     - \"mein Mana ist jetzt voll\":")
+    msg("                                  setzt das Modell auf den Anschlag")
+    msg("  /mp5 estimate on|off|reset    - Mana mitrechnen, wenn der Client")
+    msg("                                  es nicht herausgibt")
     msg("  /mp5 options                  - Interface-Optionen oeffnen")
     msg("  /mp5 decimals 0|1")
     msg("  /mp5 show always|combat|notfull")
@@ -110,11 +150,14 @@ end
 
 local toggles = {
     spells    = "showSpells",
+    logo      = "showLogo",
+    button    = "showResetButton",
     label     = "showLabel",
     full      = "showFull",
     countdown = "showCountdown",
     tooltip   = "tooltip",
     animate   = "animate",
+    buffs     = "auraRegen",
 }
 
 -- Zaubernamen duerfen Leerzeichen und Grossbuchstaben haben, deshalb wird
@@ -205,6 +248,54 @@ SlashCmdList["MP5"] = function(input)
         db[toggles[cmd]] = (arg == "on")
     elseif cmd == "icon" then
         db.iconSize = math.max(16, math.min(48, tonumber(arg) or db.iconSize))
+    elseif cmd == "mana" then
+        if arg == "off" or arg == "value" or arg == "full" or arg == "percent" then
+            db.manaDisplay = arg
+            if arg ~= "off" then
+                msg("Aktuelles Mana steht jetzt in der Anzeige."
+                    .. (Core:ManaSource() == "modell"
+                        and " Die Tilde heisst: gerechnet, nicht gelesen." or ""))
+            end
+        else
+            msg("mana off|value|full|percent")
+            return
+        end
+    elseif cmd == "debug" then
+        -- Ohne Argument umschalten. Bewusst mit if statt mit "and/or":
+        -- "x and nil or y" kann niemals nil ergeben, der nil-Zweig faellt
+        -- immer auf y durch - dadurch wurde das Fenster nie geoeffnet.
+        local want
+        if arg == "on" then want = true
+        elseif arg == "off" then want = false end
+
+        if not ns.ShowDebug then
+            msg("|cffff5555Debug-Fenster nicht geladen.|r")
+            return
+        end
+        local on = ns.ShowDebug(want)
+        msg(on and "Fenster offen - vergleiche die Zahl mit deiner Manaleiste."
+                or "Fenster zu.")
+        return
+    elseif cmd == "voll" or cmd == "full!" then
+        -- Der kurze Weg: dem Modell sagen, dass der Tank voll ist.
+        ns.MarkManaFull()
+        return
+    elseif cmd == "estimate" then
+        if arg == "full" or arg == "voll" then
+            ns.MarkManaFull()
+            return
+        elseif arg == "reset" then
+            if ns.Estimate then ns.Estimate:Reset() end
+            msg("Modell zurueckgesetzt - es baut sich aus der Regeneration "
+                .. "neu auf.")
+            return
+        elseif arg == "on" or arg == "off" then
+            db.estimate = (arg == "on")
+            if ns.Estimate then ns.Estimate:SetEnabled(db.estimate) end
+            msg(db.estimate
+                and "Mana wird mitgerechnet, wenn der Client es schuetzt."
+                or  "Mana wird nicht mitgerechnet.")
+        else msg("estimate on|off|reset"); return end
     elseif cmd == "count" then
         if arg == "topright" or arg == "center" then db.countAnchor = arg
         else msg("count topright|center"); return end
@@ -252,6 +343,40 @@ SlashCmdList["MP5"] = function(input)
         end
         msg("  Regen beim Casten: " .. str(mp5) .. " MP5"
             .. (mp5 and "" or "  -> wird mit 0 gerechnet"))
+
+        -- Segen der Weisheit und Manaquelle stehen in GetManaRegen() nicht
+        -- drin. In der Gruppe ist das der groesste Posten ueberhaupt.
+        if ns.Auras then
+            local what, total = ns.Auras:Describe()
+            msg("  davon aus Buffs:   " .. (what
+                and (tostring(total) .. " MP5  (" .. what .. ")")
+                or "0  (kein Segen der Weisheit / keine Manaquelle erkannt)"))
+        end
+
+        -- Das Modell: woraus der Wert gerade besteht.
+        if ns.Estimate then
+            local ok, s = pcall(ns.Estimate.Status, ns.Estimate)
+            if ok and type(s) == "table" then
+                local function num(v) return v and tostring(math.floor(v)) or "-" end
+                msg("  Modell: " .. (s.enabled and "an" or "aus")
+                    .. ", Wert " .. num(s.mana) .. " von " .. num(s.max)
+                    .. (s.exact and "  |cff40ff40(exakt: Tank ist voll)|r"
+                                 or "  (Untergrenze)"))
+                msg("    aufgelaufene Regeneration seit dem letzten Zauber: "
+                    .. num(s.credit)
+                    .. " (Anker bei " .. num(s.max and s.max * 1.25) .. ")")
+                msg("    Mana-Ereignis: " .. (s.events and "kommt an" or
+                    "|cffff5555noch keins gesehen|r")
+                    .. ", seit " .. num(s.quiet) .. "s still"
+                    .. " (Anker ab 3s)")
+                msg("    Zufuhr: " .. (s.mode == "ticks"
+                    and ("im Takt der Ereignisse, " .. num(s.ticks) .. " Ticks")
+                    or "laufend gerechnet (keine Ereignisse)"))
+                msg("    Schranken aus der Bezahlbarkeit: mindestens "
+                    .. num(s.lower) .. ", weniger als " .. num(s.upper)
+                    .. "  (" .. num(s.ladder) .. " Zauber in der Kostenleiter)")
+            end
+        end
 
         local any = false
         for i = 1, MAX_SPELLS do
@@ -361,6 +486,8 @@ f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
         MP5CharDB = applyDefaults(MP5CharDB or {})
         ns.db = MP5CharDB
     elseif event == "PLAYER_LOGIN" then
+        if ns.Estimate then ns.Estimate:SetEnabled(ns.db.estimate) end
+        if ns.db.debug and ns.ShowDebug then ns.ShowDebug(true) end
         pcall(ns.Probe)            -- einmal aufschreiben, was der Client kann
         ns.ResolveSpells()
         ns.UpdateVisibility()
@@ -376,11 +503,17 @@ f:SetScript("OnEvent", ns.safe(function(_, event, arg1)
             elseif src == "text" then
                 msg("|cff40ff40Umweg gefunden:|r Mana wird aus dem Text der "
                     .. "Standardleiste gelesen. Die Zauber-Zahlen stimmen.")
+            elseif src == "modell" then
+                msg("|cff40ff40Umweg gefunden:|r Mana wird mitgerechnet - "
+                    .. "Kosten der gewirkten Zauber abziehen, Regeneration "
+                    .. "dazu. Die Zahlen sind eine Untergrenze (~) und "
+                    .. "werden exakt, sobald der Tank einmal voll war.")
+                msg("Stand und Herleitung: |cff88ccff/mp5 why|r, "
+                    .. "abschalten mit |cff88ccff/mp5 estimate off|r.")
             end
-            msg("Gemessen wird deshalb nicht; die Zahlen kommen von "
-                .. "GetManaRegen(). Die 5-Sekunden-Regel laeuft ueber die "
-                .. "Zauber selbst. Nur die Zauber-Leiste entfaellt - die "
-                .. "braucht das aktuelle Mana.")
+            msg("Gemessen wird deshalb nicht; die Regenerationszahlen kommen "
+                .. "von GetManaRegen(). Die 5-Sekunden-Regel laeuft ueber die "
+                .. "Zauber selbst.")
         end
     elseif event == "LEARNED_SPELL_IN_TAB" or event == "SPELLS_CHANGED" then
         -- Neuer Rang gelernt: Kosten und Icon koennen sich geaendert haben.

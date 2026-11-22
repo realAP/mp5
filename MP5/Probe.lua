@@ -122,6 +122,12 @@ function ns.Probe()
         p.exists[names[i]] = (_G[names[i]] ~= nil) and "ja" or "nein"
     end
 
+    -- Stand des Mana-Modells, damit er in den SavedVariables mitlandet.
+    if ns.Estimate then
+        local ok, s = pcall(ns.Estimate.Status, ns.Estimate)
+        if ok and type(s) == "table" then p.estimate = s end
+    end
+
     MP5Probe = p
     return p
 end

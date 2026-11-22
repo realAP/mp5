@@ -1,0 +1,23 @@
+# Wie der BigWigs-Packager das Zip baut.
+#
+# Das Addon liegt in einem Unterordner, der Client erwartet es aber als
+# oberste Ebene im Zip. Genau das macht move-folders.
+package-as: MP5
+
+move-folders:
+    MP5/MP5: MP5
+
+# Kein Changelog aus den Commits bauen: die Datei ist von Hand gepflegt.
+manual-changelog: CHANGELOG.md
+
+enable-nolib-creation: no
+
+# Alles, was nicht ins Spiel gehoert.
+ignore:
+    - tests
+    - docs
+    - tools
+    - .github
+    - .pkgmeta
+    - .gitignore
+    - .claude

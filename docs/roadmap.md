@@ -1,14 +1,14 @@
 # Roadmap
 
-Milestones and issues live on GitHub; this file says what they mean and when
-one is finished. Each closes on a condition that can be checked.
+Milestones and issues live on GitHub. Each milestone closes on a condition
+that can be checked.
 
 | | | |
 |---|---|---|
 | [0.1.0 – First release](../../milestone/1) | on CurseForge | #16 #17 |
-| 0.2.0 – Texts | README and every explanation reworked | #21 |
-| [0.3.0 – Layout](../../milestone/2) | classic styling under the player frame | #18 #19 |
-| [0.4.0 – English](../../milestone/3) | every visible string from one table | #20 |
+| [0.2.0 – Texts](../../milestone/4) | README and every explanation text | #21 |
+| [0.3.0](../../milestone/2) | not decided yet | |
+| [0.4.0](../../milestone/3) | not decided yet | |
 
 ## 0.1.0 – First release
 
@@ -27,32 +27,18 @@ chat output, code comments (#21).
 **Done when** someone who has never seen the addon can tell what a number
 means without asking.
 
-## 0.3.0 – Layout
+## 0.3.0 and 0.4.0
 
-Five proposals are drawn to scale in [layout/index.html](layout/index.html);
-recommended are 1 (strip) and 5 (anchor). The options panel has to be
-reworked with it – it is full, the next checkbox falls off the bottom (#19).
+Empty on purpose. The milestones exist, what goes into them is open.
 
-**Done when** the display sits under the player frame in classic styling
-without covering the spell icons.
+## Open, not assigned to any milestone
 
-**Needs from you:** a screenshot of your player frame together with MP5, and
-one decision – how much height the display may have.
-
-## 0.4.0 – English
-
-Interface and chat output are German, the README is English. CurseForge is
-international, so this is the first thing a stranger trips over.
-
-**Done when** the addon comes up in English on an English client and in
-German on a German one, with nothing left hard-coded.
-
-## Without a milestone
-
-**Mana model out of beta** (#22). The computed mana is the one part that can
-be wrong, and only playing with it shows where. This closes when the data
-says so, not on a date: over a whole dungeon run the value must stay within
-10 % of maximum mana of the real bar. Then the beta markers come out.
+| | |
+|---|---|
+| #22 | get the mana model out of beta – closes when the data says so, not on a date |
+| #18 | implement one of the layout proposals in `docs/layout/index.html` |
+| #19 | make the options panel scroll before it runs out of room |
+| #20 | move every visible string into a locale table |
 
 ## Not planned
 

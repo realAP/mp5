@@ -13,9 +13,12 @@ comes back, and how many casts that is.
   rest. Plus the five-second rule as a bar.
 - Up to five spells of your choice, each with the number of times your mana
   still pays for it.
-- If the client won't hand out your current mana, MP5 works it out itself –
-  from spell costs, regeneration and the buffs that grant mana. A tilde
-  (`~847`) means "at least this much"; without it the value is exact.
+- **Beta** – if the client won't hand out your current mana, MP5 works it out
+  itself: from spell costs, regeneration and the buffs that grant mana. A
+  tilde (`~847`) means "at least this much"; without it the value is exact.
+  This part is still under development and testing – it can be wrong. The
+  button in the corner of the display sets it straight, `/mp5 debug` shows
+  how it got there, `/mp5 estimate off` turns it off.
 
 Tested on WoW Classic (interface 16001).
 
@@ -88,6 +91,12 @@ for the rest.
 /mp5 probe     what this client hands out about mana
 /mp5 errors    recorded errors
 ```
+
+## Release
+
+Tag `v<version>` on `main` builds the zip and uploads it to CurseForge and
+the GitHub release – see [docs/release.md](docs/release.md). Tests run on
+every push: `tests/run.sh`.
 
 ## License
 

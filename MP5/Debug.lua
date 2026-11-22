@@ -41,7 +41,7 @@ end
 
 local title = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 title:SetPoint("TOPLEFT", 12, -10)
-title:SetText("MP5 - was das Addon denkt")
+title:SetText("MP5 - was das Addon denkt |cffff9020(Beta)|r")
 
 local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
 if close.SetPoint then close:SetPoint("TOPRIGHT", 2, 2) end

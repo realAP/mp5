@@ -224,7 +224,7 @@ local fullOn = checkbox(panel, "Beide Stufen zeigen", COL2 - 6, -498,
     function() return ns.db.showFull end,
     function(v) ns.db.showFull = v end)
 
-local manaOn = checkbox(panel, "Aktuelles Mana anzeigen", COL2 - 6, -546,
+local manaOn = checkbox(panel, "Aktuelles Mana anzeigen |cffff9020(Beta)|r", COL2 - 6, -546,
     function() return ns.db.manaDisplay and ns.db.manaDisplay ~= "off" end,
     function(v) ns.db.manaDisplay = v and "full" or "off" end)
 
@@ -236,7 +236,7 @@ local logoOn = checkbox(panel, "Zeichen in der Anzeige", 14, -546,
     function() return ns.db.showLogo end,
     function(v) ns.db.showLogo = v end)
 
-local estimateOn = checkbox(panel, "Mana mitrechnen (geschuetzter Wert)", COL2 - 6, -522,
+local estimateOn = checkbox(panel, "Mana mitrechnen |cffff9020(Beta)|r", COL2 - 6, -522,
     function() return ns.db.estimate end,
     function(v)
         ns.db.estimate = v

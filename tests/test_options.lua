@@ -189,7 +189,13 @@ for i = 1, #frames do
   local f = frames[i]
   if f.kind == "CheckButton" then
     boxes[#boxes + 1] = f
-    if f.Text and f.Text.text then byText[f.Text.text] = f end
+    if f.Text and f.Text.text then
+      -- Farbcodes und Zusaetze wie "(Beta)" abstreifen: gesucht wird nach
+      -- dem, was der Haken sagt, nicht nach seiner Einfaerbung.
+      local plain = f.Text.text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+      plain = plain:gsub("%s*%(Beta%)%s*$", ""):gsub("%s+$", "")
+      byText[plain] = f
+    end
   end
 end
 check("neun Haken vorhanden", #boxes, 9)
@@ -214,7 +220,7 @@ check("Zeichen in der Anzeige wird gespeichert",
 check("Mana-Zeile laesst sich einschalten",
       click("Aktuelles Mana anzeigen", true) or ns.db.manaDisplay, "full")
 check("Mitrechnen laesst sich abschalten",
-      click("Mana mitrechnen (geschuetzter Wert)", false) or ns.db.estimate, false)
+      click("Mana mitrechnen", false) or ns.db.estimate, false)
 check("und wird an das Modell weitergegeben", ns.Estimate.on, false)
 
 -- Der Knopf "Mein Mana ist jetzt voll"

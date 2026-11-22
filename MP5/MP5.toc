@@ -1,8 +1,13 @@
 ## Interface: 16001
 ## Title: MP5
-## Notes: Zeigt die tatsaechliche Mana-Regeneration pro 5 Sekunden, inkl. 5-Sekunden-Regel.
+## Notes: Zeigt die tatsaechliche Mana-Regeneration pro 5 Sekunden, inkl. 5-Sekunden-Regel.|n|cffff9020Beta:|r Mana mitrechnen, wenn der Client es nicht herausgibt.
 ## Author: Axel
 ## Version: 0.1.0
+## X-License: MIT
+## X-Website: https://github.com/realAP/mp5
+# Muss die Projekt-ID von CurseForge sein, sonst findet der Upload das
+# Projekt nicht. Siehe docs/release.md.
+## X-Curse-Project-ID: 0
 ## IconTexture: Interface\AddOns\MP5\Textures\icon.tga
 ## SavedVariables: MP5DB, MP5Errors, MP5Probe
 ## SavedVariablesPerCharacter: MP5CharDB

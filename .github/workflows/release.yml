@@ -1,0 +1,58 @@
+# Ein Tag wie v0.1.0 baut das Zip und laedt es zu CurseForge und an das
+# GitHub-Release.
+#
+# Vorher einmalig zu tun (siehe docs/release.md):
+#   - Projekt auf CurseForge anlegen und freigeben lassen
+#   - die Projekt-ID in MP5/MP5.toc unter X-Curse-Project-ID eintragen
+#   - CF_API_KEY als Repository-Secret setzen
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # der Packager braucht die Historie
+
+      - name: Lua 5.1 installieren
+        run: sudo apt-get update && sudo apt-get install -y lua5.1
+
+      # Nichts veroeffentlichen, was nicht durch die Tests kommt.
+      - name: Tests
+        run: tests/run.sh
+
+      # Der Tag und die Version im TOC muessen dasselbe sagen, sonst
+      # installiert sich spaeter eine Version, die es nicht gibt.
+      - name: Version pruefen
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF#refs/tags/v}"
+          toc=$(sed -n 's/^## Version:[[:space:]]*//p' MP5/MP5.toc | tr -d '\r')
+          echo "Tag: $tag   TOC: $toc"
+          test "$tag" = "$toc"
+
+      - name: Projekt-ID pruefen
+        run: |
+          id=$(sed -n 's/^## X-Curse-Project-ID:[[:space:]]*//p' MP5/MP5.toc | tr -d '\r')
+          if [ "$id" = "0" ] || [ -z "$id" ]; then
+            echo "X-Curse-Project-ID in MP5/MP5.toc fehlt - siehe docs/release.md"
+            exit 1
+          fi
+
+      - name: Packen und hochladen
+        uses: BigWigsMods/packager@v2
+        # -g: die Spielversion fuer CurseForge. Das Interface im TOC (16001)
+        # ist die Nummer des privaten Clients, die CurseForge nicht kennt -
+        # deshalb wird sie hier von Hand gesetzt.
+        with:
+          args: -g ${{ vars.GAME_VERSION || '1.15.7' }}
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}

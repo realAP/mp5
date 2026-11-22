@@ -19,3 +19,16 @@ Bildausschnitt, einmal mit und einmal ohne das mitgerechnete Mana.
 
 PNG, unskaliert aus dem Spiel. Liegen sie hier, werden sie in die README
 eingebaut.
+
+## Wenn die Bilder da sind
+
+Dann wird in der README dieser Block eingebaut – zwei Bilder
+nebeneinander, damit der Unterschied in einem Blick zu sehen ist:
+
+```markdown
+## Screenshots
+
+| Without the computed mana | With it (beta) |
+|---|---|
+| ![](docs/screenshots/03-mana-aus.png) | ![](docs/screenshots/04-mana-an.png) |
+```

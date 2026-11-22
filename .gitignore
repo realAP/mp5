@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+dist/
+versions.json
+metadata.json
+release-notes.md

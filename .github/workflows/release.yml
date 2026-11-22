@@ -1,10 +1,20 @@
-# Ein Tag wie v0.1.0 baut das Zip und laedt es zu CurseForge und an das
-# GitHub-Release.
+# Veroeffentlichen.
 #
-# Vorher einmalig zu tun (siehe docs/release.md):
-#   - Projekt auf CurseForge anlegen und freigeben lassen
-#   - die Projekt-ID in MP5/MP5.toc unter X-Curse-Project-ID eintragen
-#   - CF_API_KEY als Repository-Secret setzen
+#   git tag v0.1.0 && git push origin v0.1.0
+#       -> Tests, Zip bauen, zu CurseForge und an das GitHub-Release
+#
+#   Actions -> release -> "Run workflow"
+#       -> Trockenlauf: baut nur das Zip und haengt es an den Lauf
+#
+# Gepackt wird hier von Hand und nicht mit dem BigWigs-Packager: das Addon
+# liegt in einem Unterordner, das Interface im TOC (16001) ist die Nummer
+# eines privaten Clients, und das Changelog ist gepflegt statt generiert.
+# Unter diesen drei Bedingungen ist der direkte Weg der, den man lesen kann.
+#
+# Einmalig einzurichten - siehe docs/release.md:
+#   Secret   CF_API_KEY      Token von CurseForge
+#   TOC      X-Curse-Project-ID
+#   Variable GAME_VERSION    optional, Standard 1.15.7
 name: release
 
 on:
@@ -13,13 +23,14 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write          # fuer das GitHub-Release
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0        # der Packager braucht die Historie
 
       - name: Lua 5.1 installieren
         run: sudo apt-get update && sudo apt-get install -y lua5.1
@@ -28,31 +39,93 @@ jobs:
       - name: Tests
         run: tests/run.sh
 
-      # Der Tag und die Version im TOC muessen dasselbe sagen, sonst
-      # installiert sich spaeter eine Version, die es nicht gibt.
-      - name: Version pruefen
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Version bestimmen
+        id: version
         run: |
-          tag="${GITHUB_REF#refs/tags/v}"
+          set -euo pipefail
           toc=$(sed -n 's/^## Version:[[:space:]]*//p' MP5/MP5.toc | tr -d '\r')
-          echo "Tag: $tag   TOC: $toc"
-          test "$tag" = "$toc"
+          if [ -z "$toc" ]; then echo "Keine Version in MP5/MP5.toc"; exit 1; fi
 
-      - name: Projekt-ID pruefen
+          if [ "${GITHUB_REF}" != "${GITHUB_REF#refs/tags/v}" ]; then
+            tag="${GITHUB_REF#refs/tags/v}"
+            echo "Tag: $tag   TOC: $toc"
+            # Sonst installiert sich spaeter eine Version, die es nicht gibt.
+            if [ "$tag" != "$toc" ]; then
+              echo "Tag und Version im TOC sind verschieden."
+              exit 1
+            fi
+            echo "publish=yes" >> "$GITHUB_OUTPUT"
+            # Ein Tag mit Bindestrich (v0.2.0-beta) ist kein fertiges Release.
+            case "$tag" in
+              *-*) echo "channel=beta" >> "$GITHUB_OUTPUT" ;;
+              *)   echo "channel=release" >> "$GITHUB_OUTPUT" ;;
+            esac
+          else
+            echo "Trockenlauf ohne Tag."
+            echo "publish=no" >> "$GITHUB_OUTPUT"
+            echo "channel=alpha" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=$toc" >> "$GITHUB_OUTPUT"
+
+      - name: Beschreibung aus dem Changelog
         run: |
-          id=$(sed -n 's/^## X-Curse-Project-ID:[[:space:]]*//p' MP5/MP5.toc | tr -d '\r')
-          if [ "$id" = "0" ] || [ -z "$id" ]; then
+          set -euo pipefail
+          python3 tools/changelog.py "${{ steps.version.outputs.version }}" > release-notes.md
+          cat release-notes.md
+
+      - name: Zip bauen
+        run: python3 tools/package.py --out dist
+
+      - name: Zip an den Lauf haengen
+        uses: actions/upload-artifact@v4
+        with:
+          name: MP5-${{ steps.version.outputs.version }}
+          path: dist/*.zip
+
+      - name: Zu CurseForge hochladen
+        if: steps.version.outputs.publish == 'yes'
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          GAME_VERSION: ${{ vars.GAME_VERSION || '1.15.7' }}
+          VERSION: ${{ steps.version.outputs.version }}
+          CHANNEL: ${{ steps.version.outputs.channel }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_API_KEY:-}" ]; then
+            echo "Secret CF_API_KEY fehlt - siehe docs/release.md"
+            exit 1
+          fi
+          project=$(sed -n 's/^## X-Curse-Project-ID:[[:space:]]*//p' MP5/MP5.toc | tr -d '\r')
+          if [ -z "$project" ] || [ "$project" = "0" ]; then
             echo "X-Curse-Project-ID in MP5/MP5.toc fehlt - siehe docs/release.md"
             exit 1
           fi
 
-      - name: Packen und hochladen
-        uses: BigWigsMods/packager@v2
-        # -g: die Spielversion fuer CurseForge. Das Interface im TOC (16001)
-        # ist die Nummer des privaten Clients, die CurseForge nicht kennt -
-        # deshalb wird sie hier von Hand gesetzt.
-        with:
-          args: -g ${{ vars.GAME_VERSION || '1.15.7' }}
+          python3 tools/cf_metadata.py \
+            --version "$VERSION" \
+            --game-version "$GAME_VERSION" \
+            --channel "$CHANNEL" \
+            --notes release-notes.md > metadata.json
+          cat metadata.json
+
+          curl -sS --fail-with-body -X POST \
+            "https://wow.curseforge.com/api/projects/$project/upload-file" \
+            -H "X-Api-Token: $CF_API_KEY" \
+            -F "metadata=<metadata.json" \
+            -F "file=@dist/MP5-$VERSION.zip"
+
+      - name: GitHub-Release
+        if: steps.version.outputs.publish == 'yes'
         env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          CHANNEL: ${{ steps.version.outputs.channel }}
+        run: |
+          set -euo pipefail
+          extra=""
+          if [ "$CHANNEL" != "release" ]; then extra="--prerelease"; fi
+          gh release create "${GITHUB_REF#refs/tags/}" \
+            --title "MP5 $VERSION" \
+            --notes-file release-notes.md \
+            $extra \
+            "dist/MP5-$VERSION.zip"

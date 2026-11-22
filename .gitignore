@@ -4,3 +4,4 @@ dist/
 versions.json
 metadata.json
 release-notes.md
+.claude/

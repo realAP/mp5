@@ -7,8 +7,6 @@ that can be checked.
 |---|---|---|
 | [0.1.0 – First release](../../milestone/1) | on CurseForge | #16 #17 |
 | [0.2.0 – Texts](../../milestone/4) | README and every explanation text | #21 |
-| [0.3.0](../../milestone/2) | not decided yet | |
-| [0.4.0](../../milestone/3) | not decided yet | |
 
 ## 0.1.0 – First release
 
@@ -26,10 +24,6 @@ chat output, code comments (#21).
 
 **Done when** someone who has never seen the addon can tell what a number
 means without asking.
-
-## 0.3.0 and 0.4.0
-
-Empty on purpose. The milestones exist, what goes into them is open.
 
 ## Open, not assigned to any milestone
 
